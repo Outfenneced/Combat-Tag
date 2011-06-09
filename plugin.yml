@@ -1,0 +1,9 @@
+name: CombatTag
+main: com.WildAmazing.marinating.CombatTag.CombatTag
+version: 2.0
+commands:
+  combattag:
+    description: List players you have tagged and your ...
+    aliases: ct
+    usage: |
+           Incorrect usage of /<command>.

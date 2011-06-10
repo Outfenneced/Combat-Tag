@@ -262,21 +262,14 @@ public class CombatTag extends JavaPlugin {
 	{
 		PlayerCombatClass PCCWinner = getPCC(Winner);
 		PlayerCombatClass PCCLoser = getPCC(Loser);
-		if(!(getServer().getPlayer(PCCWinner.getPlayerName()) == null))
+		if(isPlrOnline(PCCWinner.getPlayerName()))
 		{
 			Player PlrWinner = getServer().getPlayer(PCCWinner.getPlayerName());//Winner by default (or  by pvp logging)
 			logit("dropping " + Loser + "items at " + Winner + "'s feet");
-			if(PlrWinner.isOnline()) //If the victor is online give items to him otherwise no one get them
+			PlrWinner.sendMessage(ChatColor.LIGHT_PURPLE+ "[CombatTag] "+ChatColor.RED + Loser + ChatColor.GOLD +" has pvp logged. His/Her items drop at your feet");
+			for(int i = 0;PCCLoser.getItems().size() > i; i++)
 			{
-				PlrWinner.sendMessage(ChatColor.LIGHT_PURPLE+ "[CombatTag] "+ChatColor.RED + Loser + ChatColor.GOLD +" has pvp logged. His/Her items drop at your feet");
-				for(int i = 0;PCCLoser.getItems().size() > i; i++)
-				{
-					PlrWinner.getWorld().dropItemNaturally(PlrWinner.getLocation(), PCCLoser.getItems().get(i));
-				}
-			}
-			else
-			{
-				//do nothing
+				PlrWinner.getWorld().dropItemNaturally(PlrWinner.getLocation(), PCCLoser.getItems().get(i));
 			}
 		}
 		else
@@ -295,72 +288,58 @@ public class CombatTag extends JavaPlugin {
 		}
 		Tagged.setTagExpiration(getDelay());// Sets the tag expiration for Tagged
 	}
-	public void updateTags(String playername, String originalPlayerName)//Updates tags for players (called from onCommand)
+	
+	public boolean isPlrOnline(String Playername)
 	{
-		PlayerCombatClass PCCPlr1 = getPCC(playername); //Player1 (tagged player)
-		if(PCCPlr1.isTagged())//Check to see if player1 is tagged
+		try
 		{
-			logit(PCCPlr1.getPlayerName() + " PCCPlr1 is tagged");
-			if(PCCPlr1.tagExpired())//Check to see if the tag has expired
+			Player myplayer = getServer().getPlayer(Playername);
+			return myplayer.isOnline();
+		}
+		catch(NullPointerException e)
+		{
+			return false;
+		}
+	}
+	public void updateTags(String playername, Boolean Continue_deeper)//Updates tags for players (called from onCommand)
+	{
+		PlayerCombatClass Tagged = getPCC(playername); //Player1 (tagged player)
+		if(Tagged.isTagged())
+		{
+			if(Tagged.tagExpired())
 			{
-				logit("PCCPlr1's tag is expired");
-				if(!(PCCPlr1.hasScheduledtask()))
+				if(isPlrOnline(Tagged.getPlayerName()))//If tagged is online
 				{
-					if(!(getServer().getPlayer(PCCPlr1.getTaggedBy()) == null))
-					{
-						logit(PCCPlr1.getPlayerName() +" is not online");
-						PlayerCombatClass PCCPlr2 = getPCC(PCCPlr1.getTaggedBy());//Player2 is the tagger
-						logit("removing PCCPlr2 from tagged players");
-						//Cause of the concurrent modification exception
-						PCCPlr2.removeFromTaggedPlayers(PCCPlr1.getPlayerName());//Remove Player1 from Player2's tagged list
-						logit("Removing PCCPlr1's tagged by");
-						PCCPlr1.removeTaggedBy();//Set Player1's tagged by to null
-					}
-				}
-				else//Player has a scheduled task
-				{
-					logit(PCCPlr1.getPlayerName() + " has a scheduled task. canceling it.");
-					if(!(getServer().getPlayer(PCCPlr1.getPlayerName()) == null))
-					{
-						logit(PCCPlr1.getTaggedBy() + " was not online when /ct was called");
-						logit("Canceling task");
-						getServer().getScheduler().cancelTask(PCCPlr1.getTasknumber());
-						PCCPlr1.setScheduledtask(false);
-						logit(PCCPlr1.getPlayerName() +" is not online");
-						PlayerCombatClass PCCPlr2 = getPCC(PCCPlr1.getTaggedBy());//Player2 is the tagger
-						logit("removing PCCPlr2 from tagged players");
-						//Cause of the concurrent modification exception
-						PCCPlr2.removeFromTaggedPlayers(PCCPlr1.getPlayerName());//Remove Player1 from Player2's tagged list
-						logit("Removing PCCPlr1's tagged by");
-						PCCPlr1.removeTaggedBy();//Set Player1's tagged by to null
-					}
+					PlayerCombatClass Tagger = getPCC(Tagged.getTaggedBy());
+					Tagged.removeTaggedBy();
+					Tagger.removeFromTaggedPlayers(Tagged.getPlayerName());
+					//remove tags here
 				}
 			}
-			
 		}
-		if(PCCPlr1.hasTaggedPlayer())// Check to see if Player has tagged other players
-		{	
-			logit(PCCPlr1.getPlayerName() + " has tagged players");
-			ArrayList<String> Myarray = PCCPlr1.getTaggedPlayers();// Temporary arraylist for deep copy
-			logit("setting up iterator");
-			//Make a deep copy of Myarray
-		    Iterator<String> itr = Myarray.iterator(); // Setup iterator
-		    ArrayList<String> backup = new ArrayList<String>();
-		    while (itr.hasNext())//Check to see if there is another element in Myarray
-		    {
-		    	backup.add(itr.next());	//Copy each element in arraylist
-		    }
-		    //Deep copy finished
-		    Iterator<String> newitr = backup.iterator();//Setup iterator
-		    while(newitr.hasNext())// Check to see if there is another element in backup
-		    {
-		    	String currentplayer = newitr.next();
-                        if(originalPlayerName == currentplayer){
-                            continue;
-                        }
-	    		logit("recursive call to update tags using" + currentplayer);
-	    		updateTags(currentplayer, originalPlayerName);// Recursive call for tagged player
-		    }
+		if(Continue_deeper == true)
+		{
+			if(Tagged.hasTaggedPlayer())// Check to see if Player has tagged other players
+			{	
+				logit(Tagged.getPlayerName() + " has tagged players");
+				ArrayList<String> Myarray = Tagged.getTaggedPlayers();// Temporary arraylist for deep copy
+				logit("setting up iterator");
+				//Make a deep copy of Myarray
+				Iterator<String> itr = Myarray.iterator(); // Setup iterator
+				ArrayList<String> backup = new ArrayList<String>();
+				while (itr.hasNext())//Check to see if there is another element in Myarray
+				{
+					backup.add(itr.next());	//Copy each element in arraylist
+				}
+				//Deep copy finished
+				Iterator<String> newitr = backup.iterator();//Setup iterator
+				while(newitr.hasNext())// Check to see if there is another element in backup
+				{
+					String currentplayer = newitr.next();
+					logit("recursive call to update tags using " + currentplayer);
+					updateTags(currentplayer, false);// Recursive call for tagged player
+				}
+			}
 		}
 	}
 	
@@ -375,7 +354,7 @@ public class CombatTag extends JavaPlugin {
 				{
 					Player CmdPlr = (Player)sender;
 					PlayerCombatClass PCCPlr = getPCC(CmdPlr.getName());
-					updateTags(PCCPlr.getPlayerName(),PCCPlr.getPlayerName());//Updates tags to represent most recent values
+					updateTags(PCCPlr.getPlayerName(),true);//Updates tags to represent most recent values
 					if(PCCPlr.isTagged())
 					{
 						

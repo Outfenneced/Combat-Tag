@@ -267,25 +267,26 @@ public class CombatTag extends JavaPlugin {
 	public void dropitemsandclearPCCitems(String Winner, String Loser)// Drops items naturally infront of Player and removes items from ...
 	{
 		PlayerCombatClass PCCLoser = getPCC(Loser);
-		if(getPenalty().equalsIgnoreCase("DEATH"))
-		{
-			PlayerCombatClass PCCWinner = getPCC(Winner);
-			
+		PlayerCombatClass PCCWinner = getPCC(Winner);
 			if(isPlrOnline(PCCWinner.getPlayerName()))
 			{
 				Player PlrWinner = getServer().getPlayer(PCCWinner.getPlayerName());//Winner by default (or  by pvp logging)
-				logit("dropping " + Loser + "items at " + Winner + "'s feet");
 				sendMessageWinner(PlrWinner, PCCLoser.getPlayerName());
-				for(int i = 0;PCCLoser.getItems().size() > i; i++)
+				if(getPenalty().equalsIgnoreCase("DEATH"))
 				{
-					PlrWinner.getWorld().dropItemNaturally(PlrWinner.getLocation(), PCCLoser.getItems().get(i));
+					
+					logit("dropping " + Loser + "items at " + Winner + "'s feet");
+				
+					for(int i = 0;PCCLoser.getItems().size() > i; i++)
+					{
+						PlrWinner.getWorld().dropItemNaturally(PlrWinner.getLocation(), PCCLoser.getItems().get(i));
+					}
 				}
 			}
 			else
 			{
 				logit("Unable to get winner null returned. (winner not online)");
 			}
-		}
 		PCCLoser.clearItems();
 		return;
 	}

@@ -40,7 +40,6 @@ public class CombatTag extends JavaPlugin {
     private String PENALTY = "DEATH";
     private boolean INVENTORYCLEAR = true;
     private boolean LIGHTNING = false;
-    private boolean DROP = true; //Dropitems at feet instead of using command
     private boolean DEBUG = false;
     private int MAXRELOG = 1; //Number of times a player can relog during a tag
     private String MSG2PLR = "&d[CombatTag] &c $tagged &6 was executed for logging off while in combat with &c $tagger";
@@ -67,23 +66,22 @@ public class CombatTag extends JavaPlugin {
         		CONFIG.createNewFile(); //make new file
                 FileOutputStream out = new FileOutputStream(CONFIG); //for writing the file
                // prop.put("Extended_Grace_Period", "30");
-	        	prop.put("Debug", "False");
-               // prop.put("Drop_items_on_pvp_log", "true");
-               prop.put("Penalty", "DEATH");
-               prop.put("PvpMessage2plr", "&d[CombatTag] &c $tagged &6 was executed for logging off while in combat with &c $tagger");
-               prop.put("PvpMessage1plr", "&d[CombatTag] &c $tagged &6 was executed for logging off during pvp");
-               prop.put("ItemsDroppedMsg", "&d[CombatTag] &c $tagged &6 has pvp logged. His/Her items drop at your feet");
-               // prop.put("Inventory_steal", "true");
+                prop.put("Debug", "False");
+                prop.put("Penalty", "DEATH");
+                prop.put("PvpMessage2plr", "&d[CombatTag] &c $tagged &6 was executed for logging off while in combat with &c $tagger");
+                prop.put("PvpMessage1plr", "&d[CombatTag] &c $tagged &6 was executed for logging off during pvp");
+                prop.put("ItemsDroppedMsg", "&d[CombatTag] &c $tagged &6 has pvp logged. His/Her items drop at your feet");
                 prop.put("TagTime", "15");
                 prop.put("Grace_period","45");
                 prop.put("MaxRelog", "1");
-               // prop.put("Lightning","false");
+                prop.put("Lightning","false");
                 prop.store(out, " TagTime = duration of tag" + "\r\n Grace_period = time the player has to relog (starting from the moment they logout)"
                 		+ "\r\n Debug = enables debug mode (be ready for the spam)" + "\r\n PvpMessage2plr is called upon a pvp logger logging back in.\r\n It supports $tagger (person who hit the pvplogger) and $tagged (Pvplogger).\r\n It also supports color coding using the &(0-9,a-f)"
                 		+ "\r\n PvpMessage1plr is nearly the same as PvpMessage1plr except it is called when the pvp logger did not log back in before the server was reloaded or restarted.\r\n It supports $tagged and &colors only."
                 		+ "\r\n ItemsDroppedMsg is called when the player is considered a pvplogger(when the items would normally drop to the gound)." +
                 		 "\r\n It supports $tagger,$tagged and chat colors and only send the message to the person who tagged the pvp logger, as apposed to the entire server." +
-                		 "\r\n MaxRelog is the maximum number of times a player can relog during a tag period.");
+                		 "\r\n MaxRelog is the maximum number of times a player can relog during a tag period." +
+                		 "\r\n Lightning (true or false) Strikes lightning at players location upon logging back in. \r\n Only works when penalty is set to DEATH");
                 out.flush();  
                 out.close(); //save and close writer
                 log.info("[CombatTag] New file created.");
@@ -119,11 +117,9 @@ public class CombatTag extends JavaPlugin {
 	        prop.load(in); //loads file
 	        PENALTY = prop.getProperty("Penalty");
 	       // EXTENDEDGRACEPERIOD = Long.parseLong(prop.getProperty("Extended_Grace_Period"))*1000; //To be implemented (will change time depending on disconect type)
-	       // INVENTORYCLEAR = Boolean.parseBoolean(prop.getProperty("Inventory_steal"));
 	        TAGTIME = Long.parseLong(prop.getProperty("TagTime"))*1000;
 	        GRACEPERIOD = Long.parseLong(prop.getProperty("Grace_period"))*1000;
-	       // LIGHTNING = Boolean.parseBoolean(prop.getProperty("Lightning"));
-	       // DROP = Boolean.parseBoolean(prop.getProperty("Drop_items_on_pvp_log"));
+	        LIGHTNING = Boolean.parseBoolean(prop.getProperty("Lightning"));
 	        DEBUG = Boolean.parseBoolean(prop.getProperty("Debug"));
 	        MSG2PLR = prop.getProperty("PvpMessage2plr");
 	        MSG1PLR = prop.getProperty("PvpMessage1plr");
@@ -176,9 +172,7 @@ public class CombatTag extends JavaPlugin {
     {
     	pvploggers.remove(Playername);
     }
-    public boolean getDropItems(){
-    	return DROP;
-    }
+
     public boolean getLightning(){
     	return LIGHTNING;
     }
@@ -250,7 +244,10 @@ public class CombatTag extends JavaPlugin {
 		if (getPenalty().equalsIgnoreCase("DEATH")){
 			p.getInventory().clear();
 			if (getLightning())
+			{
+				logit("Lightning struck at " + p.getName() + "'s location");
 				p.getWorld().strikeLightning(p.getLocation());
+			}
 			logit(p.getName() + "'s inventory has been cleared and killed");
 			
     		p.setHealth(0);

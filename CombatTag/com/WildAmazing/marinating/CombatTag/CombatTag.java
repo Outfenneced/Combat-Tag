@@ -102,9 +102,10 @@ public class CombatTag extends JavaPlugin {
 				catch (IOException ex){
 					log.warning("[CombatTag] File creation error: " + ex.getMessage());
 				}
+				log.info("[CombatTag] " + getDescription().getVersion() + " Loaded.");
 	    }
         else {
-	    	log.info("[CombatTag] Detected existing config file and loading.");
+	    	log.info("[CombatTag]"+ getDescription().getVersion() +"Detected existing config file and loading.");
 	        loadProcedure();//added later
 	        logit("Debug is enabled! Be ready for the spam.");
 
@@ -246,7 +247,7 @@ public class CombatTag extends JavaPlugin {
 			if (getLightning())
 			{
 				logit("Lightning struck at " + p.getName() + "'s location");
-				p.getWorld().strikeLightning(p.getLocation());
+				p.getWorld().strikeLightningEffect(p.getLocation());
 			}
 			logit(p.getName() + "'s inventory has been cleared and killed");
 			

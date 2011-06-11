@@ -40,18 +40,11 @@ public class CombatTagPlayerListener extends PlayerListener {
     		{
     			PlayerCombatClass tagger = plugin.getPCC(PlrComClass.getTaggedBy());
     			plugin.announcePvPLog(PlrComClass.getPlayerName(), PlrComClass.getTaggedBy());
-    			/*plugin.getServer().broadcastMessage(ChatColor.LIGHT_PURPLE+"[CombatTag] "+ChatColor.RED+p.getName()+ChatColor.GOLD+" was executed for logging off" +
-    			" while in combat with " + ChatColor.RED + PlrComClass.getTaggedBy());
-    			*/
     			tagger.removeFromTaggedPlayers(PlrComClass.getPlayerName());
     		}
     		else
     		{
     			plugin.announcePvPLog(p.getName());
-    			/*
-    			plugin.getServer().broadcastMessage(ChatColor.LIGHT_PURPLE+"[CombatTag] "+ChatColor.RED+p.getName()+ChatColor.GOLD+" was executed for logging off" +
-    			" while in combat.");
-    			*/
     		}
     		PlrComClass.removeTaggedBy();//Removes player from all tagged lists
    			PlrComClass.setPvplogged(false);
@@ -95,7 +88,7 @@ public class CombatTagPlayerListener extends PlayerListener {
     			if(!(CCQuitter.tagExpired()))
     			{
     				plugin.logit(CCQuitter.getPlayerName() + " logged out within the tag period");
-    				if(plugin.getPenalty().equalsIgnoreCase("DEATH"))
+    				if(plugin.getPenalty().equals("DEATH"))
     				{
     					CCQuitter.setItems(quitter);//Save items before logout
     				}
@@ -105,15 +98,12 @@ public class CombatTagPlayerListener extends PlayerListener {
     					plugin.logit("Player has exceeded the maximum number of relogs allowed");
     					//Quitter has reloged more than the maximum amount in current tag. Deal with player appropriately.
     					CCQuitter.removeTimesReloged();
-    					if(plugin.getPenalty().equalsIgnoreCase("DEATH"))
+    					if(plugin.getPenalty().equals("DEATH"))
     					{
     						plugin.logit("Made it into penalty == death");
     						plugin.dropitemsandclearPCCitems(CCQuitter.getTaggedBy(), CCQuitter.getPlayerName());
     					}
     					CCQuitter.setPvplogged(true);
-    					/*
-    					 * Do stuff to player here (i.e. kill them)
-    					 */
     				}
     				else if(!(CCQuitter.hasScheduledtask()))
     				{
@@ -270,7 +260,7 @@ public class CombatTagPlayerListener extends PlayerListener {
 					if(CCQuitter.isTagged())
 					{
 						CCQuitter.setPvplogged(true);// Set pvp logged to true to indicate player needs to be dealt with on login
-						if (plugin.getPenalty().equalsIgnoreCase("DEATH"))// Checks penalty for pvp logging
+						if (plugin.getPenalty().equals("DEATH"))// Checks penalty for pvp logging
 						{
 							if (plugin.getInventoryClear())// Checks to see if winner receives items
 							{

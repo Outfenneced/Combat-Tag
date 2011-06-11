@@ -116,7 +116,7 @@ public class CombatTag extends JavaPlugin {
     	try {
 	        FileInputStream in = new FileInputStream(CONFIG); //Creates the input stream
 	        prop.load(in); //loads file
-	        PENALTY = prop.getProperty("Penalty");
+	        PENALTY = prop.getProperty("Penalty").toUpperCase();
 	       // EXTENDEDGRACEPERIOD = Long.parseLong(prop.getProperty("Extended_Grace_Period"))*1000; //To be implemented (will change time depending on disconect type)
 	        TAGTIME = Long.parseLong(prop.getProperty("TagTime"))*1000;
 	        GRACEPERIOD = Long.parseLong(prop.getProperty("Grace_period"))*1000;
@@ -242,7 +242,7 @@ public class CombatTag extends JavaPlugin {
     }
 	public void killAndClean(Player p)//Kills Player and cleans inventory
 	{
-		if (getPenalty().equalsIgnoreCase("DEATH")){
+		if (getPenalty().equals("DEATH")){
 			p.getInventory().clear();
 			if (getLightning())
 			{
@@ -270,7 +270,7 @@ public class CombatTag extends JavaPlugin {
 			{
 				Player PlrWinner = getServer().getPlayer(PCCWinner.getPlayerName());//Winner by default (or  by pvp logging)
 				sendMessageWinner(PlrWinner, PCCLoser.getPlayerName());
-				if(getPenalty().equalsIgnoreCase("DEATH"))
+				if(getPenalty().equals("DEATH"))
 				{
 					
 					logit("dropping " + Loser + "items at " + Winner + "'s feet");

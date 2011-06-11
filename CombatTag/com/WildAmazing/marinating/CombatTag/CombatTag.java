@@ -42,6 +42,7 @@ public class CombatTag extends JavaPlugin {
     private boolean LIGHTNING = false;
     private boolean DROP = true; //Dropitems at feet instead of using command
     private boolean DEBUG = false;
+    private int MAXRELOG = 1; //Number of times a player can relog during a tag
     private String MSG2PLR = "&d[CombatTag] &c $tagged &6 was executed for logging off while in combat with &c $tagger";
     private String MSG1PLR =  "&d[CombatTag] &c $tagged &6 was executed for logging off during pvp";
     private String ITEMSDROPPEDMSG = "&d[CombatTag] &c $tagged &6 has pvp logged. His/Her items drop at your feet";
@@ -75,12 +76,14 @@ public class CombatTag extends JavaPlugin {
                // prop.put("Inventory_steal", "true");
                 prop.put("TagTime", "15");
                 prop.put("Grace_period","45");
+                prop.put("MaxRelog", "1");
                // prop.put("Lightning","false");
                 prop.store(out, " TagTime = duration of tag" + "\r\n Grace_period = time the player has to relog (starting from the moment they logout)"
                 		+ "\r\n Debug = enables debug mode (be ready for the spam)" + "\r\n PvpMessage2plr is called upon a pvp logger logging back in.\r\n It supports $tagger (person who hit the pvplogger) and $tagged (Pvplogger).\r\n It also supports color coding using the &(0-9,a-f)"
                 		+ "\r\n PvpMessage1plr is nearly the same as PvpMessage1plr except it is called when the pvp logger did not log back in before the server was reloaded or restarted.\r\n It supports $tagged and &colors only."
                 		+ "\r\n ItemsDroppedMsg is called when the player is considered a pvplogger(when the items would normally drop to the gound)." +
-                		 "\r\n It supports $tagger,$tagged and chat colors and only send the message to the person who tagged the pvp logger, as apposed to the entire server.");
+                		 "\r\n It supports $tagger,$tagged and chat colors and only send the message to the person who tagged the pvp logger, as apposed to the entire server." +
+                		 "\r\n MaxRelog is the maximum number of times a player can relog during a tag period.");
                 out.flush();  
                 out.close(); //save and close writer
                 log.info("[CombatTag] New file created.");
@@ -125,6 +128,7 @@ public class CombatTag extends JavaPlugin {
 	        MSG2PLR = prop.getProperty("PvpMessage2plr");
 	        MSG1PLR = prop.getProperty("PvpMessage1plr");
 	        ITEMSDROPPEDMSG = prop.getProperty("ItemsDroppedMsg");
+	        MAXRELOG = Integer.parseInt(prop.getProperty("MaxRelog"));
 	        in.close(); //Closes the input stream.
 	        FileInputStream inplayerfile = new FileInputStream(PVPLOG);
 	        pvploggers.load(inplayerfile);
@@ -177,6 +181,10 @@ public class CombatTag extends JavaPlugin {
     }
     public boolean getLightning(){
     	return LIGHTNING;
+    }
+    public int getMaxRelog()
+    {
+    	return MAXRELOG;
     }
     public long getGracePeriod(){
     	return GRACEPERIOD;
@@ -239,7 +247,7 @@ public class CombatTag extends JavaPlugin {
     }
 	public void killAndClean(Player p)//Kills Player and cleans inventory
 	{
-		if (getPenalty().equals("DEATH")){
+		if (getPenalty().equalsIgnoreCase("DEATH")){
 			p.getInventory().clear();
 			if (getLightning())
 				p.getWorld().strikeLightning(p.getLocation());
@@ -258,21 +266,25 @@ public class CombatTag extends JavaPlugin {
 	}
 	public void dropitemsandclearPCCitems(String Winner, String Loser)// Drops items naturally infront of Player and removes items from ...
 	{
-		PlayerCombatClass PCCWinner = getPCC(Winner);
 		PlayerCombatClass PCCLoser = getPCC(Loser);
-		if(isPlrOnline(PCCWinner.getPlayerName()))
+		if(getPenalty().equalsIgnoreCase("DEATH"))
 		{
-			Player PlrWinner = getServer().getPlayer(PCCWinner.getPlayerName());//Winner by default (or  by pvp logging)
-			logit("dropping " + Loser + "items at " + Winner + "'s feet");
-			sendMessageWinner(PlrWinner, PCCLoser.getPlayerName());
-			for(int i = 0;PCCLoser.getItems().size() > i; i++)
+			PlayerCombatClass PCCWinner = getPCC(Winner);
+			
+			if(isPlrOnline(PCCWinner.getPlayerName()))
 			{
-				PlrWinner.getWorld().dropItemNaturally(PlrWinner.getLocation(), PCCLoser.getItems().get(i));
+				Player PlrWinner = getServer().getPlayer(PCCWinner.getPlayerName());//Winner by default (or  by pvp logging)
+				logit("dropping " + Loser + "items at " + Winner + "'s feet");
+				sendMessageWinner(PlrWinner, PCCLoser.getPlayerName());
+				for(int i = 0;PCCLoser.getItems().size() > i; i++)
+				{
+					PlrWinner.getWorld().dropItemNaturally(PlrWinner.getLocation(), PCCLoser.getItems().get(i));
+				}
 			}
-		}
-		else
-		{
-			logit("Unable to get winner null returned. (winner not online)");
+			else
+			{
+				logit("Unable to get winner null returned. (winner not online)");
+			}
 		}
 		PCCLoser.clearItems();
 		return;
@@ -331,6 +343,7 @@ public class CombatTag extends JavaPlugin {
 			{
 				if(isPlrOnline(Tagged.getPlayerName()))//If tagged is online
 				{
+					Tagged.removeTimesReloged();
 					PlayerCombatClass Tagger = getPCC(Tagged.getTaggedBy());
 					Tagged.removeTaggedBy();
 					Tagger.removeFromTaggedPlayers(Tagged.getPlayerName());
@@ -381,6 +394,7 @@ public class CombatTag extends JavaPlugin {
 						
 						CmdPlr.sendMessage(ChatColor.GOLD + "You are tagged by " + ChatColor.RED +PCCPlr.getTaggedBy() + ChatColor.GOLD +" for " + PCCPlr.tagPeriodInSeconds() + " more seconds.");
 						CmdPlr.sendMessage(ChatColor.GOLD + "You have " + getGracePeriod()/1000 + " seconds to relog");
+						CmdPlr.sendMessage(ChatColor.GOLD + "You have " + new Integer (getMaxRelog()-PCCPlr.getTimesReloged()).toString() + " relog(s) remaining for this tag");
 					}
 					else
 					{

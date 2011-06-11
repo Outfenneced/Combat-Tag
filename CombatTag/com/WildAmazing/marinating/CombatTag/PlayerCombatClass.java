@@ -16,12 +16,14 @@ public class PlayerCombatClass {
 	private ArrayList<ItemStack> ITEMS = new ArrayList<ItemStack>();//items in players inventory
 	private boolean scheduledtask;
 	private int Tasknumber;
+	private int TimesReloged;
 	private boolean pvplogged;
 	
 	public PlayerCombatClass(Player pl)//initializes the class
 	{
 		setPvplogged(false);
 		tagExpirationTime = 0;
+		TimesReloged = 0;
 		gracePeriod = 0;
 		playerName = pl.getName();
 		taggedBy = null;
@@ -229,6 +231,18 @@ public class PlayerCombatClass {
 	public boolean hasPvplogged()// Returns true if player has pvp logged
 	{
 		return pvplogged;
+	}
+
+	public void incrementTimesReloged() {
+		TimesReloged = TimesReloged + 1;
+	}
+
+	public int getTimesReloged() {
+		return TimesReloged;
+	}
+	public void removeTimesReloged()
+	{
+		TimesReloged = 0;
 	}
 
 }

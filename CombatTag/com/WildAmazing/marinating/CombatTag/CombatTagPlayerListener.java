@@ -74,7 +74,8 @@ public class CombatTagPlayerListener extends PlayerListener {
     				plugin.getServer().getScheduler().cancelTask(PlrLogin.getTasknumber());
     				PlrLogin.setScheduledtask(false);
     				PlrLogin.setTagExpiration(plugin.getTagTime());
-    				plugin.getServer().getPlayer(PlrLogin.getPlayerName()).sendMessage( ChatColor.LIGHT_PURPLE + "[CombatTag]" + ChatColor.GOLD + " Your tag time has been reset to: " + PlrLogin.tagPeriodInSeconds() + " seconds");
+    				p.sendMessage( ChatColor.LIGHT_PURPLE + "[CombatTag]" + ChatColor.GOLD + " Your tag time has been reset to: " + PlrLogin.tagPeriodInSeconds() + " seconds.");
+    				p.sendMessage(ChatColor.LIGHT_PURPLE + "[CombatTag]" + ChatColor.GOLD + " You can relog " + new Integer (plugin.getMaxRelog()-PlrLogin.getTimesReloged()).toString() + " time(s) during this tag.");
     			}
     		}
     		
@@ -94,11 +95,27 @@ public class CombatTagPlayerListener extends PlayerListener {
     			if(!(CCQuitter.tagExpired()))
     			{
     				plugin.logit(CCQuitter.getPlayerName() + " logged out within the tag period");
-    				if(plugin.getPenalty() == "DEATH")
+    				if(plugin.getPenalty().equalsIgnoreCase("DEATH"))
     				{
     					CCQuitter.setItems(quitter);//Save items before logout
     				}
-    				if(!(CCQuitter.hasScheduledtask()))
+    				if(CCQuitter.getTimesReloged() >= plugin.getMaxRelog())
+    				{
+    					plugin.logit("Penalty is " + plugin.getPenalty() );
+    					plugin.logit("Player has exceeded the maximum number of relogs allowed");
+    					//Quitter has reloged more than the maximum amount in current tag. Deal with player appropriately.
+    					CCQuitter.removeTimesReloged();
+    					if(plugin.getPenalty().equalsIgnoreCase("DEATH"))
+    					{
+    						plugin.logit("Made it into penalty == death");
+    						plugin.dropitemsandclearPCCitems(CCQuitter.getTaggedBy(), CCQuitter.getPlayerName());
+    					}
+    					CCQuitter.setPvplogged(true);
+    					/*
+    					 * Do stuff to player here (i.e. kill them)
+    					 */
+    				}
+    				else if(!(CCQuitter.hasScheduledtask()))
     				{
     					plugin.logit("Task scheduled");
     					CCQuitter.setScheduledtask(true);
@@ -116,6 +133,7 @@ public class CombatTagPlayerListener extends PlayerListener {
 	    				}
 	    				*/
 	    				CCQuitter.setGracePeriod(plugin.getGracePeriod());
+	    				CCQuitter.incrementTimesReloged();
 	    				
 	    				if(plugin.isPlrOnline(CCQuitter.getTaggedBy()))
 	    				{
@@ -133,7 +151,7 @@ public class CombatTagPlayerListener extends PlayerListener {
 	    		}
 	    		else
 	    		{
-	    			//do nothing player still has time to logout
+	    			//do nothing the tag is already expired
 	    		}
 	    	}
 	    	else
@@ -158,6 +176,7 @@ public class CombatTagPlayerListener extends PlayerListener {
 			PlayerCombatClass Tagger = plugin.getPCC(PlrKicked.getTaggedBy());
 			plugin.logit("set plrkicked.taggedby to null");
 			PlrKicked.removeTaggedBy();//Set tagged by to null
+			PlrKicked.removeTimesReloged();
 			plugin.logit("removing tagger from tagged players");
 			Tagger.removeFromTaggedPlayers(PlrKicked.getPlayerName());//Remove PlrKicked from the taggers list of tagged players
 			plugin.logit("setpvplogged to false");
@@ -203,6 +222,7 @@ public class CombatTagPlayerListener extends PlayerListener {
 							PlrKicked.removeFromTaggedPlayers(PCCPlr2.getPlayerName());//Remove Player1 from Player2's tagged list
 							plugin.logit("Removing PCCPlr1's tagged by");
 							PCCPlr2.removeTaggedBy();//Set Player1's tagged by to null
+							PCCPlr2.removeTimesReloged();
 		    }
 		}
 		return;
@@ -219,6 +239,7 @@ public class CombatTagPlayerListener extends PlayerListener {
     		PlayerCombatClass Tagger = plugin.getPCC(PlrRespawn.getTaggedBy());
     		Tagger.removeFromTaggedPlayers(PlrRespawn.getPlayerName()); //Remove PlrRespawn from the tagger
     		PlrRespawn.removeTaggedBy();//Removes tagger from this player
+    		PlrRespawn.removeTimesReloged();
     		PlrRespawn.removeAllTaggedPlayers();// Removes all players from the respawning players tagged list
     		PlrRespawn.setGraceAndTagPast();//Sets the time of expiration for grace and tag -1 and -2 millis in the past respectively 
     		if(PlrRespawn.hasScheduledtask())//Check to see if the player has a scheduled task
@@ -249,7 +270,7 @@ public class CombatTagPlayerListener extends PlayerListener {
 					if(CCQuitter.isTagged())
 					{
 						CCQuitter.setPvplogged(true);// Set pvp logged to true to indicate player needs to be dealt with on login
-						if (plugin.getPenalty().equals("DEATH"))// Checks penalty for pvp logging
+						if (plugin.getPenalty().equalsIgnoreCase("DEATH"))// Checks penalty for pvp logging
 						{
 							if (plugin.getInventoryClear())// Checks to see if winner receives items
 							{
@@ -258,29 +279,16 @@ public class CombatTagPlayerListener extends PlayerListener {
 						}
 					}
 				}
-				else //Player may or may not be online
+				else //Player is online
 				{
-					plugin.logit("Player check returned something other than null");
-					if (!(plugin.getServer().getPlayer(CCQuitter.getPlayerName()).isOnline()))//if not back by the time the grace period has ended
-					{
-						if (plugin.getPenalty().equals("DEATH"))// Checks penalty for pvp logging
-						{
-							if (plugin.getInventoryClear())// Checks to see if winner receives items
-							{
-								plugin.dropitemsandclearPCCitems(CCQuitter.getTaggedBy(), CCQuitter.getPlayerName());//Drops pvp loggers inventory at the taggers feet.
-							}
-						}
-					}
-					else
-					{
-						removetaggedbyandremovefromtaggedplayers(CCQuitter); //Overly long and overly descriptive function name.
-					}
+					removetaggedbyandremovefromtaggedplayers(CCQuitter); //Overly long and overly descriptive function name.
 				}
 			}
 
 			private void removetaggedbyandremovefromtaggedplayers(PlayerCombatClass myplayer)
 			{
 				PlayerCombatClass Playertest = plugin.getPCC(myplayer.getTaggedBy());
+				myplayer.removeTimesReloged();
 				myplayer.removeTaggedBy();//Removes player that has tagged this player
 				Playertest.removeFromTaggedPlayers(myplayer.getPlayerName());// Gets tagger and removes CCQuitter from taggers tagged list
 			}

@@ -39,14 +39,19 @@ public class CombatTagPlayerListener extends PlayerListener {
     		if(PlrComClass.isTagged())
     		{
     			PlayerCombatClass tagger = plugin.getPCC(PlrComClass.getTaggedBy());
-    			plugin.getServer().broadcastMessage(ChatColor.LIGHT_PURPLE+"[CombatTag] "+ChatColor.RED+p.getName()+ChatColor.GOLD+" was executed for logging off" +
+    			plugin.announcePvPLog(PlrComClass.getPlayerName(), PlrComClass.getTaggedBy());
+    			/*plugin.getServer().broadcastMessage(ChatColor.LIGHT_PURPLE+"[CombatTag] "+ChatColor.RED+p.getName()+ChatColor.GOLD+" was executed for logging off" +
     			" while in combat with " + ChatColor.RED + PlrComClass.getTaggedBy());
+    			*/
     			tagger.removeFromTaggedPlayers(PlrComClass.getPlayerName());
     		}
     		else
     		{
+    			plugin.announcePvPLog(p.getName());
+    			/*
     			plugin.getServer().broadcastMessage(ChatColor.LIGHT_PURPLE+"[CombatTag] "+ChatColor.RED+p.getName()+ChatColor.GOLD+" was executed for logging off" +
     			" while in combat.");
+    			*/
     		}
     		PlrComClass.removeTaggedBy();//Removes player from all tagged lists
    			PlrComClass.setPvplogged(false);
@@ -68,7 +73,8 @@ public class CombatTagPlayerListener extends PlayerListener {
     			{//Cancel old scheduled task.
     				plugin.getServer().getScheduler().cancelTask(PlrLogin.getTasknumber());
     				PlrLogin.setScheduledtask(false);
-    				PlrLogin.setTagExpiration(plugin.getDelay());
+    				PlrLogin.setTagExpiration(plugin.getTagTime());
+    				plugin.getServer().getPlayer(PlrLogin.getPlayerName()).sendMessage( ChatColor.LIGHT_PURPLE + "[CombatTag]" + ChatColor.GOLD + " Your tag time has been reset to: " + PlrLogin.tagPeriodInSeconds() + " seconds");
     			}
     		}
     		
@@ -80,54 +86,61 @@ public class CombatTagPlayerListener extends PlayerListener {
     public void onPlayerQuit(PlayerQuitEvent e){
     	//try {
     	final Player quitter = e.getPlayer();//Player quitting
-    	final PlayerCombatClass CCQuitter = plugin.getPCC(quitter.getName());// CombatClass of quitter
-    	if(CCQuitter.isTagged())// Checks to see if the player is tagged otherwise does nothing
+    	if(!(quitter.isDead()))
     	{
-    		if(!(CCQuitter.tagExpired()))
+    		final PlayerCombatClass CCQuitter = plugin.getPCC(quitter.getName());// CombatClass of quitter
+    		if(CCQuitter.isTagged())// Checks to see if the player is tagged otherwise does nothing
     		{
-    			plugin.logit(CCQuitter.getPlayerName() + " logged out within the tag period");
-    			CCQuitter.setItems(quitter);//Save items before logout
-    			if(!(CCQuitter.hasScheduledtask()))
+    			if(!(CCQuitter.tagExpired()))
     			{
-    				plugin.logit("Task scheduled");
-    				CCQuitter.setScheduledtask(true);
-    				//To be implemented
-    				/*
-    				if(e.getQuitMessage() == "disconnect.quitting")//Player intended to logout use standard graceperiod
+    				plugin.logit(CCQuitter.getPlayerName() + " logged out within the tag period");
+    				if(plugin.getPenalty() == "DEATH")
     				{
-    					plugin.logit("Regular disconnect using regular period");
-    					CCQuitter.setGracePeriod(plugin.getGracePeriod());
+    					CCQuitter.setItems(quitter);//Save items before logout
     				}
-    				else if(e.getQuitMessage() == "disconnect.endOfStream")//Player did not intend to logout extend graceperiod
+    				if(!(CCQuitter.hasScheduledtask()))
     				{
-    					plugin.logit("EOS disconnect using extended time");
-    					CCQuitter.setGracePeriod(plugin.getExtendedGracePeriod());
-    				}
-    				*/
-    				CCQuitter.setGracePeriod(plugin.getGracePeriod());
-    				if(!((plugin.getServer().getPlayer(CCQuitter.getTaggedBy())) == null))
-    				{
-    					plugin.getServer().getPlayer(CCQuitter.getTaggedBy()).sendMessage(ChatColor.LIGHT_PURPLE+ "[CombatTag] "+ ChatColor.RED+CCQuitter.getPlayerName() + ChatColor.GOLD + " has " + (plugin.getGracePeriod()/1000) + " seconds to relog.");
-    				}
-    				CombatTagRunnable cr =  new CombatTagRunnable(CCQuitter.getPlayerName());
-    				CCQuitter.setTasknumber(plugin.getServer().getScheduler().scheduleSyncDelayedTask(
-                            plugin, cr, (CCQuitter.getGracePeriod()/50))); // ~ 20*((cpi.getGracePeriod())/1000)
-    			}
-    			else
-    			{
-    				plugin.logit(CCQuitter.getPlayerName() +" already has a scheduled task. doing nothing.");
-    			}
-    				
-    		}
-    		else
-    		{
-    			//do nothing player still has time to logout
-    		}
-    	}
-    	else
-    	{
-    		plugin.logit(quitter.getName() + " is not tagged, doing nothing.");
-    		//Player is not tagged. Do nothing.
+    					plugin.logit("Task scheduled");
+    					CCQuitter.setScheduledtask(true);
+    					//To be implemented
+	    				/*
+	    				if(e.getQuitMessage() == "disconnect.quitting")//Player intended to logout use standard graceperiod
+	    				{
+	    					plugin.logit("Regular disconnect using regular period");
+	    					CCQuitter.setGracePeriod(plugin.getGracePeriod());
+	    				}
+	    				else if(e.getQuitMessage() == "disconnect.endOfStream")//Player did not intend to logout extend graceperiod
+	    				{
+	    					plugin.logit("EOS disconnect using extended time");
+	    					CCQuitter.setGracePeriod(plugin.getExtendedGracePeriod());
+	    				}
+	    				*/
+	    				CCQuitter.setGracePeriod(plugin.getGracePeriod());
+	    				
+	    				if(plugin.isPlrOnline(CCQuitter.getTaggedBy()))
+	    				{
+	    					plugin.getServer().getPlayer(CCQuitter.getTaggedBy()).sendMessage(ChatColor.LIGHT_PURPLE+ "[CombatTag] "+ ChatColor.RED+CCQuitter.getPlayerName() + ChatColor.GOLD + " has " + (plugin.getGracePeriod()/1000) + " seconds to relog.");
+	    				}
+	    				CombatTagRunnable cr =  new CombatTagRunnable(CCQuitter.getPlayerName());
+	    				CCQuitter.setTasknumber(plugin.getServer().getScheduler().scheduleSyncDelayedTask(
+	                            plugin, cr, (CCQuitter.getGracePeriod()/50))); // ~ 20*((cpi.getGracePeriod())/1000)
+	    			}
+	    			else
+	    			{
+	    				plugin.logit(CCQuitter.getPlayerName() +" already has a scheduled task. doing nothing.");
+	    			}
+	    				
+	    		}
+	    		else
+	    		{
+	    			//do nothing player still has time to logout
+	    		}
+	    	}
+	    	else
+	    	{
+	    		plugin.logit(quitter.getName() + " is not tagged, doing nothing.");
+	    		//Player is not tagged. Do nothing.
+	    	}
     	}
     	}
 
@@ -260,7 +273,7 @@ public class CombatTagPlayerListener extends PlayerListener {
 					}
 					else
 					{
-						removetaggedbyandremovefromtaggedplayers(CCQuitter);
+						removetaggedbyandremovefromtaggedplayers(CCQuitter); //Overly long and overly descriptive function name.
 					}
 				}
 			}

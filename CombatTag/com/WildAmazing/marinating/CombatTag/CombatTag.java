@@ -34,16 +34,17 @@ public class CombatTag extends JavaPlugin {
     public static File PVPLOG = new File(mainDirectory + File.separator + "CombatTag.Players");
     static Properties prop = new Properties();
     Properties pvploggers = new Properties();
-    private long TIMEDELAY = 15000; //time in milliseconds (1000 is 1)
+    private long TAGTIME = 15000; //time in milliseconds (1000 is 1)
     private long GRACEPERIOD = 45000; //time in milliseconds before players are considered penalized
-    private long EXTENDEDGRACEPERIOD = 30000; //grace period for players who accidently disconnect.
-    private long BANTIME = 300000;
+   // private long EXTENDEDGRACEPERIOD = 30000; //grace period for players who accidently disconnect.
     private String PENALTY = "DEATH";
     private boolean INVENTORYCLEAR = true;
-    private boolean SPAWNATLAST = true;
     private boolean LIGHTNING = false;
     private boolean DROP = true; //Dropitems at feet instead of using command
     private boolean DEBUG = false;
+    private String MSG2PLR = "&d[CombatTag] &c $tagged &6 was executed for logging off while in combat with &c $tagger";
+    private String MSG1PLR =  "&d[CombatTag] &c $tagged &6 was executed for logging off during pvp";
+    private String ITEMSDROPPEDMSG = "&d[CombatTag] &c $tagged &6 has pvp logged. His/Her items drop at your feet";
     
     public static Logger log = Logger.getLogger("Minecraft");
 
@@ -65,18 +66,21 @@ public class CombatTag extends JavaPlugin {
         		CONFIG.createNewFile(); //make new file
                 FileOutputStream out = new FileOutputStream(CONFIG); //for writing the file
                // prop.put("Extended_Grace_Period", "30");
-	           // prop.put("Drop_items_on_pvp_log", "true");
 	        	prop.put("Debug", "False");
                // prop.put("Drop_items_on_pvp_log", "true");
-               // prop.put("Penalty", "DEATH");
+               prop.put("Penalty", "DEATH");
+               prop.put("PvpMessage2plr", "&d[CombatTag] &c $tagged &6 was executed for logging off while in combat with &c $tagger");
+               prop.put("PvpMessage1plr", "&d[CombatTag] &c $tagged &6 was executed for logging off during pvp");
+               prop.put("ItemsDroppedMsg", "&d[CombatTag] &c $tagged &6 has pvp logged. His/Her items drop at your feet");
                // prop.put("Inventory_steal", "true");
-               // prop.put("Spawn_at_last", "false");
                 prop.put("TagTime", "15");
-               // prop.put("Ban_duration","300");
                 prop.put("Grace_period","45");
                // prop.put("Lightning","false");
                 prop.store(out, " TagTime = duration of tag" + "\r\n Grace_period = time the player has to relog (starting from the moment they logout)"
-                		+ "\r\n Debug = enables debug mode (be ready for the spam)");
+                		+ "\r\n Debug = enables debug mode (be ready for the spam)" + "\r\n PvpMessage2plr is called upon a pvp logger logging back in.\r\n It supports $tagger (person who hit the pvplogger) and $tagged (Pvplogger).\r\n It also supports color coding using the &(0-9,a-f)"
+                		+ "\r\n PvpMessage1plr is nearly the same as PvpMessage1plr except it is called when the pvp logger did not log back in before the server was reloaded or restarted.\r\n It supports $tagged and &colors only."
+                		+ "\r\n ItemsDroppedMsg is called when the player is considered a pvplogger(when the items would normally drop to the gound)." +
+                		 "\r\n It supports $tagger,$tagged and chat colors and only send the message to the person who tagged the pvp logger, as apposed to the entire server.");
                 out.flush();  
                 out.close(); //save and close writer
                 log.info("[CombatTag] New file created.");
@@ -110,16 +114,17 @@ public class CombatTag extends JavaPlugin {
     	try {
 	        FileInputStream in = new FileInputStream(CONFIG); //Creates the input stream
 	        prop.load(in); //loads file
-	        //PENALTY = prop.getProperty("Penalty");
-	       // EXTENDEDGRACEPERIOD = Long.parseLong(prop.getProperty("Extended_Grace_Period"))*1000;
+	        PENALTY = prop.getProperty("Penalty");
+	       // EXTENDEDGRACEPERIOD = Long.parseLong(prop.getProperty("Extended_Grace_Period"))*1000; //To be implemented (will change time depending on disconect type)
 	       // INVENTORYCLEAR = Boolean.parseBoolean(prop.getProperty("Inventory_steal"));
-	       // SPAWNATLAST = Boolean.parseBoolean(prop.getProperty("Spawn_at_last"));
-	        TIMEDELAY = Long.parseLong(prop.getProperty("TagTime"))*1000;
-	       // BANTIME = Long.parseLong(prop.getProperty("Ban_duration"))*1000;
+	        TAGTIME = Long.parseLong(prop.getProperty("TagTime"))*1000;
 	        GRACEPERIOD = Long.parseLong(prop.getProperty("Grace_period"))*1000;
 	       // LIGHTNING = Boolean.parseBoolean(prop.getProperty("Lightning"));
 	       // DROP = Boolean.parseBoolean(prop.getProperty("Drop_items_on_pvp_log"));
 	        DEBUG = Boolean.parseBoolean(prop.getProperty("Debug"));
+	        MSG2PLR = prop.getProperty("PvpMessage2plr");
+	        MSG1PLR = prop.getProperty("PvpMessage1plr");
+	        ITEMSDROPPEDMSG = prop.getProperty("ItemsDroppedMsg");
 	        in.close(); //Closes the input stream.
 	        FileInputStream inplayerfile = new FileInputStream(PVPLOG);
 	        pvploggers.load(inplayerfile);
@@ -170,25 +175,18 @@ public class CombatTag extends JavaPlugin {
     public boolean getDropItems(){
     	return DROP;
     }
-    public long getBanTime(){
-    	return BANTIME;
-    }
     public boolean getLightning(){
     	return LIGHTNING;
-    }
-    public boolean getSpawn(){
-    	return SPAWNATLAST;
     }
     public long getGracePeriod(){
     	return GRACEPERIOD;
     }
-    public long getExtendedGracePeriod()
+  /*  public long getExtendedGracePeriod()
     {
     	return EXTENDEDGRACEPERIOD;
     }
-    public void setSpawnAtLastLocation(boolean b){
-    	SPAWNATLAST = b;
-    }
+    */
+
     public String getPenalty(){
     	return PENALTY;
     }
@@ -201,9 +199,9 @@ public class CombatTag extends JavaPlugin {
     public void setInventoryClear(boolean b){
     	INVENTORYCLEAR = b;
     }
-    public long getDelay()
+    public long getTagTime()
     {
-    	return TIMEDELAY;
+    	return TAGTIME;
     }
     public boolean isinPlayerList(String PlayerName)
     {
@@ -266,7 +264,7 @@ public class CombatTag extends JavaPlugin {
 		{
 			Player PlrWinner = getServer().getPlayer(PCCWinner.getPlayerName());//Winner by default (or  by pvp logging)
 			logit("dropping " + Loser + "items at " + Winner + "'s feet");
-			PlrWinner.sendMessage(ChatColor.LIGHT_PURPLE+ "[CombatTag] "+ChatColor.RED + Loser + ChatColor.GOLD +" has pvp logged. His/Her items drop at your feet");
+			sendMessageWinner(PlrWinner, PCCLoser.getPlayerName());
 			for(int i = 0;PCCLoser.getItems().size() > i; i++)
 			{
 				PlrWinner.getWorld().dropItemNaturally(PlrWinner.getLocation(), PCCLoser.getItems().get(i));
@@ -286,7 +284,30 @@ public class CombatTag extends JavaPlugin {
 			Tagged.setTaggedBy(Tagger.getPlayerName()); //Sets tagger as the tagger for tagged
 			Tagger.addToTaggedPlayers(Tagged.getPlayerName()); //Adds Tagged player to Taggers player list
 		}
-		Tagged.setTagExpiration(getDelay());// Sets the tag expiration for Tagged
+		Tagged.setTagExpiration(getTagTime());// Sets the tag expiration for Tagged
+	}
+	
+	public void announcePvPLog(String tagged, String tagger)
+	{
+		String Messageout = MSG2PLR;
+		Messageout = Messageout.replace("$tagged", tagged);
+		Messageout = Messageout.replace("$tagger", tagger);
+		Messageout = Messageout.replaceAll("&([0-9a-f])", "\u00A7$1");
+		getServer().broadcastMessage(Messageout);
+	}
+	public void announcePvPLog(String tagged)
+	{
+		String Messageout = MSG1PLR;
+		Messageout = Messageout.replace("$tagged", tagged);
+		Messageout = Messageout.replaceAll("&([0-9a-f])", "\u00A7$1");
+		getServer().broadcastMessage(Messageout);
+	}
+	public void sendMessageWinner(Player winner, String Loser)
+	{
+		 String mymessage = ITEMSDROPPEDMSG;
+		 mymessage = mymessage.replace("$tagged", Loser );
+		 mymessage = mymessage.replaceAll("&([0-9a-f])", "\u00A7$1");
+		 winner.sendMessage(mymessage);
 	}
 	
 	public boolean isPlrOnline(String Playername)

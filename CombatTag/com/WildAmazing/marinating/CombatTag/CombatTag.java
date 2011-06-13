@@ -35,8 +35,8 @@ public class CombatTag extends JavaPlugin {
     static Properties prop = new Properties();
     Properties pvploggers = new Properties();
     private long TAGTIME = 15000; //time in milliseconds (1000 is 1)
-    private long GRACEPERIOD = 45000; //time in milliseconds before players are considered penalized
-   // private long EXTENDEDGRACEPERIOD = 30000; //grace period for players who accidently disconnect.
+    private long GRACEPERIOD = 20000; //time in milliseconds before players are considered penalized
+    private long EXTENDEDGRACEPERIOD = 60000; //grace period for players who accidently disconnect.
     private String PENALTY = "DEATH";
     private boolean INVENTORYCLEAR = true;
     private boolean LIGHTNING = false;
@@ -54,43 +54,36 @@ public class CombatTag extends JavaPlugin {
     }
     public void onEnable() {
         log.info("[CombatTag] Operational.");
+        log.addHandler(new Handler() {
+      public void publish(LogRecord logRecord) {
+    	  String mystring = logRecord.getMessage();
+    	  if(mystring.contains(" lost connection: "))
+    	  {
+    		  String myarray[] = mystring.split(" ");
+    		  if(myarray.length == 4)
+    		  {
+    			  String PlrQuitName = myarray[0];
+    			  String DisconnectMessage = myarray[3];
+    			  getPCC(PlrQuitName).setDisconnectType(DisconnectMessage);
+    		  }
+    	  }
+      }
+      public void flush() {
+        }
+
+        public void close() {
+        }
+      });
+        
         getServer().getPluginManager().registerEvent(Event.Type.PLAYER_JOIN, playerListener, Event.Priority.Low, this);
         getServer().getPluginManager().registerEvent(Event.Type.PLAYER_QUIT, playerListener, Event.Priority.Low, this);
         getServer().getPluginManager().registerEvent(Event.Type.PLAYER_KICK, playerListener, Event.Priority.Normal, this);
         getServer().getPluginManager().registerEvent(Event.Type.PLAYER_RESPAWN, playerListener, Event.Priority.Low, this);
         getServer().getPluginManager().registerEvent(Event.Type.ENTITY_DAMAGE, (Listener) entityListener, Event.Priority.Monitor, this);
-        
     	new File(mainDirectory).mkdir(); //directory for the config file
         if(!CONFIG.exists()){ //Make config file if it doesn't exist
-        	try { 
-        		
-        		CONFIG.createNewFile(); //make new file
-                FileOutputStream out = new FileOutputStream(CONFIG); //for writing the file
-               // prop.put("Extended_Grace_Period", "30");
-                prop.put("Debug", "False");
-                prop.put("Penalty", "DEATH");
-                prop.put("PvpMessage2plr", "&d[CombatTag] &c $tagged &6 was executed for logging off while in combat with &c $tagger");
-                prop.put("PvpMessage1plr", "&d[CombatTag] &c $tagged &6 was executed for logging off during pvp");
-                prop.put("ItemsDroppedMsg", "&d[CombatTag] &c $tagged &6 has pvp logged. His/Her items drop at your feet");
-                prop.put("MsgToPvPLogger", "");
-                prop.put("TagTime", "15");
-                prop.put("Grace_period","45");
-                prop.put("MaxRelog", "1");
-                prop.put("Lightning","false");
-                prop.store(out, " TagTime = duration of tag" + "\r\n Grace_period = time the player has to relog (starting from the moment they logout)"
-                		+ "\r\n Debug = enables debug mode (be ready for the spam)" + "\r\n PvpMessage2plr is called upon a pvp logger logging back in.\r\n It supports $tagger (person who hit the pvplogger) and $tagged (Pvplogger).\r\n It also supports color coding using the &(0-9,a-f)"
-                		+ "\r\n PvpMessage1plr is nearly the same as PvpMessage1plr except it is called when the pvp logger did not log back in before the server was reloaded or restarted.\r\n It supports $tagged and &colors only."
-                		+ "\r\n ItemsDroppedMsg is called when the player is considered a pvplogger(when the items would normally drop to the gound)." +
-                		 "\r\n It supports $tagger,$tagged and chat colors and only send the message to the person who tagged the pvp logger, as apposed to the entire server." +
-                		 "\r\n MsgToPvPlogger sends a custom message to the player who pvp logged it only supports colors." +
-                		 "\r\n MaxRelog is the maximum number of times a player can relog during a tag period." +
-                		 "\r\n Lightning (true or false) Strikes lightning at players location upon logging back in. \r\n Only works when penalty is set to DEATH");
-                out.flush();  
-                out.close(); //save and close writer
-                log.info("[CombatTag] New file created.");
-            } catch (IOException ex) {
-                log.warning("[CombatTag] File creation error: "+ex.getMessage());
-            }
+        	updateprop();
+            log.info("[CombatTag] New file created.");
         }
 			if(!PVPLOG.exists()){
 				try { 
@@ -120,7 +113,7 @@ public class CombatTag extends JavaPlugin {
 	        FileInputStream in = new FileInputStream(CONFIG); //Creates the input stream
 	        prop.load(in); //loads file
 	        PENALTY = prop.getProperty("Penalty").toUpperCase();
-	       // EXTENDEDGRACEPERIOD = Long.parseLong(prop.getProperty("Extended_Grace_Period"))*1000; //To be implemented (will change time depending on disconect type)
+	        EXTENDEDGRACEPERIOD = Long.parseLong(prop.getProperty("Extended_Grace_Period"))*1000; //To be implemented (will change time depending on disconect type)
 	        TAGTIME = Long.parseLong(prop.getProperty("TagTime"))*1000;
 	        GRACEPERIOD = Long.parseLong(prop.getProperty("Grace_period"))*1000;
 	        LIGHTNING = Boolean.parseBoolean(prop.getProperty("Lightning"));
@@ -130,16 +123,48 @@ public class CombatTag extends JavaPlugin {
 	        ITEMSDROPPEDMSG = prop.getProperty("ItemsDroppedMsg");
 	        MSGTOPLRKILLED = prop.getProperty("MsgToPvPLogger");
 	        MAXRELOG = Integer.parseInt(prop.getProperty("MaxRelog"));
-	        
 	        in.close(); //Closes the input stream.
 	        FileInputStream inplayerfile = new FileInputStream(PVPLOG);
 	        pvploggers.load(inplayerfile);
 	        inplayerfile.close();
     	}catch (Exception e){
-    		log.severe("[CombatTag] Loading error: "+e.getMessage());
+    		log.severe("[CombatTag] Saving error: "+e.getMessage());
     	}
     }
+    public void updateprop()
+    {
+    	try { 
+    		
+    		CONFIG.createNewFile(); //make new file
+            FileOutputStream out = new FileOutputStream(CONFIG); //for writing the file
+            prop.put("Extended_Grace_Period", Long.toString(EXTENDEDGRACEPERIOD/1000));
+            prop.put("Debug", Boolean.toString(DEBUG));
+            prop.put("Penalty", PENALTY);
+            prop.put("PvpMessage2plr", MSG2PLR);
+            prop.put("PvpMessage1plr", MSG1PLR);
+            prop.put("ItemsDroppedMsg", ITEMSDROPPEDMSG);
+            prop.put("MsgToPvPLogger", MSGTOPLRKILLED);
+            prop.put("TagTime", Long.toString(TAGTIME/1000));
+            prop.put("Grace_period",Long.toString(GRACEPERIOD/1000));
+            prop.put("MaxRelog", Integer.toString(MAXRELOG));
+            prop.put("Lightning",Boolean.toString(LIGHTNING));
+            prop.store(out, " TagTime = duration of tag" + "\r\n Grace_period = time the player has to relog (starting from the moment they logout). This time is called when they disconnect normally." +
+            		"\r\n Extended_Grace_Period = time player has to relog. This time is used then the client crashes or the window is closed."
+            		+ "\r\n Debug = enables debug mode (be ready for the spam)" + "\r\n PvpMessage2plr is called upon a pvp logger logging back in.\r\n It supports $tagger (person who hit the pvplogger) and $tagged (Pvplogger).\r\n It also supports color coding using the &(0-9,a-f)"
+            		+ "\r\n PvpMessage1plr is nearly the same as PvpMessage1plr except it is called when the pvp logger did not log back in before the server was reloaded or restarted.\r\n It supports $tagged and &colors only."
+            		+ "\r\n ItemsDroppedMsg is called when the player is considered a pvplogger(when the items would normally drop to the gound)." +
+            		 "\r\n It supports $tagger,$tagged and chat colors and only send the message to the person who tagged the pvp logger, as apposed to the entire server." +
+            		 "\r\n MsgToPvPlogger sends a custom message to the player who pvp logged it only supports colors." +
+            		 "\r\n MaxRelog is the maximum number of times a player can relog during a tag period." +
+            		 "\r\n Lightning (true or false) Strikes lightning at players location upon logging back in. \r\n Only works when penalty is set to DEATH");
+            out.flush();  
+            out.close(); //save and close writer
+        } catch (IOException ex) {
+            log.warning("[CombatTag] File creation error: "+ex.getMessage());
+        }
+    }
     public void onDisable() {
+    	updateprop();
     	try {
         	for (PlayerCombatClass i : PLAYERLIST.values())
         	{
@@ -189,11 +214,10 @@ public class CombatTag extends JavaPlugin {
     public long getGracePeriod(){
     	return GRACEPERIOD;
     }
-  /*  public long getExtendedGracePeriod()
+    public long getExtendedGracePeriod()
     {
     	return EXTENDEDGRACEPERIOD;
     }
-    */
 
     public String getPenalty(){
     	return PENALTY;
@@ -217,7 +241,14 @@ public class CombatTag extends JavaPlugin {
     }
     public PlayerCombatClass getPCC(String PlayerName)// Retrieves PlayerCombatClass from HashMap
     {
-    	return(PLAYERLIST.get(PlayerName));
+    	if(PLAYERLIST.containsKey(PlayerName))
+    	{
+    		return(PLAYERLIST.get(PlayerName));
+    	}
+    	else
+    	{
+    		return(null);
+    	}
     }
     public void addtoPCC(Player myplayer)// Adds Player to HashMap PlayerList
     {
@@ -296,6 +327,10 @@ public class CombatTag extends JavaPlugin {
 	}
 	public void configureTaggerAndTagged(PlayerCombatClass Tagger, PlayerCombatClass Tagged)//Configures Tagged and Tagger appropriately
 	{
+		if(Tagged.tagExpired())
+		{
+			Tagged.removeTimesReloged();
+		}
 		if(!(Tagger.hasTaggedPlayer(Tagged.getPlayerName())))
 		{
 			Tagged.setTaggedBy(Tagger.getPlayerName()); //Sets tagger as the tagger for tagged
@@ -332,6 +367,10 @@ public class CombatTag extends JavaPlugin {
 		String mymessage = MSGTOPLRKILLED;
 		mymessage = mymessage.replaceAll("&([0-9a-f])", "\u00A7$1");
 		myPlayer.sendMessage(mymessage);
+	}
+	public void sendLogToConsole(String PvpLogger)
+	{
+		log.info(PvpLogger + " has logged out during PVP.");
 	}
 	
 	public boolean isPlrOnline(String Playername)

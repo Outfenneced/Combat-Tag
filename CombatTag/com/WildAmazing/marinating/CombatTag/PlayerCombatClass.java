@@ -18,6 +18,7 @@ public class PlayerCombatClass {
 	private int Tasknumber;
 	private int TimesReloged;
 	private boolean pvplogged;
+	private String disconnectType;
 	
 	public PlayerCombatClass(Player pl)//initializes the class
 	{
@@ -30,6 +31,7 @@ public class PlayerCombatClass {
 		ITEMS = null;
 		setTasknumber(0);
 		setScheduledtask(false);
+		disconnectType = null;
 	}
 	
 	//Who this player is tagged by
@@ -243,6 +245,18 @@ public class PlayerCombatClass {
 	public void removeTimesReloged()
 	{
 		TimesReloged = 0;
+	}
+
+	public void setDisconnectType(String disconnectType) {
+		this.disconnectType = disconnectType;
+	}
+
+	public String getDisconnectType() {
+		return disconnectType;
+	}
+	public void removeDisconnectType()
+	{
+		this.disconnectType = null;
 	}
 
 }

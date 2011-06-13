@@ -1,6 +1,6 @@
 name: CombatTag
 main: com.WildAmazing.marinating.CombatTag.CombatTag
-version: 2.0
+version: 2.3
 commands:
   combattag:
     description: List players you have tagged and your ...

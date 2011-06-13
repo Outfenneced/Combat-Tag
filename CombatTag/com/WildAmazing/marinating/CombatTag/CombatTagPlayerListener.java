@@ -33,6 +33,7 @@ public class CombatTagPlayerListener extends PlayerListener {
     	}
     	
     	PlayerCombatClass PlrComClass = plugin.getPCC(p.getName());
+    	PlrComClass.removeDisconnectType();
     	if(PlrComClass.hasPvplogged())//Check to see if the player has pvp logged on current session
     	{
     		plugin.killAndClean(p);//Kill player and clear inventory
@@ -46,6 +47,7 @@ public class CombatTagPlayerListener extends PlayerListener {
     		{
     			plugin.announcePvPLog(p.getName());
     		}
+    		plugin.sendLogToConsole(PlrComClass.getPlayerName());
     		PlrComClass.removeTaggedBy();//Removes player from all tagged lists
    			PlrComClass.setPvplogged(false);
     	}
@@ -109,25 +111,31 @@ public class CombatTagPlayerListener extends PlayerListener {
     				{
     					plugin.logit("Task scheduled");
     					CCQuitter.setScheduledtask(true);
-    					//To be implemented
-	    				/*
-	    				if(e.getQuitMessage() == "disconnect.quitting")//Player intended to logout use standard graceperiod
-	    				{
-	    					plugin.logit("Regular disconnect using regular period");
-	    					CCQuitter.setGracePeriod(plugin.getGracePeriod());
-	    				}
-	    				else if(e.getQuitMessage() == "disconnect.endOfStream")//Player did not intend to logout extend graceperiod
-	    				{
-	    					plugin.logit("EOS disconnect using extended time");
-	    					CCQuitter.setGracePeriod(plugin.getExtendedGracePeriod());
-	    				}
-	    				*/
-	    				CCQuitter.setGracePeriod(plugin.getGracePeriod());
+    					if(CCQuitter.getDisconnectType() == null)
+    					{
+    						plugin.logit("Disconnect type is null using default period");
+    						CCQuitter.setGracePeriod(plugin.getGracePeriod());
+    					}
+    					else if(CCQuitter.getDisconnectType().equals("disconnect.quitting"))
+    					{
+    						plugin.logit("Regular disconnect. using regular period");
+    						CCQuitter.setGracePeriod(plugin.getGracePeriod());
+    					}
+    					else if(CCQuitter.getDisconnectType().equals("disconnect.endOfStream"))
+    					{
+    						plugin.logit("EOS disconnect using extended time");
+    						CCQuitter.setGracePeriod(plugin.getExtendedGracePeriod()); //Extended grace period here
+    					}
+    					else
+    					{
+    						plugin.logit("Could not detect disconnect type. using default.");
+    						CCQuitter.setGracePeriod(plugin.getGracePeriod());
+    					}
 	    				CCQuitter.incrementTimesReloged();
 	    				
 	    				if(plugin.isPlrOnline(CCQuitter.getTaggedBy()))
 	    				{
-	    					plugin.getServer().getPlayer(CCQuitter.getTaggedBy()).sendMessage(ChatColor.LIGHT_PURPLE+ "[CombatTag] "+ ChatColor.RED+CCQuitter.getPlayerName() + ChatColor.GOLD + " has " + (plugin.getGracePeriod()/1000) + " seconds to relog.");
+	    					plugin.getServer().getPlayer(CCQuitter.getTaggedBy()).sendMessage(ChatColor.LIGHT_PURPLE+ "[CombatTag] "+ ChatColor.RED+CCQuitter.getPlayerName() + ChatColor.GOLD + " has " + (CCQuitter.gracePeriodInSeconds()) + " seconds to relog.");
 	    				}
 	    				CombatTagRunnable cr =  new CombatTagRunnable(CCQuitter.getPlayerName());
 	    				CCQuitter.setTasknumber(plugin.getServer().getScheduler().scheduleSyncDelayedTask(

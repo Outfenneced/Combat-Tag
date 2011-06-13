@@ -3,7 +3,8 @@ CombatTag:
 	This plugin was orignally made by marinating. 
 Config file explination:
 	TagTime = duration of tag
-	Grace_period = time the player has to relog (starting from the moment they logout)
+	Grace_period - Time the player has to log back in before being considered a pvplogger. This starts from the time they logout. This is used when players chose to disconect from the client.
+	Extended_Grace_Period - Time the player has to log back in. This is used when the client crashes or is forcibly closed
 	Debug = enables debug mode (be ready for the spam)
 	PvpMessage2plr is called upon a pvp logger logging back in.
 	It supports $tagger (person who hit the pvplogger) and $tagged (Pvplogger).

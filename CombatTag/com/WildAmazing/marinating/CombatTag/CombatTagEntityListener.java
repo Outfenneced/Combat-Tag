@@ -18,7 +18,7 @@ public class CombatTagEntityListener extends EntityListener {
 	    		EntityDamageByEntityEvent e = (EntityDamageByEntityEvent)EntityDamaged;
 	    		if (e.getDamager() instanceof Player && e.getEntity() instanceof Player)//Check to see if the damager and damaged are players
 	    		{
-	    			if (!e.isCancelled())//Check if the damage event is cancled
+	    			if (!e.isCancelled())//Check if the damage event is canceled
 	    			{
 	    				plugin.logit("Damage done by player to player.");
 	    				Player damager = (Player)e.getDamager();
@@ -48,8 +48,7 @@ public class CombatTagEntityListener extends EntityListener {
 				    			}
 				    			else
 				    			{
-				    				plugin.configureTaggerAndTagged(PCCdamager, PCCdamaged);//Reset the graceperiod and tagduration
-				    			//Player has already been tagged by this person. do nothing.	
+				    				plugin.configureTaggerAndTagged(PCCdamager, PCCdamaged);//Reset the graceperiod and tagduration	
 				    			}
 				    		
 				    		}

@@ -30,6 +30,7 @@ public class CombatTag extends JavaPlugin {
     private HashMap<String, PlayerCombatClass> PLAYERLIST = new HashMap<String, PlayerCombatClass>(); //All players should be in this list.
     
     static String mainDirectory = "plugins/CombatTag";
+    public static File DebugFile = new File(mainDirectory + File.separator + "CombatTag.Error");
     public static File CONFIG = new File(mainDirectory + File.separator + "CombatTag.properties");
     public static File PVPLOG = new File(mainDirectory + File.separator + "CombatTag.Players");
     static Properties prop = new Properties();
@@ -56,15 +57,44 @@ public class CombatTag extends JavaPlugin {
         log.info("[CombatTag] Operational.");
         log.addHandler(new Handler() {
       public void publish(LogRecord logRecord) {
-    	  String mystring = logRecord.getMessage();
-    	  if(mystring.contains(" lost connection: "))
+    	  if(logRecord == null)
     	  {
-    		  String myarray[] = mystring.split(" ");
-    		  if(myarray.length == 4)
+    		  logit("logRecord is null");
+    		  return;
+    	  }
+    	  else if(logRecord.getMessage() == null)
+    	  {
+    		  logit("log message is null");
+    		  return;
+    	  }
+    	  else
+    	  {
+    		  try
     		  {
-    			  String PlrQuitName = myarray[0];
-    			  String DisconnectMessage = myarray[3];
-    			  getPCC(PlrQuitName).setDisconnectType(DisconnectMessage);
+    			  String mystring = logRecord.getMessage();
+    			  if(mystring.contains(" lost connection: "))
+    			  {
+    				  String myarray[] = mystring.split(" ");
+    				  if(!(myarray == null))
+    				  {
+    					 logit("myarray != null");
+    					 if(myarray.length == 4)
+    					 {
+    						  String PlrQuitName = myarray[0];
+    						  String DisconnectMessage = myarray[3];
+    						  getPCC(PlrQuitName).setDisconnectType(DisconnectMessage);
+    					 }
+    				  }
+    				  else
+    				  {
+    					  logit("myarray == null");
+    				  }
+    			  }
+    			  return;
+    		  }
+    		  catch(NullPointerException e)
+    		  {
+    			  log.info("Combat tag encountered a null pointer exception in the handler");
     		  }
     	  }
       }
@@ -311,10 +341,12 @@ public class CombatTag extends JavaPlugin {
 				{
 					
 					logit("dropping " + Loser + "items at " + Winner + "'s feet");
-				
-					for(int i = 0;PCCLoser.getItems().size() > i; i++)
+					if(PCCLoser.getItems() != null)
 					{
-						PlrWinner.getWorld().dropItemNaturally(PlrWinner.getLocation(), PCCLoser.getItems().get(i));
+						for(int i = 0;PCCLoser.getItems().size() > i; i++)
+						{
+							PlrWinner.getWorld().dropItemNaturally(PlrWinner.getLocation(), PCCLoser.getItems().get(i));
+						}
 					}
 				}
 			}

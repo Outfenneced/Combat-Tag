@@ -135,7 +135,10 @@ public class PlayerCombatClass {
 	}
 	public void clearItems()//Sets items to null
 	{
-		ITEMS.clear();
+		if(ITEMS != null)
+		{	
+			ITEMS.clear();
+		}
 		return;
 	}
 

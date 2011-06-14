@@ -100,11 +100,7 @@ public class CombatTagPlayerListener extends PlayerListener {
     					plugin.logit("Player has exceeded the maximum number of relogs allowed");
     					//Quitter has reloged more than the maximum amount in current tag. Deal with player appropriately.
     					CCQuitter.removeTimesReloged();
-    					if(plugin.getPenalty().equals("DEATH"))
-    					{
-    						plugin.logit("Made it into penalty == death");
-    						plugin.dropitemsandclearPCCitems(CCQuitter.getTaggedBy(), CCQuitter.getPlayerName());
-    					}
+    					plugin.dropitemsandclearPCCitems(CCQuitter.getTaggedBy(), CCQuitter.getPlayerName());
     					CCQuitter.setPvplogged(true);
     				}
     				else if(!(CCQuitter.hasScheduledtask()))
@@ -268,13 +264,7 @@ public class CombatTagPlayerListener extends PlayerListener {
 					if(CCQuitter.isTagged())
 					{
 						CCQuitter.setPvplogged(true);// Set pvp logged to true to indicate player needs to be dealt with on login
-						if (plugin.getPenalty().equals("DEATH"))// Checks penalty for pvp logging
-						{
-							if (plugin.getInventoryClear())// Checks to see if winner receives items
-							{
-								plugin.dropitemsandclearPCCitems(CCQuitter.getTaggedBy(), CCQuitter.getPlayerName());//Drops pvp loggers inventory at the taggers feet.
-							}
-						}
+						plugin.dropitemsandclearPCCitems(CCQuitter.getTaggedBy(), CCQuitter.getPlayerName());//Drops pvp loggers inventory at the taggers feet.
 					}
 				}
 				else //Player is online

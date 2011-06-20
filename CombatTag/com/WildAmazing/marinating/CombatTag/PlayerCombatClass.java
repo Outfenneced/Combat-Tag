@@ -251,11 +251,22 @@ public class PlayerCombatClass {
 	}
 
 	public void setDisconnectType(String disconnectType) {
-		this.disconnectType = disconnectType;
+		if(disconnectType != null)
+		{
+			this.disconnectType = disconnectType;
+		}
+		return;
 	}
 
 	public String getDisconnectType() {
+		if(disconnectType == null)
+		{
+			return "";
+		}
+		else
+		{
 		return disconnectType;
+		}
 	}
 	public void removeDisconnectType()
 	{

@@ -47,7 +47,6 @@ public class CombatTagPlayerListener extends PlayerListener {
     		{
     			plugin.announcePvPLog(p.getName());
     		}
-    		plugin.sendLogToConsole(PlrComClass.getPlayerName());
     		PlrComClass.removeTaggedBy();//Removes player from all tagged lists
    			PlrComClass.setPvplogged(false);
     	}
@@ -263,22 +262,20 @@ public class CombatTagPlayerListener extends PlayerListener {
 					plugin.logit(CCQuitter.getPlayerName() + " did not make it back online before the required time");
 					if(CCQuitter.isTagged())
 					{
+						plugin.sendLogToConsole(CCQuitter.getPlayerName());
+						plugin.updatepvploggerfile(CCQuitter.getPlayerName());
 						CCQuitter.setPvplogged(true);// Set pvp logged to true to indicate player needs to be dealt with on login
 						plugin.dropitemsandclearPCCitems(CCQuitter.getTaggedBy(), CCQuitter.getPlayerName());//Drops pvp loggers inventory at the taggers feet.
 					}
 				}
 				else //Player is online
 				{
-					removetaggedbyandremovefromtaggedplayers(CCQuitter); //Overly long and overly descriptive function name.
+					PlayerCombatClass Playertest = plugin.getPCC(CCQuitter.getTaggedBy());
+					CCQuitter.removeTimesReloged();
+					CCQuitter.removeTaggedBy();//Removes player that has tagged this player
+					Playertest.removeFromTaggedPlayers(CCQuitter.getPlayerName());// Gets tagger and removes CCQuitter from taggers tagged list
+				
 				}
-			}
-
-			private void removetaggedbyandremovefromtaggedplayers(PlayerCombatClass myplayer)
-			{
-				PlayerCombatClass Playertest = plugin.getPCC(myplayer.getTaggedBy());
-				myplayer.removeTimesReloged();
-				myplayer.removeTaggedBy();//Removes player that has tagged this player
-				Playertest.removeFromTaggedPlayers(myplayer.getPlayerName());// Gets tagger and removes CCQuitter from taggers tagged list
 			}
      }
     }

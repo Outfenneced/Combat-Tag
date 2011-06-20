@@ -30,10 +30,11 @@ public class CombatTag extends JavaPlugin {
     private HashMap<String, PlayerCombatClass> PLAYERLIST = new HashMap<String, PlayerCombatClass>(); //All players should be in this list.
     
     static String mainDirectory = "plugins/CombatTag";
-    public static File DebugFile = new File(mainDirectory + File.separator + "CombatTag.Error");
+    public static File CTPVPLG = new File(mainDirectory + File.separator + "CombatTag.log");
     public static File CONFIG = new File(mainDirectory + File.separator + "CombatTag.properties");
     public static File PVPLOG = new File(mainDirectory + File.separator + "CombatTag.Players");
     static Properties prop = new Properties();
+    Properties logplayers = new Properties();
     Properties pvploggers = new Properties();
     private long TAGTIME = 15000; //time in milliseconds (1000 is 1)
     private long GRACEPERIOD = 20000; //time in milliseconds before players are considered penalized
@@ -42,12 +43,13 @@ public class CombatTag extends JavaPlugin {
     private boolean INVENTORYCLEAR = true;
     private boolean LIGHTNING = false;
     private boolean DEBUG = false;
+    private boolean logplayersenab = false;
     private int MAXRELOG = 1; //Number of times a player can relog during a tag
     private String MSG2PLR = "&d[CombatTag] &c $tagged &6 was executed for logging off while in combat with &c $tagger";
     private String MSG1PLR =  "&d[CombatTag] &c $tagged &6 was executed for logging off during pvp";
     private String ITEMSDROPPEDMSG = "&d[CombatTag] &c $tagged &6 has pvp logged. His/Her items drop at your feet";
     private String MSGTOPLRKILLED = "";
-    
+    private double Version = 2.5;
     public static Logger log = Logger.getLogger("Minecraft");
 
     public CombatTag(){
@@ -57,46 +59,33 @@ public class CombatTag extends JavaPlugin {
         log.info("[CombatTag] Operational.");
         log.addHandler(new Handler() {
       public void publish(LogRecord logRecord) {
-    	  if(logRecord == null)
-    	  {
-    		  logit("logRecord is null");
-    		  return;
-    	  }
-    	  else if(logRecord.getMessage() == null)
-    	  {
-    		  logit("log message is null");
-    		  return;
-    	  }
-    	  else
-    	  {
-    		  try
-    		  {
-    			  String mystring = logRecord.getMessage();
-    			  if(mystring.contains(" lost connection: "))
-    			  {
-    				  String myarray[] = mystring.split(" ");
-    				  if(!(myarray == null))
-    				  {
-    					 logit("myarray != null");
-    					 if(myarray.length == 4)
-    					 {
-    						  String PlrQuitName = myarray[0];
-    						  String DisconnectMessage = myarray[3];
-    						  getPCC(PlrQuitName).setDisconnectType(DisconnectMessage);
-    					 }
-    				  }
-    				  else
-    				  {
-    					  logit("myarray == null");
-    				  }
-    			  }
-    			  return;
-    		  }
-    		  catch(NullPointerException e)
-    		  {
-    			  log.info("Combat tag encountered a null pointer exception in the handler");
-    		  }
-    	  }
+    	  try
+		  {
+			  String mystring = logRecord.getMessage();
+			  if(mystring.contains(" lost connection: "))
+			  {
+				  String myarray[] = mystring.split(" ");
+				 if(myarray.length == 4)
+				 {
+				  String PlrQuitName = myarray[0];
+				  String DisconnectMessage = myarray[3];
+				  if(PlrQuitName != null)
+				  {
+					if(getPCC(PlrQuitName) != null)
+					{
+					  if(DisconnectMessage != null)
+					  {
+						  getPCC(PlrQuitName).setDisconnectType(DisconnectMessage);
+					  }
+					}
+				  }
+			     }
+			    }
+			  return;
+		  }
+		  catch(NullPointerException e)
+		  {
+		  }
       }
       public void flush() {
         }
@@ -104,7 +93,6 @@ public class CombatTag extends JavaPlugin {
         public void close() {
         }
       });
-        
         getServer().getPluginManager().registerEvent(Event.Type.PLAYER_JOIN, playerListener, Event.Priority.Low, this);
         getServer().getPluginManager().registerEvent(Event.Type.PLAYER_QUIT, playerListener, Event.Priority.Low, this);
         getServer().getPluginManager().registerEvent(Event.Type.PLAYER_KICK, playerListener, Event.Priority.Normal, this);
@@ -131,28 +119,35 @@ public class CombatTag extends JavaPlugin {
 				log.info("[CombatTag] " + getDescription().getVersion() + " Loaded.");
 	    }
         else {
-	    	log.info("[CombatTag]"+ getDescription().getVersion() +"Detected existing config file and loading.");
+	    	log.info("[CombatTag] "+ getDescription().getVersion() +" Detected existing config file and loading.");
 	        loadProcedure();//added later
 	        logit("Debug is enabled! Be ready for the spam.");
 
         }
 			loadplayers();//get players currently online here
+			if(Version < Double.parseDouble(getDescription().getVersion()))
+			{
+				log.info("[CombatTag] Properties file updated");
+				updateprop();
+			}
     }
     public void loadProcedure(){
     	try {
 	        FileInputStream in = new FileInputStream(CONFIG); //Creates the input stream
 	        prop.load(in); //loads file
-	        PENALTY = prop.getProperty("Penalty").toUpperCase();
-	        EXTENDEDGRACEPERIOD = Long.parseLong(prop.getProperty("Extended_Grace_Period"))*1000; //To be implemented (will change time depending on disconect type)
-	        TAGTIME = Long.parseLong(prop.getProperty("TagTime"))*1000;
-	        GRACEPERIOD = Long.parseLong(prop.getProperty("Grace_period"))*1000;
-	        LIGHTNING = Boolean.parseBoolean(prop.getProperty("Lightning"));
-	        DEBUG = Boolean.parseBoolean(prop.getProperty("Debug"));
-	        MSG2PLR = prop.getProperty("PvpMessage2plr");
-	        MSG1PLR = prop.getProperty("PvpMessage1plr");
-	        ITEMSDROPPEDMSG = prop.getProperty("ItemsDroppedMsg");
-	        MSGTOPLRKILLED = prop.getProperty("MsgToPvPLogger");
-	        MAXRELOG = Integer.parseInt(prop.getProperty("MaxRelog"));
+	        Version = Double.parseDouble(prop.getProperty("Version", "0"));
+	        logplayersenab = Boolean.parseBoolean(prop.getProperty("LogPlayers", "false"));
+	        PENALTY = prop.getProperty("Penalty", "DEATH").toUpperCase();
+	        EXTENDEDGRACEPERIOD = Long.parseLong(prop.getProperty("Extended_Grace_Period", "60"))*1000; //To be implemented (will change time depending on disconect type)
+	        TAGTIME = Long.parseLong(prop.getProperty("TagTime", "15"))*1000;
+	        GRACEPERIOD = Long.parseLong(prop.getProperty("Grace_period", "15"))*1000;
+	        LIGHTNING = Boolean.parseBoolean(prop.getProperty("Lightning", "False"));
+	        DEBUG = Boolean.parseBoolean(prop.getProperty("Debug", "False"));
+	        MSG2PLR = prop.getProperty("PvpMessage2plr", MSG2PLR);
+	        MSG1PLR = prop.getProperty("PvpMessage1plr", MSG1PLR);
+	        ITEMSDROPPEDMSG = prop.getProperty("ItemsDroppedMsg", ITEMSDROPPEDMSG);
+	        MSGTOPLRKILLED = prop.getProperty("MsgToPvPLogger", MSGTOPLRKILLED);
+	        MAXRELOG = Integer.parseInt(prop.getProperty("MaxRelog", "1"));
 	        in.close(); //Closes the input stream.
 	        FileInputStream inplayerfile = new FileInputStream(PVPLOG);
 	        pvploggers.load(inplayerfile);
@@ -164,11 +159,12 @@ public class CombatTag extends JavaPlugin {
     public void updateprop()
     {
     	try { 
-    		
     		CONFIG.createNewFile(); //make new file
             FileOutputStream out = new FileOutputStream(CONFIG); //for writing the file
+            prop.put("Version", getDescription().getVersion().toString());
             prop.put("Extended_Grace_Period", Long.toString(EXTENDEDGRACEPERIOD/1000));
             prop.put("Debug", Boolean.toString(DEBUG));
+            prop.put("LogPlayers", "false");
             prop.put("Penalty", PENALTY);
             prop.put("PvpMessage2plr", MSG2PLR);
             prop.put("PvpMessage1plr", MSG1PLR);
@@ -178,7 +174,7 @@ public class CombatTag extends JavaPlugin {
             prop.put("Grace_period",Long.toString(GRACEPERIOD/1000));
             prop.put("MaxRelog", Integer.toString(MAXRELOG));
             prop.put("Lightning",Boolean.toString(LIGHTNING));
-            prop.store(out, " TagTime = duration of tag" + "\r\n Grace_period = time the player has to relog (starting from the moment they logout). This time is called when they disconnect normally." +
+            prop.store(out, " Version = Do not edit this. (It is used to determine if the properites file needs to be updated.)" +"\r\n TagTime = duration of tag" + "\r\n Grace_period = time the player has to relog (starting from the moment they logout). This time is called when they disconnect normally." +
             		"\r\n Extended_Grace_Period = time player has to relog. This time is used then the client crashes or the window is closed."
             		+ "\r\n Debug = enables debug mode (be ready for the spam)" + "\r\n PvpMessage2plr is called upon a pvp logger logging back in.\r\n It supports $tagger (person who hit the pvplogger) and $tagged (Pvplogger).\r\n It also supports color coding using the &(0-9,a-f)"
             		+ "\r\n PvpMessage1plr is nearly the same as PvpMessage1plr except it is called when the pvp logger did not log back in before the server was reloaded or restarted.\r\n It supports $tagged and &colors only."
@@ -186,7 +182,8 @@ public class CombatTag extends JavaPlugin {
             		 "\r\n It supports $tagger,$tagged and chat colors and only send the message to the person who tagged the pvp logger, as apposed to the entire server." +
             		 "\r\n MsgToPvPlogger sends a custom message to the player who pvp logged it only supports colors." +
             		 "\r\n MaxRelog is the maximum number of times a player can relog during a tag period." +
-            		 "\r\n Lightning (true or false) Strikes lightning at players location upon logging back in. \r\n Only works when penalty is set to DEATH");
+            		 "\r\n Lightning (true or false) Strikes lightning at players location upon logging back in. \r\n Only works when penalty is set to DEATH" +
+            		 "\r\n LogPlayers creates a new file with a list of pvploggers and updates whenever a player pvplogs.");
             out.flush();  
             out.close(); //save and close writer
         } catch (IOException ex) {
@@ -194,7 +191,6 @@ public class CombatTag extends JavaPlugin {
         }
     }
     public void onDisable() {
-    	updateprop();
     	try {
         	for (PlayerCombatClass i : PLAYERLIST.values())
         	{
@@ -271,14 +267,18 @@ public class CombatTag extends JavaPlugin {
     }
     public PlayerCombatClass getPCC(String PlayerName)// Retrieves PlayerCombatClass from HashMap
     {
-    	if(PLAYERLIST.containsKey(PlayerName))
+    	if(!(PlayerName == null))
     	{
-    		return(PLAYERLIST.get(PlayerName));
+    		if(PLAYERLIST.containsKey(PlayerName))
+    		{
+    			return(PLAYERLIST.get(PlayerName));
+    		}
+    		else
+    		{
+    			return(null);
+    		}
     	}
-    	else
-    	{
-    		return(null);
-    	}
+    	return(null);
     }
     public void addtoPCC(Player myplayer)// Adds Player to HashMap PlayerList
     {
@@ -403,6 +403,57 @@ public class CombatTag extends JavaPlugin {
 	public void sendLogToConsole(String PvpLogger)
 	{
 		log.info(PvpLogger + " has logged out during PVP.");
+	}
+	
+	public void updatepvploggerfile(String Playername)
+	{
+		if(logplayersenab == true)
+		{
+			if(!(CTPVPLG.exists()))
+			{
+				try {
+					CTPVPLG.createNewFile();
+					FileOutputStream loglist = new FileOutputStream(CTPVPLG);
+					logplayers.store(loglist, " Do not edit this file\r\n This File is a log of pvp loggers.");
+					loglist.flush();
+					loglist.close();
+				} catch (IOException e) {
+					log.severe("[CombatTag] Failed to make the pvp info file.");
+				}
+			}
+			try{
+				if(CTPVPLG.exists())
+				{
+					FileInputStream inlist = new FileInputStream(CTPVPLG);
+					logplayers.load(inlist);
+					if(logplayers.containsKey(Playername))
+					{
+						Integer logcount = Integer.parseInt(logplayers.getProperty(Playername, "0"));
+						logcount = logcount + 1;
+						logplayers.put(Playername, logcount.toString());
+					}
+					else
+					{
+						logplayers.put(Playername, "1");
+					}
+					inlist.close();
+					//finally write the properties back to the file 
+					FileOutputStream outlist = new FileOutputStream(CTPVPLG);
+					logplayers.store(outlist, "Do not edit this file\r\n This File is a log of pvp loggers.");
+					outlist.flush();
+					outlist.close();
+					logplayers.clear();
+				}
+			}
+			catch(IOException ex)
+			{
+				log.severe("[CombatTag] Failed to update the pvp info file");
+			}
+			//create file
+			//logplayers
+			//check for property existing else put the property in
+		}
+	return;
 	}
 	
 	public boolean isPlrOnline(String Playername)

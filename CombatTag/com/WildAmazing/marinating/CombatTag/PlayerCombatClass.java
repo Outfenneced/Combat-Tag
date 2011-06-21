@@ -15,6 +15,7 @@ public class PlayerCombatClass {
 	private String playerName; //PlayerName
 	private ArrayList<ItemStack> ITEMS = new ArrayList<ItemStack>();//items in players inventory
 	private boolean scheduledtask;
+	private boolean jailthem;
 	private int Tasknumber;
 	private int TimesReloged;
 	private boolean pvplogged;
@@ -279,6 +280,15 @@ public class PlayerCombatClass {
 	public void removeDisconnectType()
 	{
 		this.disconnectType = null;
+	}
+
+
+	public void setJailthem(boolean jailplayer) {
+		this.jailthem = jailplayer;
+	}
+
+	public boolean getJailthem() {
+		return jailthem;
 	}
 
 }

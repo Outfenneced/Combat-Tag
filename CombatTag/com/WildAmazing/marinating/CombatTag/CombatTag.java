@@ -17,7 +17,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import com.matejdro.bukkit.jail.Jail;
+import com.matejdro.bukkit.jail.JailAPI;
 
 
 /**
@@ -29,6 +33,7 @@ public class CombatTag extends JavaPlugin {
     private final CombatTagPlayerListener playerListener = new CombatTagPlayerListener(this);
     private final CombatTagEntityListener entityListener = new CombatTagEntityListener(this);
     private HashMap<String, PlayerCombatClass> PLAYERLIST = new HashMap<String, PlayerCombatClass>(); //All players should be in this list.
+    JailAPI jailplugin;
     
     static String mainDirectory = "plugins/CombatTag";
     public static File CTPVPLG = new File(mainDirectory + File.separator + "CombatTag.log");
@@ -40,13 +45,16 @@ public class CombatTag extends JavaPlugin {
     private long TAGTIME = 15000; //time in milliseconds (1000 is 1)
     private long GRACEPERIOD = 20000; //time in milliseconds before players are considered penalized
     private long EXTENDEDGRACEPERIOD = 60000; //grace period for players who accidently disconnect.
+    private Integer JAILTIME = 5;
     private String PENALTY = "DEATH";
+    private boolean USEJAIL = false;
     private boolean INVENTORYCLEAR = true;
     private boolean LIGHTNING = false;
     private boolean DEBUG = false;
     private boolean logplayersenab = false;
     private int MAXRELOG = 1; //Number of times a player can relog during a tag
-    private String MSG2PLR = "&d[CombatTag] &c $tagged &6 was executed for logging off while in combat with&c $tagger";    private String ITEMSDROPPEDMSG = "&d[CombatTag] &c $tagged &6 has pvp logged. His/Her items drop at your feet";
+    private String MSG2PLR = "&d[CombatTag] &c $tagged &6 was executed for logging off while in combat with&c $tagger";    
+    private String ITEMSDROPPEDMSG = "&d[CombatTag] &c $tagged &6 has pvp logged. His/Her items drop at your feet";
     private String TAGGERMESSAGE = "&d[CombatTag] &6Tagged:&c $tagged";
     private String TAGGEDMESSAGE ="&d[CombatTag] &6Tagged by:&c $tagger ::&6StdGracePeriod: $graceperiod seconds ::&6/ct for more info.";
     private String MSGTOPLRKILLED = "";
@@ -97,7 +105,7 @@ public class CombatTag extends JavaPlugin {
         getServer().getPluginManager().registerEvent(Event.Type.PLAYER_JOIN, playerListener, Event.Priority.Low, this);
         getServer().getPluginManager().registerEvent(Event.Type.PLAYER_QUIT, playerListener, Event.Priority.Low, this);
         getServer().getPluginManager().registerEvent(Event.Type.PLAYER_KICK, playerListener, Event.Priority.Normal, this);
-        getServer().getPluginManager().registerEvent(Event.Type.PLAYER_RESPAWN, playerListener, Event.Priority.Low, this);
+        getServer().getPluginManager().registerEvent(Event.Type.PLAYER_RESPAWN, playerListener, Event.Priority.Monitor, this);
         getServer().getPluginManager().registerEvent(Event.Type.ENTITY_DAMAGE, (Listener) entityListener, Event.Priority.Monitor, this);
     	new File(mainDirectory).mkdir(); //directory for the config file
         if(!CONFIG.exists()){ //Make config file if it doesn't exist
@@ -131,8 +139,24 @@ public class CombatTag extends JavaPlugin {
 				log.info("[CombatTag] Properties file updated");
 				updateprop();
 			}
+			loadjail();
     }
-    public void loadProcedure(){
+    private void loadjail() {
+    	Plugin jailplug = this.getServer().getPluginManager().getPlugin("Jail");
+    	if (jailplug != null)
+    	{
+    		this.getServer().getPluginManager().enablePlugin(jailplug);
+    	    jailplugin = ((Jail) jailplug).API;
+    	}
+    	else
+    	{
+    		USEJAIL = false;
+    	    //Code here will run if player don't have Jail installed.
+    	    //Use that to disable features of your plugin that include Jail to prevent errors.
+    	}
+		
+	}
+	public void loadProcedure(){
     	try {
 	        FileInputStream in = new FileInputStream(CONFIG); //Creates the input stream
 	        prop.load(in); //loads file
@@ -141,6 +165,8 @@ public class CombatTag extends JavaPlugin {
 	        Version = Double.parseDouble(prop.getProperty("Version", "0"));
 	        logplayersenab = Boolean.parseBoolean(prop.getProperty("LogPlayers", "false"));
 	        PENALTY = prop.getProperty("Penalty", "DEATH").toUpperCase();
+	        USEJAIL = Boolean.parseBoolean(prop.getProperty("UseJail", "false"));
+	        JAILTIME = Integer.parseInt(prop.getProperty("JailTime", "5"));
 	        EXTENDEDGRACEPERIOD = Long.parseLong(prop.getProperty("Extended_Grace_Period", "60"))*1000; //To be implemented (will change time depending on disconect type)
 	        TAGTIME = Long.parseLong(prop.getProperty("TagTime", "15"))*1000;
 	        GRACEPERIOD = Long.parseLong(prop.getProperty("Grace_period", "15"))*1000;
@@ -168,6 +194,8 @@ public class CombatTag extends JavaPlugin {
             prop.put("Debug", Boolean.toString(DEBUG));
             prop.put("LogPlayers", "false");
             prop.put("Penalty", PENALTY);
+            prop.put("UseJail", Boolean.toString(USEJAIL));
+            prop.put("JailTime", Integer.toString(JAILTIME));
             prop.put("MessageToTagger", TAGGERMESSAGE);
             prop.put("MessageToTagged", TAGGEDMESSAGE);
             prop.put("PvpMessage2plr", MSG2PLR);
@@ -243,7 +271,11 @@ public class CombatTag extends JavaPlugin {
     {
     	pvploggers.remove(Playername);
     }
-
+    public boolean getjailenabled()
+    {
+    	return USEJAIL;
+    }
+    
     public boolean getLightning(){
     	return LIGHTNING;
     }
@@ -338,6 +370,14 @@ public class CombatTag extends JavaPlugin {
 			logit(p.getName() + "'s inventory has been cleared and killed");
 			
     		p.setHealth(0);
+		}
+	}
+	public void jailPlayer(String Playername)
+	{
+		if(USEJAIL == true)
+		{
+			String reason = "PvPLogging";
+			jailplugin.jailPlayer(Playername, JAILTIME, null, reason);
 		}
 	}
 	public void removetaggedfromallplrs(String PlayerName)// Removes Player from all other players tagged list

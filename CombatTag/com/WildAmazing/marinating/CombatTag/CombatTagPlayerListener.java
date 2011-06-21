@@ -37,6 +37,10 @@ public class CombatTagPlayerListener extends PlayerListener {
     	if(PlrComClass.hasPvplogged())//Check to see if the player has pvp logged on current session
     	{
     		plugin.killAndClean(p);//Kill player and clear inventory
+    		if(plugin.getjailenabled())
+    		{
+    			PlrComClass.setJailthem(true);
+    		}
     		if(PlrComClass.isTagged())
     		{
     			PlayerCombatClass tagger = plugin.getPCC(PlrComClass.getTaggedBy());
@@ -51,6 +55,10 @@ public class CombatTagPlayerListener extends PlayerListener {
     		//get key value from plugin send message to player using plugin.announcePvPLog(tagged, tagger);
     		plugin.announcePvPLog(p.getName(), plugin.gettaggerfromfile(p.getName()));
     		plugin.killAndClean(p);
+    		if(plugin.getjailenabled())
+    		{
+    			PlrComClass.setJailthem(true);
+    		}
     		plugin.logit("plugins have been reloaded and " + p.getName() + "is in pvploggers file");
 			plugin.removepvplogger(p.getName());
     	}		    		
@@ -221,8 +229,14 @@ public class CombatTagPlayerListener extends PlayerListener {
     @Override
     public void onPlayerRespawn(PlayerRespawnEvent e)
     {
-    	Player p = e.getPlayer();
+    	final Player p = e.getPlayer();
     	PlayerCombatClass PlrRespawn = plugin.getPCC(p.getName());
+    	if(PlrRespawn.getJailthem() == true)
+    	{
+    		CombatTagJail ctj =  new CombatTagJail(PlrRespawn.getPlayerName());
+    		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, ctj, 60L);
+    		PlrRespawn.setJailthem(false);
+    	}
     	if(PlrRespawn.isTagged())
     	{
     		PlayerCombatClass Tagger = plugin.getPCC(PlrRespawn.getTaggedBy());
@@ -239,7 +253,19 @@ public class CombatTagPlayerListener extends PlayerListener {
     	}
     	return;
     }
-    
+    public class CombatTagJail implements Runnable //Required for jail (otherwise it spits errors out everywhere)
+    {
+    	protected String name;
+    	public CombatTagJail(String Playername)
+    	{
+    		name = Playername;
+    	}
+    	@Override
+    	public void run()
+    	{
+    		plugin.jailPlayer(name);
+    	}
+    }
     
     public class CombatTagRunnable implements Runnable
     {

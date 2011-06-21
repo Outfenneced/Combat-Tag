@@ -127,6 +127,14 @@ public class PlayerCombatClass {
 				NewCont.add(Temp[i]);
 			}
 		}
+		ItemStack TempArmor[] = p.getInventory().getArmorContents();
+		for(int i = 0; TempArmor.length > i; i++)
+		{
+			if((TempArmor[i].getTypeId() != 0) && !(TempArmor[i].getType().equals(Material.AIR)))
+			{
+				NewCont.add(TempArmor[i]);
+			}
+		}
 		ITEMS = NewCont;
 	}
 	public ArrayList<ItemStack> getItems()//Returns a copy of items from the players inventory

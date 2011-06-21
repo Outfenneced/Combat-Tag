@@ -43,20 +43,16 @@ public class CombatTagPlayerListener extends PlayerListener {
     			plugin.announcePvPLog(PlrComClass.getPlayerName(), PlrComClass.getTaggedBy());
     			tagger.removeFromTaggedPlayers(PlrComClass.getPlayerName());
     		}
-    		else
-    		{
-    			plugin.announcePvPLog(p.getName());
-    		}
     		PlrComClass.removeTaggedBy();//Removes player from all tagged lists
    			PlrComClass.setPvplogged(false);
     	}
     	else if(plugin.checkpvplogger(p.getName()))// Check to see if the player has pvp logged after reload or restart (from file)
     	{
+    		//get key value from plugin send message to player using plugin.announcePvPLog(tagged, tagger);
+    		plugin.announcePvPLog(p.getName(), plugin.gettaggerfromfile(p.getName()));
     		plugin.killAndClean(p);
     		plugin.logit("plugins have been reloaded and " + p.getName() + "is in pvploggers file");
 			plugin.removepvplogger(p.getName());
-			plugin.getServer().broadcastMessage(ChatColor.LIGHT_PURPLE+"[CombatTag] "+ChatColor.RED+p.getName()+ChatColor.GOLD+" was executed for logging off" +
-			" while in combat.");
     	}		    		
     	else
     	{

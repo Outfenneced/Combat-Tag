@@ -1,5 +1,4 @@
 package com.WildAmazing.marinating.CombatTag;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -25,40 +24,35 @@ public class CombatTagEntityListener extends EntityListener {
 				    	Player damaged = (Player)e.getEntity();
 				    	plugin.logit("damager is " + damager.getName());
 				    	plugin.logit("damaged is " + damaged.getName());
-				    	if(!(damager.getName() == damaged.getName()))//Check to make sure the player did not tag themselves
+				    	if(!(damager.getName() == damaged.getName()))//Check to make sure the player did not tag themself
 				    	{
 				    		PlayerCombatClass PCCdamager = plugin.getPCC(damager.getName());//retrieve the Player combat class for damager
 				    		PlayerCombatClass PCCdamaged = plugin.getPCC(damaged.getName());//retrieve the Player combat class for damaged
 				    		if(PCCdamaged.isTagged())//Check to see if damaged is tagged
 				    		{
-				    			if(!(PCCdamaged.getTaggedBy() == PCCdamager.getPlayerName()))//Check to see if the damaged is already tagged by damager if damaged is do nothing
+				    			if(!(PCCdamaged.getTaggedBy() == PCCdamager.getPlayerName()))//Check to see if the damaged is already tagged by damager 
 				    			{
 				    				PlayerCombatClass otherplr = plugin.getPCC(PCCdamaged.getTaggedBy());//Get previous tagger
 				    				otherplr.removeFromTaggedPlayers(PCCdamaged.getPlayerName());//Only one player can tag damaged at a time. Remove from other players tagged list
-				    				if(PCCdamaged.hasScheduledtask())// If PCCdamaged has a scheduled task cancel it
+				    				if(PCCdamaged.hasScheduledtask())// If PCCdamaged has a scheduled task cancel it (should not be possible now as scheduled task are removed on login. (need to double check that before I remove this)
 				    				{
 				    					PCCdamaged.setScheduledtask(false);
 				    					plugin.getServer().getScheduler().cancelTask(PCCdamaged.getTasknumber());				    								    					
 				    				}
 				    				plugin.configureTaggerAndTagged(PCCdamager, PCCdamaged);//Sets up damager and damaged appropriately 
-				    				damager.sendMessage(ChatColor.LIGHT_PURPLE +"[CombatTag] " +ChatColor.GOLD + "Tagged: " + ChatColor.RED +PCCdamaged.getPlayerName());
-				    				damaged.sendMessage(ChatColor.LIGHT_PURPLE +"[CombatTag] " + ChatColor.GOLD + "Tagged by : " + ChatColor.RED + PCCdamager.getPlayerName());
-				    				damaged.sendMessage(ChatColor.GOLD + "StdGracePeriod: " + plugin.getGracePeriod()/1000 + " seconds" );
-				    				damaged.sendMessage(ChatColor.GOLD + "/ct for more info.");
+				    				plugin.sendmessagetoDamagerandDamaged(damager, damaged);
+
 				    			}
-				    			else
+				    			else //Player has already been tagged by this person silently reset tag time
 				    			{
 				    				plugin.configureTaggerAndTagged(PCCdamager, PCCdamaged);//Reset the graceperiod and tagduration	
 				    			}
 				    		
 				    		}
-				    		else//Player has been tagged. setup appropately 
+				    		else//Player has been tagged. setup appropately (restart tag time)
 				    		{
 				    			plugin.configureTaggerAndTagged(PCCdamager, PCCdamaged);//Sets up damager and damaged appropriately 
-				    			damager.sendMessage(ChatColor.LIGHT_PURPLE +"[CombatTag] " +ChatColor.GOLD + "Tagged: " + ChatColor.RED +PCCdamaged.getPlayerName());
-			    				damaged.sendMessage(ChatColor.LIGHT_PURPLE +"[CombatTag] " + ChatColor.GOLD + "Tagged by : " + ChatColor.RED + PCCdamager.getPlayerName());
-			    				damaged.sendMessage(ChatColor.GOLD + "StdGracePeriod: " + plugin.getGracePeriod()/1000 + " seconds" );
-			    				damaged.sendMessage(ChatColor.GOLD + "/ct for more info.");
+				    			plugin.sendmessagetoDamagerandDamaged(damager, damaged);
 				    		}
 				    	}
 				    }

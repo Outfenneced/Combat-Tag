@@ -16,6 +16,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 
@@ -45,9 +46,9 @@ public class CombatTag extends JavaPlugin {
     private boolean DEBUG = false;
     private boolean logplayersenab = false;
     private int MAXRELOG = 1; //Number of times a player can relog during a tag
-    private String MSG2PLR = "&d[CombatTag] &c $tagged &6 was executed for logging off while in combat with &c $tagger";
-    private String MSG1PLR =  "&d[CombatTag] &c $tagged &6 was executed for logging off during pvp";
-    private String ITEMSDROPPEDMSG = "&d[CombatTag] &c $tagged &6 has pvp logged. His/Her items drop at your feet";
+    private String MSG2PLR = "&d[CombatTag] &c $tagged &6 was executed for logging off while in combat with&c $tagger";    private String ITEMSDROPPEDMSG = "&d[CombatTag] &c $tagged &6 has pvp logged. His/Her items drop at your feet";
+    private String TAGGERMESSAGE = "&d[CombatTag] &6Tagged:&c $tagged";
+    private String TAGGEDMESSAGE ="&d[CombatTag] &6Tagged by:&c $tagger ::&6StdGracePeriod: $graceperiod seconds ::&6/ct for more info.";
     private String MSGTOPLRKILLED = "";
     private double Version = 2.5;
     public static Logger log = Logger.getLogger("Minecraft");
@@ -135,6 +136,8 @@ public class CombatTag extends JavaPlugin {
     	try {
 	        FileInputStream in = new FileInputStream(CONFIG); //Creates the input stream
 	        prop.load(in); //loads file
+	        TAGGERMESSAGE = prop.getProperty("MessageToTagger", TAGGERMESSAGE);
+	        TAGGEDMESSAGE = prop.getProperty("MessageToTagged", TAGGEDMESSAGE);
 	        Version = Double.parseDouble(prop.getProperty("Version", "0"));
 	        logplayersenab = Boolean.parseBoolean(prop.getProperty("LogPlayers", "false"));
 	        PENALTY = prop.getProperty("Penalty", "DEATH").toUpperCase();
@@ -144,7 +147,6 @@ public class CombatTag extends JavaPlugin {
 	        LIGHTNING = Boolean.parseBoolean(prop.getProperty("Lightning", "False"));
 	        DEBUG = Boolean.parseBoolean(prop.getProperty("Debug", "False"));
 	        MSG2PLR = prop.getProperty("PvpMessage2plr", MSG2PLR);
-	        MSG1PLR = prop.getProperty("PvpMessage1plr", MSG1PLR);
 	        ITEMSDROPPEDMSG = prop.getProperty("ItemsDroppedMsg", ITEMSDROPPEDMSG);
 	        MSGTOPLRKILLED = prop.getProperty("MsgToPvPLogger", MSGTOPLRKILLED);
 	        MAXRELOG = Integer.parseInt(prop.getProperty("MaxRelog", "1"));
@@ -166,8 +168,9 @@ public class CombatTag extends JavaPlugin {
             prop.put("Debug", Boolean.toString(DEBUG));
             prop.put("LogPlayers", "false");
             prop.put("Penalty", PENALTY);
+            prop.put("MessageToTagger", TAGGERMESSAGE);
+            prop.put("MessageToTagged", TAGGEDMESSAGE);
             prop.put("PvpMessage2plr", MSG2PLR);
-            prop.put("PvpMessage1plr", MSG1PLR);
             prop.put("ItemsDroppedMsg", ITEMSDROPPEDMSG);
             prop.put("MsgToPvPLogger", MSGTOPLRKILLED);
             prop.put("TagTime", Long.toString(TAGTIME/1000));
@@ -196,7 +199,7 @@ public class CombatTag extends JavaPlugin {
         	{
         		if(i.hasPvplogged() == true)
         		{
-        			pvploggers.put(i.getPlayerName(), "logged");
+        			pvploggers.put(i.getPlayerName(), i.getTaggedBy());
         		}
         	}
 			FileOutputStream badplayers = new FileOutputStream(PVPLOG);
@@ -205,10 +208,10 @@ public class CombatTag extends JavaPlugin {
 			badplayers.close();
 		} catch (FileNotFoundException e) {
 
-			log.info("Combat tag has encountered error" + e);
+			log.info("Combat tag has encountered error" + e.getStackTrace());
 			
 		} catch (IOException e) {
-			log.info("Combat tag has encountered error" + e);
+			log.info("Combat tag has encountered error" + e.getStackTrace());
 		}
 
 		
@@ -223,6 +226,17 @@ public class CombatTag extends JavaPlugin {
     	else
     	{
     		return false;
+    	}
+    }
+    public String gettaggerfromfile(String Playername)
+    {
+    	if(pvploggers.containsKey(Playername))
+    	{
+    		return pvploggers.getProperty(Playername);
+    	}
+    	else
+    	{
+    		return "";
     	}
     }
     public void removepvplogger(String Playername)
@@ -244,7 +258,6 @@ public class CombatTag extends JavaPlugin {
     {
     	return EXTENDEDGRACEPERIOD;
     }
-
     public String getPenalty(){
     	return PENALTY;
     }
@@ -311,6 +324,12 @@ public class CombatTag extends JavaPlugin {
 		msgPvpLogger(p);
 		if (getPenalty().equals("DEATH")){
 			p.getInventory().clear();
+			ItemStack TempArmor[] = p.getInventory().getArmorContents();
+			for(int i = 0; TempArmor.length > i; i++)
+			{
+				TempArmor[i].setTypeId(0);
+			}
+			p.getInventory().setArmorContents(TempArmor);
 			if (getLightning())
 			{
 				logit("Lightning struck at " + p.getName() + "'s location");
@@ -377,32 +396,61 @@ public class CombatTag extends JavaPlugin {
 		Messageout = Messageout.replace("$tagged", tagged);
 		Messageout = Messageout.replace("$tagger", tagger);
 		Messageout = Messageout.replaceAll("&([0-9a-f])", "\u00A7$1");
-		getServer().broadcastMessage(Messageout);
-	}
-	public void announcePvPLog(String tagged)
-	{
-		String Messageout = MSG1PLR;
-		Messageout = Messageout.replace("$tagged", tagged);
-		Messageout = Messageout.replaceAll("&([0-9a-f])", "\u00A7$1");
-		getServer().broadcastMessage(Messageout);
+		String MessageoutArray[] = Messageout.split("::");
+		for(String message : MessageoutArray)
+		{
+			getServer().broadcastMessage(message);
+		}
 	}
 	public void sendMessageWinner(Player winner, String Loser)
 	{
 		 String mymessage = ITEMSDROPPEDMSG;
 		 mymessage = mymessage.replace("$tagged", Loser );
 		 mymessage = mymessage.replaceAll("&([0-9a-f])", "\u00A7$1");
-		 winner.sendMessage(mymessage);
+		 String MessageoutArray[] = mymessage.split("::");
+		for(String message : MessageoutArray)
+		{
+			winner.sendMessage(message);
+		}
+		 
 	}
 	public void msgPvpLogger(Player myPlayer)
 	{
 		logit("Sending message to pvp logger" + "Message: " + MSGTOPLRKILLED);
 		String mymessage = MSGTOPLRKILLED;
 		mymessage = mymessage.replaceAll("&([0-9a-f])", "\u00A7$1");
-		myPlayer.sendMessage(mymessage);
+		String MessageoutArray[] = mymessage.split("::");
+		for(String message : MessageoutArray)
+		{
+			myPlayer.sendMessage(message);
+		}
+		
 	}
 	public void sendLogToConsole(String PvpLogger)
 	{
 		log.info(PvpLogger + " has logged out during PVP.");
+	}
+	public void sendmessagetoDamagerandDamaged(Player damager, Player damaged) {
+		String damagedmessage = TAGGEDMESSAGE;
+		damagedmessage = damagedmessage.replace("$tagged", damaged.getName());
+		damagedmessage = damagedmessage.replace("$tagger", damager.getName());
+		damagedmessage = damagedmessage.replace("$graceperiod", String.valueOf(getGracePeriod()/1000));
+		damagedmessage = damagedmessage.replaceAll("&([0-9a-f])", "\u00A7$1");
+		String Messagetodamaged[] = damagedmessage.split("::");
+		for(String message : Messagetodamaged)
+		{
+			damaged.sendMessage(message);
+		}
+		String damagermessage = TAGGERMESSAGE;
+		damagermessage = damagermessage.replace("$tagged", damaged.getName());
+		damagermessage = damagermessage.replace("$tagger", damager.getName());
+		damagermessage = damagermessage.replace("$graceperiod", String.valueOf(getGracePeriod()/1000));
+		damagermessage = damagermessage.replaceAll("&([0-9a-f])", "\u00A7$1");
+		String Messagetodamager[] = damagermessage.split("::");
+		for(String message : Messagetodamager)
+		{
+			damager.sendMessage(message);
+		}
 	}
 	
 	public void updatepvploggerfile(String Playername)
@@ -546,5 +594,6 @@ public class CombatTag extends JavaPlugin {
 		}
 		return false;
 	}
+	
 }
 

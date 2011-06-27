@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.bukkit.entity.*;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerListener;
@@ -234,7 +235,7 @@ public class CombatTagPlayerListener extends PlayerListener {
     	if(PlrRespawn.getJailthem() == true)
     	{
     		CombatTagJail ctj =  new CombatTagJail(PlrRespawn.getPlayerName());
-    		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, ctj, 60L);
+    		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, ctj, 120L);
     		PlrRespawn.setJailthem(false);
     	}
     	if(PlrRespawn.isTagged())
@@ -300,5 +301,45 @@ public class CombatTagPlayerListener extends PlayerListener {
 				}
 			}
      }
+
+    public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
+    	if(event.isCancelled())
+    	{
+    		return;
+    	}
+    	Player CommandPlayer = event.getPlayer();
+    	if(!(plugin.isinPlayerList(CommandPlayer.getName())))
+    	{
+    		plugin.addtoPCC(CommandPlayer);
+    	}
+    	PlayerCombatClass CommandPCC = plugin.getPCC(CommandPlayer.getName());
+    	plugin.updateTags(CommandPCC.getPlayerName(), true);
+    	plugin.logit("Command preprocess event");
+    	if(CommandPCC.isTagged())
+    	{
+    		plugin.logit("Player is tagged");
+    		String Message[] = event.getMessage().split(" ");
+    		plugin.logit(Integer.toString(Message.length) + " Message length");
+    		if(Message.length >= 1)
+    		{
+    			plugin.logit(Message[0] + " Made it to length > 1");
+    			String disabled[] = plugin.getdisabledcommands();
+    			for(String disabledcmd : disabled)
+    			{
+    				if(Message[0].equalsIgnoreCase(disabledcmd))
+    				{
+    					plugin.senddisabledmsg(CommandPlayer);
+    					event.setCancelled(true);
+    					break;
+    				}
+    			}
+    		}
+    		return;
+    	}
+    	else
+    	{
+    		return;
+    	}
     }
+}
 

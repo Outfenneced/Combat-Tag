@@ -58,6 +58,10 @@ public class CombatTag extends JavaPlugin {
     private String TAGGERMESSAGE = "&d[CombatTag] &6Tagged:&c $tagged";
     private String TAGGEDMESSAGE ="&d[CombatTag] &6Tagged by:&c $tagger ::&6StdGracePeriod: $graceperiod seconds ::&6/ct for more info.";
     private String MSGTOPLRKILLED = "";
+    private boolean DISABLECOMMANDS = false;
+    private String STRDISABLEDCOMMANDS = "/tp::/warp";
+    private String DISABLEDMSG = "&d[CombatTag] &6You can't do that while you are tagged";
+    private String DISABLEDCOMMANDS[];
     private double Version = 2.5;
     public static Logger log = Logger.getLogger("Minecraft");
 
@@ -80,14 +84,14 @@ public class CombatTag extends JavaPlugin {
 				  String DisconnectMessage = myarray[3];
 				  if(PlrQuitName != null)
 				  {
-					if(getPCC(PlrQuitName) != null)
-					{
-					  if(DisconnectMessage != null)
+					  if(isinPlayerList(PlrQuitName))
 					  {
-						  getPCC(PlrQuitName).setDisconnectType(DisconnectMessage);
+						  if(DisconnectMessage != null)
+						  {
+							  getPCC(PlrQuitName).setDisconnectType(DisconnectMessage);
+						  }
 					  }
-					}
-				  }
+				  	}
 			     }
 			    }
 			  return;
@@ -102,13 +106,9 @@ public class CombatTag extends JavaPlugin {
         public void close() {
         }
       });
-        getServer().getPluginManager().registerEvent(Event.Type.PLAYER_JOIN, playerListener, Event.Priority.Low, this);
-        getServer().getPluginManager().registerEvent(Event.Type.PLAYER_QUIT, playerListener, Event.Priority.Low, this);
-        getServer().getPluginManager().registerEvent(Event.Type.PLAYER_KICK, playerListener, Event.Priority.Normal, this);
-        getServer().getPluginManager().registerEvent(Event.Type.PLAYER_RESPAWN, playerListener, Event.Priority.Monitor, this);
-        getServer().getPluginManager().registerEvent(Event.Type.ENTITY_DAMAGE, (Listener) entityListener, Event.Priority.Monitor, this);
     	new File(mainDirectory).mkdir(); //directory for the config file
-        if(!CONFIG.exists()){ //Make config file if it doesn't exist
+        if(!CONFIG.exists())
+        { //Make config file if it doesn't exist
         	updateprop();
             log.info("[CombatTag] New file created.");
         }
@@ -133,6 +133,16 @@ public class CombatTag extends JavaPlugin {
 	        logit("Debug is enabled! Be ready for the spam.");
 
         }
+	        getServer().getPluginManager().registerEvent(Event.Type.PLAYER_JOIN, playerListener, Event.Priority.Low, this);
+	        getServer().getPluginManager().registerEvent(Event.Type.PLAYER_QUIT, playerListener, Event.Priority.Low, this);
+	        getServer().getPluginManager().registerEvent(Event.Type.PLAYER_KICK, playerListener, Event.Priority.Normal, this);
+	        getServer().getPluginManager().registerEvent(Event.Type.PLAYER_RESPAWN, playerListener, Event.Priority.Monitor, this);
+	        getServer().getPluginManager().registerEvent(Event.Type.ENTITY_DAMAGE, (Listener) entityListener, Event.Priority.Monitor, this);
+	        if(DISABLECOMMANDS == true)
+	        {
+	        	getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND_PREPROCESS,playerListener,Event.Priority.Normal, this);
+	        }
+
 			loadplayers();//get players currently online here
 			if(Version < Double.parseDouble(getDescription().getVersion()))
 			{
@@ -162,6 +172,9 @@ public class CombatTag extends JavaPlugin {
 	        prop.load(in); //loads file
 	        TAGGERMESSAGE = prop.getProperty("MessageToTagger", TAGGERMESSAGE);
 	        TAGGEDMESSAGE = prop.getProperty("MessageToTagged", TAGGEDMESSAGE);
+	        DISABLECOMMANDS = Boolean.parseBoolean(prop.getProperty("DisableCommands", "false"));
+	        DISABLEDMSG = prop.getProperty("DisabledMsg", DISABLEDMSG);
+	        STRDISABLEDCOMMANDS = prop.getProperty("DisabledCommands", STRDISABLEDCOMMANDS);
 	        Version = Double.parseDouble(prop.getProperty("Version", "0"));
 	        logplayersenab = Boolean.parseBoolean(prop.getProperty("LogPlayers", "false"));
 	        PENALTY = prop.getProperty("Penalty", "DEATH").toUpperCase();
@@ -183,6 +196,7 @@ public class CombatTag extends JavaPlugin {
     	}catch (Exception e){
     		log.severe("[CombatTag] Saving error: "+e.getMessage());
     	}
+    	DISABLEDCOMMANDS = STRDISABLEDCOMMANDS.split("::");
     }
     public void updateprop()
     {
@@ -192,6 +206,9 @@ public class CombatTag extends JavaPlugin {
             prop.put("Version", getDescription().getVersion().toString());
             prop.put("Extended_Grace_Period", Long.toString(EXTENDEDGRACEPERIOD/1000));
             prop.put("Debug", Boolean.toString(DEBUG));
+            prop.put("DisableCommands", Boolean.toString(DISABLECOMMANDS));
+            prop.put("DisabledCommands", STRDISABLEDCOMMANDS);
+            prop.put("DisabledMsg", DISABLEDMSG);
             prop.put("LogPlayers", "false");
             prop.put("Penalty", PENALTY);
             prop.put("UseJail", Boolean.toString(USEJAIL));
@@ -241,7 +258,7 @@ public class CombatTag extends JavaPlugin {
 		} catch (IOException e) {
 			log.info("Combat tag has encountered error" + e.getStackTrace());
 		}
-
+		PLAYERLIST.clear();
 		
         log.info("[CombatTag] Out.");
     }
@@ -275,7 +292,17 @@ public class CombatTag extends JavaPlugin {
     {
     	return USEJAIL;
     }
-    
+    public void senddisabledmsg(Player player)
+    {
+    	String Messageout = DISABLEDMSG;
+    	Messageout = Messageout.replaceAll("&([0-9a-f])", "\u00A7$1");
+		String MessageoutArray[] = Messageout.split("::");
+		for(String message : MessageoutArray)
+		{
+			player.sendMessage(message);
+		}
+    	return;
+    }
     public boolean getLightning(){
     	return LIGHTNING;
     }
@@ -306,37 +333,66 @@ public class CombatTag extends JavaPlugin {
     {
     	return TAGTIME;
     }
+	public String[] getdisabledcommands() {
+		return DISABLEDCOMMANDS;
+	}
+    /*
+     * Checks to see if the player name is contained in the player list
+     * returns true if player is in list 
+     * returns false otherwise
+     */
     public boolean isinPlayerList(String PlayerName)
     {
     	return(PLAYERLIST.containsKey(PlayerName));
     }
-    public PlayerCombatClass getPCC(String PlayerName)// Retrieves PlayerCombatClass from HashMap
+    /*
+     * Returns class PlayerCombatClass if the player is found in hashmap PLAYERLIST
+     * otherwise returns null
+     */
+    public PlayerCombatClass getPCC(String PlayerName)
     {
     	if(!(PlayerName == null))
     	{
-    		if(PLAYERLIST.containsKey(PlayerName))
+    		if(isinPlayerList(PlayerName))
     		{
     			return(PLAYERLIST.get(PlayerName));
     		}
-    		else
+    		else 
     		{
     			return(null);
     		}
     	}
     	return(null);
     }
-    public void addtoPCC(Player myplayer)// Adds Player to HashMap PlayerList
+  /*
+   * If player is not already in the hashmap PLAYERLIST adds player to PLAYERLIST.
+   * Also creates a new instance of PlayerCombatClass with myplayer.
+   * Does not handle null values.
+   */
+    public void addtoPCC(Player myplayer)
     {
-    	PLAYERLIST.put(myplayer.getName(),new PlayerCombatClass(myplayer));
+    	if(!(isinPlayerList(myplayer.getName())))
+    	{
+    		PLAYERLIST.put(myplayer.getName(),new PlayerCombatClass(myplayer));
+    	}
     	return;
     }
-    public void logit(String stringlog)
+    /*
+     * Accepts strings to send to the console. 
+     * Used in debugging.
+     * Only passes the string onward if DEBUG is true. 
+     */
+   public void logit(String stringlog)
     {
     	if (DEBUG == true){
     		log.info(stringlog);
     	}
     }
-    public void loadplayers()//Loads Players upon starting up. Used for reloads and such
+   /*
+    * Loads all players in all worlds of the server.
+    * Is only to be called when there are no values in the hashmap PLAYERLIST
+    */
+   	public void loadplayers()
     {
         logit("loading all players currently in world");
         //Add all Players currently online to the PLAYERLIST
@@ -351,7 +407,10 @@ public class CombatTag extends JavaPlugin {
     	}
     	return;
     }
-	public void killAndClean(Player p)//Kills Player and cleans inventory
+   	/*
+   	 * Kills players and Cleans inventory if penalty is death. Calls msgPvpLogger either way
+   	 */
+	public void killAndClean(Player p)
 	{
 		msgPvpLogger(p);
 		if (getPenalty().equals("DEATH")){
@@ -372,12 +431,14 @@ public class CombatTag extends JavaPlugin {
     		p.setHealth(0);
 		}
 	}
+	/*
+	 * If USEJAIL == true jail the player for the user specified time JAILTIME
+	 */
 	public void jailPlayer(String Playername)
 	{
 		if(USEJAIL == true)
 		{
-			String reason = "PvPLogging";
-			jailplugin.jailPlayer(Playername, JAILTIME, null, reason);
+			jailplugin.jailPlayer(Playername, JAILTIME, null, "PvPLogging");
 		}
 	}
 	public void removetaggedfromallplrs(String PlayerName)// Removes Player from all other players tagged list
@@ -633,7 +694,6 @@ public class CombatTag extends JavaPlugin {
 			}
 		}
 		return false;
-	}
-	
+	}	
 }
 

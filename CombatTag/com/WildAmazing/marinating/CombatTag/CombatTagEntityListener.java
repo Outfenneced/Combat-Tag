@@ -24,6 +24,17 @@ public class CombatTagEntityListener extends EntityListener {
 				    	Player damaged = (Player)e.getEntity();
 				    	plugin.logit("damager is " + damager.getName());
 				    	plugin.logit("damaged is " + damaged.getName());
+				    	// This should not be needed but it appears data has been lost elsewhere in the program. I have yet to be able to reproduce the bug
+				    	if (!plugin.isinPlayerList(damager.getName()))
+				    	{
+				    		plugin.logit("player added to combat tag in entity listener.");
+				    		plugin.addtoPCC(damager);//Add new player to Playerlist
+				    	}
+				    	if (!plugin.isinPlayerList(damaged.getName()))
+				    	{
+				    		plugin.logit("player added to combat tag in entity listener.");
+				    		plugin.addtoPCC(damaged);//Add new player to Playerlist
+				    	}
 				    	if(!(damager.getName() == damaged.getName()))//Check to make sure the player did not tag themself
 				    	{
 				    		PlayerCombatClass PCCdamager = plugin.getPCC(damager.getName());//retrieve the Player combat class for damager

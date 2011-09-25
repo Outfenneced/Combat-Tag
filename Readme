@@ -2,16 +2,4 @@ CombatTag:
 	Combat tag is a plugin for bukkit which prevents pvp loggers from getting away with logging.
 	This plugin was orignally made by marinating. 
 Config file explination:
-	TagTime = duration of tag
-	Grace_period - Time the player has to log back in before being considered a pvplogger. This starts from the time they logout. This is used when players chose to disconect from the client.
-	Extended_Grace_Period - Time the player has to log back in. This is used when the client crashes or is forcibly closed
-	Debug = enables debug mode (be ready for the spam)
-	It supports $tagger (person who hit the pvplogger) and $tagged (Pvplogger).
-	It also supports color coding using the &(0-9,a-f)
-	PvpMessage1plr is nearly the same as PvpMessage1plr except it is called when the pvp logger did not log back in before the server was reloaded or restarted.
-	It supports $tagged and &colors only.
-	ItemsDroppedMsg is called when the player is considered a pvplogger(when the items would normally drop to the gound).
-	It supports $tagger,$tagged and chat colors and only send the message to the person who tagged the pvp logger, as apposed to the entire server.
-	MaxRelog is the maximum number of times a player can relog during a tag period." +
-	Lightning (true or false) Strikes lightning at players location upon logging back in.
-	Only works when penalty is set to DEATH");
+	TagTime: duration of tag (from the time the player is hit by another player)

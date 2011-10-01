@@ -1,6 +1,8 @@
 package com.trc202.NoPvpLog;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -28,6 +30,7 @@ public class nopvpPlayerListener extends PlayerListener{
 				loginPlayer.getInventory().setArmorContents(loginDataContainer.getPlayerArmor());
 				loginPlayer.getInventory().setContents(loginDataContainer.getPlayerInventory());
 				loginPlayer.setHealth(loginDataContainer.getHealth());
+				loginPlayer.setLastDamageCause(new EntityDamageEvent(loginPlayer, DamageCause.ENTITY_EXPLOSION, 0));
 				loginDataContainer.setShouldBePunished(false);
 			}
 		}

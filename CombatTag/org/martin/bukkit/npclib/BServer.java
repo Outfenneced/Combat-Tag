@@ -72,7 +72,7 @@ public class BServer {
     }
 
     public void stop() {
-        mcServer.a();
+        mcServer.safeShutdown();
     }
 
     public void sendConsoleCommand(String cmd) {

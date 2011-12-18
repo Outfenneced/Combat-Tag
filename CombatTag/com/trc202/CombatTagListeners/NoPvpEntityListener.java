@@ -6,9 +6,9 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityListener;
-
 import com.trc202.CombatTag.CombatTag;
 import com.trc202.Containers.PlayerDataContainer;
+import com.trc202.Containers.Settings;
 
 public class NoPvpEntityListener extends EntityListener{
 
@@ -26,18 +26,24 @@ public class NoPvpEntityListener extends EntityListener{
     		if (EntityDamaged instanceof EntityDamageByEntityEvent){
 	    		EntityDamageByEntityEvent e = (EntityDamageByEntityEvent)EntityDamaged;
 	    		if ((e.getDamager() instanceof Player) && (e.getEntity() instanceof Player)){//Check to see if the damager and damaged are players
-	    			if(!plugin.npcm.isNPC(e.getEntity())){
-		    			Player tagged = (Player) e.getEntity();
-		    			PlayerDataContainer taggedData;
-		    			if(plugin.hasDataContainer(tagged.getName())){
-		    				taggedData = plugin.getPlayerData(tagged.getName());
+	    			Player damager = (Player) e.getDamager();
+	    			Player tagged = (Player) e.getEntity();
+	    			if(plugin.settings.getCurrentMode() == Settings.SettingsType.NPC){
+		    			if(!plugin.npcm.isNPC(e.getEntity())){
+			    			PlayerDataContainer taggedData;
+			    			if(plugin.hasDataContainer(tagged.getName())){
+			    				taggedData = plugin.getPlayerData(tagged.getName());
+			    			}
+			    			else{
+			    				taggedData = plugin.createPlayerData(tagged.getName());
+			    			}
+			    			if(plugin.isDebugEnabled()){plugin.log.info("[CombatTag] Player tagged another player, setting pvp timeout");}
+			    			taggedData.setPvPTimeout(plugin.getTagDuration());
 		    			}
-		    			else{
-		    				taggedData = plugin.createPlayerData(tagged.getName());
-		    			}
-		    			if(plugin.isDebugEnabled()){plugin.log.info("[CombatTag] Player tagged another player, setting pvp timeout");}
-		    			taggedData.setPvPTimeout(plugin.getTagDuration());
+	    			}else if(plugin.settings.getCurrentMode() == Settings.SettingsType.OTHER){
+	    				
 	    			}
+
 	    		}
     		}
 		}
@@ -59,4 +65,6 @@ public class NoPvpEntityListener extends EntityListener{
 			}
 		}
 	}
+	
+	
 }

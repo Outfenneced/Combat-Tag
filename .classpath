@@ -2,6 +2,8 @@
 <classpath>
 	<classpathentry kind="src" path="CombatTag"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="C:/Users/trc/plugindevelopment/craftbukkit-0.0.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="C:/Users/trc/plugindevelopment/craftbukkit-1.0.1-R1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/trc/plugindevelopment/SpoutAPI.jar"/>
+	<classpathentry kind="lib" path="C:/Users/trc/plugindevelopment/Spout.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

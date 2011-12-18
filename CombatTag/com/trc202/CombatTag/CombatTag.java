@@ -13,9 +13,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.martin.bukkit.npclib.NPCEntity;
-import org.martin.bukkit.npclib.NPCManager;
 
+import com.topcat.npclib.NPCManager;
+import com.topcat.npclib.entity.NPC;
+import com.topcat.npclib.nms.NPCEntity;
 import com.trc202.CombatTagListeners.NoPvpEntityListener;
 import com.trc202.CombatTagListeners.NoPvpPlayerListener;
 import com.trc202.Containers.PlayerDataContainer;
@@ -55,6 +56,7 @@ public class CombatTag extends JavaPlugin {
 			}
 			PlayerDataManager.savePlayerData(mainDirectory, pdc);
 		}
+		//Just in case...
 		log.info("[CombatTag] Disabled");
 	}
 
@@ -77,9 +79,9 @@ public class CombatTag extends JavaPlugin {
 	 * @param location
 	 * @return
 	 */
-	public NPCEntity spawnNpc(String plr,Location location){
+	public NPC spawnNpc(String plr,Location location){
 		if(isDebugEnabled()){log.info("[CombatTag] Spawning NPC");}
-		NPCEntity spawnedNPC = npcm.spawnNPC("PvPLogger" + getNpcNumber(), location , plr);
+		NPC spawnedNPC = npcm.spawnHumanNPC("PvPLogger" + getNpcNumber(), location , plr);
 		return spawnedNPC;
 	}
 	
@@ -89,14 +91,17 @@ public class CombatTag extends JavaPlugin {
 	 */
 	public void despawnNPC(PlayerDataContainer plrData) {
 		if(isDebugEnabled()){log.info("[CombatTag] Despawning NPC");}
-		NPCEntity npc = npcm.getNPC(plrData.getNPCId());
-		plrData.setPlayerArmor(npc.getInventory().getArmorContents());
-		plrData.setPlayerInventory(npc.getInventory().getContents());
-		plrData.setHealth(npc.health);
-		plrData.setExp(npc.exp);
-		npcm.despawnById(plrData.getNPCId());
-		plrData.setNPCId("");
-		plrData.setSpawnedNPC(false);
+		Entity anNPC = npcm.getNPC(plrData.getNPCId()).getBukkitEntity();
+		if(anNPC instanceof Player){
+			Player npc = (Player) anNPC;
+			plrData.setPlayerArmor(npc.getInventory().getArmorContents());
+			plrData.setPlayerInventory(npc.getInventory().getContents());
+			plrData.setHealth(npc.getHealth());
+			plrData.setExp(npc.getExp());
+			npcm.despawnById(plrData.getNPCId());
+			plrData.setNPCId("");
+			plrData.setSpawnedNPC(false);
+		}
 	}
 
 	public String getPlayerName(Entity entity){
@@ -109,24 +114,30 @@ public class CombatTag extends JavaPlugin {
 	 * @param npc Npc
 	 * @param plr Player
 	 */
-	public void copyContentsNpc(NPCEntity npc, Player plr) {
-		PlayerInventory npcInv = npc.getInventory();
-		PlayerInventory plrInv = plr.getInventory();
-		npcInv.setArmorContents(plrInv.getArmorContents());
-		npc.exp = plr.getExperience();
-		npcInv.setContents(plrInv.getContents());
+	public void copyContentsNpc(NPC npc, Player plr) {
+		if(npc.getBukkitEntity() instanceof Player){
+			Player playerNPC = (Player) npc.getBukkitEntity();
+			PlayerInventory npcInv = playerNPC.getInventory();
+			PlayerInventory plrInv = plr.getInventory();
+			npcInv.setArmorContents(plrInv.getArmorContents());
+			playerNPC.setExp(plr.getExp());
+			npcInv.setContents(plrInv.getContents());
+		}
 	}
 	/**
 	 * Copys inventory from the NPC to the player
 	 * @param npc
 	 * @param plr
 	 */
-	public void copyContentsPlayer(NPCEntity npc, Player plr) {
-		PlayerInventory npcInv = npc.getInventory();
-		PlayerInventory plrInv = plr.getInventory();
-		plrInv.setArmorContents(npcInv.getArmorContents());
-		plrInv.setContents(npcInv.getContents());
-		plr.setExperience(npc.exp);
+	public void copyContentsPlayer(NPC npc, Player plr) {
+		if(npc.getBukkitEntity() instanceof Player){
+			Player playerNPC = (Player) npc.getBukkitEntity();
+			PlayerInventory npcInv = playerNPC.getInventory();
+			PlayerInventory plrInv = plr.getInventory();
+			plrInv.setArmorContents(npcInv.getArmorContents());
+			plrInv.setContents(npcInv.getContents());
+			plr.setExp(playerNPC.getExp());
+		}
 	}
 
 	public boolean hasDataContainer(String playerName){

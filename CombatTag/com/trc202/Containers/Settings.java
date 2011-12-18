@@ -1,11 +1,16 @@
 package com.trc202.Containers;
 
 public class Settings {
+	
+	public enum SettingsType {NPC,OTHER};
+	
 	private int tagDuration;
 	private boolean debugEnabled;
 	private boolean instaKill;
+	private SettingsType currentMode;
 	
 	public Settings(){
+		currentMode = SettingsType.NPC;
 		instaKill = false;
 		tagDuration = 10;
 		debugEnabled = false;
@@ -35,4 +40,7 @@ public class Settings {
 		return instaKill;
 	}
 	
+	public SettingsType getCurrentMode(){
+		return currentMode;
+	}
 }

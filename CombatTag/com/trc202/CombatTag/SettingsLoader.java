@@ -28,7 +28,7 @@ public class SettingsLoader {
 		if(helper.getProperty(debug) == null){helper.setProperty(debug, Boolean.toString(temp.isDebugEnabled()));}
 		if(helper.getProperty(tagDuration) == null){helper.setProperty(tagDuration, String.valueOf(temp.getTagDuration()));}
 		if(helper.getProperty(instaKill) == null){helper.setProperty(instaKill, Boolean.toString(temp.isInstaKill()));}
-		if(helper.getProperty(this.version) == null){helper.setProperty(this.version, version);}
+		if(helper.getProperty(SettingsLoader.version) == null){helper.setProperty(SettingsLoader.version, version);}
 	}
 
 	private boolean isLatestVersion(SettingsHelper helper, String version){

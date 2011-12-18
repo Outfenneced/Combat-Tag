@@ -12,23 +12,44 @@ public class PlayerDataManager {
 	private static int inventorySlots = 36;
 	private static String stringAir = "0:0:0";
 	
+	/**
+	 * Saves the player data container to a particular directory
+	 * @param directory to save the file to
+	 * @param playerContainer with which to get the data from
+	 */
 	public static void savePlayerData(String directory,PlayerDataContainer playerContainer){
 		File file = new File(directory + File.separator + playerContainer.getPlayerName());
 		SettingsHelper settings = new SettingsHelper(file, "CombatTag");
 		settings.setProperty("Health", String.valueOf(playerContainer.getHealth()));
 		settings.setProperty("Experience", String.valueOf(playerContainer.getExp()));
 		settings.setProperty("Should-Be-Punished", String.valueOf(playerContainer.shouldBePunished()));
-		String[] items = itemsToString(playerContainer.getPlayerInventory());
+		String[] items;
+		if(playerContainer.getPlayerInventory() == null){
+			 items = itemsToString(new ItemStack[inventorySlots]);
+		}else{
+			 items = itemsToString(playerContainer.getPlayerInventory());
+		}
 		for(int i = 0; i < items.length; i++){
 			settings.setProperty("InventorySlot" + i,items[i]);
 		}
-		String[] armorItems = itemsToString(playerContainer.getPlayerArmor());
+		String[] armorItems;
+		if(playerContainer.getPlayerArmor() == null){
+			armorItems = itemsToString(new ItemStack[armorSlots]);
+		}else{
+			armorItems = itemsToString(playerContainer.getPlayerArmor());
+		}
 		for(int i = 0; i < armorItems.length; i++){
 			settings.setProperty("ArmorSlot" + i, armorItems[i]);
 		}
 		settings.saveConfig();
 	}
 	
+	/**
+	 * Loads the player data from the directory\playername
+	 * @param directory with which to load the file
+	 * @param playerName name of the player and consiquently the file
+	 * @return PlayerDataContainer which contains the data of the player
+	 */
 	public static PlayerDataContainer loadPlayerData(String directory, String playerName){
 		File playerFile =  new File(directory + File.separator + playerName);
 		if(!playerFile.exists()){
@@ -54,7 +75,7 @@ public class PlayerDataManager {
 		}
 		ItemStack[] armorItems = stringToItems(armorString);
 		int health = Integer.valueOf(settings.getProperty("Health"));
-		int experience = Integer.valueOf(settings.getProperty("Experience"));
+		float experience = Float.valueOf(settings.getProperty("Experience"));
 		boolean punish = Boolean.valueOf(settings.getProperty("Should-Be-Punished"));
 
 		PlayerDataContainer pdc = new PlayerDataContainer(playerName);
@@ -66,6 +87,12 @@ public class PlayerDataManager {
 		return pdc;
 	}
 	
+	/**
+	 * Checks to see if there is a player data file
+	 * @param directory
+	 * @param playerName
+	 * @return true if file exists
+	 */
 	public static boolean hasPlayerDataFile(String directory, String playerName){
 		File file = new File(directory + File.separator + playerName);
 		if(file.canRead() && file.canWrite() && file.exists()){
@@ -74,6 +101,12 @@ public class PlayerDataManager {
 		return false;
 	}
 	
+	/**
+	 * Converts the itemstack array to a string array seperated by : 
+	 * the flormat is id:durability:amount
+	 * @param items
+	 * @return
+	 */
 	private static String[] itemsToString(ItemStack[] items){
 		String[] array = new String[items.length];
 		for(int i = 0; i < items.length; i++){
@@ -90,6 +123,7 @@ public class PlayerDataManager {
 		}
 		return array;
 	}
+	
 	private static ItemStack[] stringToItems(String[] stringArray){
 		ItemStack[] itemStack = new ItemStack[stringArray.length];
 		for(int i = 0; i < stringArray.length; i++){

@@ -20,7 +20,7 @@ public class PlayerDataContainer implements Serializable {
 	private long pvpTimeOut; //Time at which the current tag is over
 	private boolean shouldBePunished;
 	private int health;
-	private int experience;
+	private float experience;
 	private ItemStack[] playerInventory;
 	private ItemStack[] playerArmor;
 	
@@ -43,7 +43,7 @@ public class PlayerDataContainer implements Serializable {
 	public void setPvPTimeout(int seconds){
 		pvpTimeOut = System.currentTimeMillis() + (seconds * 1000);
 	}
-	public boolean hasPVPTimedOut(){
+	public boolean hasPVPtagExpired(){
 		return (pvpTimeOut <= System.currentTimeMillis());
 	}
 	
@@ -82,11 +82,11 @@ public class PlayerDataContainer implements Serializable {
 		return health;
 	}
 
-	public void setExp(int experience) {
-		this.experience = experience;	
+	public void setExp(float exp) {
+		this.experience = exp;	
 	}
 
-	public int getExp() {
+	public float getExp() {
 		return experience;
 	}
 

@@ -31,4 +31,24 @@ public class CombatTagApi {
 	public boolean isInCombat(Player player){
 		return isInCombat(player.getName());
 	}
+	
+	/**
+	 * Returns the time before the tag is over
+	 *  -1 if the tag has expired
+	 *  -2 if the player is not in combat
+	 * @param player
+	 * @return
+	 */
+	public long getRemainingTagTime(String player){
+		if(plugin.hasDataContainer(player)){
+			PlayerDataContainer playerDataContainer = plugin.getPlayerData(player);
+			if(playerDataContainer.hasPVPtagExpired()){
+				return -1;
+			}else{
+				return playerDataContainer.getRemainingTagTime();
+			}
+		}else{
+			return -2;
+		}
+	}
 }

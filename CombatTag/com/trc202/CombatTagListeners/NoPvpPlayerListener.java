@@ -10,6 +10,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import com.topcat.npclib.entity.NPC;
 import com.trc202.CombatTag.CombatTag;
 import com.trc202.Containers.PlayerDataContainer;
+import com.trc202.Containers.Settings;
 
 public class NoPvpPlayerListener extends PlayerListener{
 	
@@ -23,32 +24,28 @@ public class NoPvpPlayerListener extends PlayerListener{
 	@Override
     public void onPlayerJoin(PlayerJoinEvent e){
 		Player loginPlayer = e.getPlayer();
-		if(plugin.hasDataContainer(loginPlayer.getName())){
-			//Player has a data container and is likely to need some sort of punishment
-			PlayerDataContainer loginDataContainer = plugin.getPlayerData(loginPlayer.getName());
-			if(loginDataContainer.hasSpawnedNPC()){
-				//Player has pvplogged and has not been killed yet
-				//despawn the npc and transfer any effects over to the player
-				if(plugin.isDebugEnabled()){plugin.log.info("[CombatTag] Player logged in and has npc");}
-				plugin.despawnNPC(loginDataContainer);
-			}
-			if(plugin.isDebugEnabled()){plugin.log.info("[CombatTag] " + loginDataContainer.getPlayerName() +" should be punushed");}
-			if(loginDataContainer.shouldBePunished()){
-				if(plugin.isDebugEnabled()){plugin.log.info("[CombatTag] Getting info from NPC and putting it back into the player");}
-				loginPlayer.setExp(loginDataContainer.getExp());
-				loginPlayer.getInventory().setArmorContents(loginDataContainer.getPlayerArmor());
-				loginPlayer.getInventory().setContents(loginDataContainer.getPlayerInventory());
-				loginPlayer.setHealth(loginDataContainer.getHealth());
-				assert(loginPlayer.getHealth() == loginDataContainer.getHealth());
-				loginPlayer.setLastDamageCause(new EntityDamageEvent(loginPlayer, DamageCause.ENTITY_EXPLOSION, 0));
-			}
-			plugin.removeDataContainer(loginPlayer.getName());
+		if(plugin.settings.getCurrentMode() == Settings.SettingsType.NPC){
+			onPlayerJoinNPCMode(loginPlayer);
+		}else if(plugin.settings.getCurrentMode() == Settings.SettingsType.TIMED){
+			onPlayerJoinTimedMode(loginPlayer);
 		}
 	}
 	
 	@Override
 	public void onPlayerQuit(PlayerQuitEvent e){
 		Player quitPlr = e.getPlayer();
+		if(plugin.settings.getCurrentMode() == Settings.SettingsType.NPC){
+			onPlayerQuitNPCMode(quitPlr);
+		}else if(plugin.settings.getCurrentMode() == Settings.SettingsType.TIMED){
+			onPlayerQuitTimedMode(quitPlr);
+		}
+	}
+	
+	private void onPlayerQuitTimedMode(Player quitPlr){
+		//TODO
+	}
+	
+	private void onPlayerQuitNPCMode(Player quitPlr){
 		if(plugin.hasDataContainer(quitPlr.getName())){
 			//Player is likely in pvp
 			PlayerDataContainer quitDataContainer = plugin.getPlayerData(quitPlr.getName());
@@ -74,6 +71,33 @@ public class NoPvpPlayerListener extends PlayerListener{
 		}
 	}
 
+	private void onPlayerJoinNPCMode(Player loginPlayer){
+		if(plugin.hasDataContainer(loginPlayer.getName())){
+			//Player has a data container and is likely to need some sort of punishment
+			PlayerDataContainer loginDataContainer = plugin.getPlayerData(loginPlayer.getName());
+			if(loginDataContainer.hasSpawnedNPC()){
+				//Player has pvplogged and has not been killed yet
+				//despawn the npc and transfer any effects over to the player
+				if(plugin.isDebugEnabled()){plugin.log.info("[CombatTag] Player logged in and has npc");}
+				plugin.despawnNPC(loginDataContainer);
+			}
+			if(plugin.isDebugEnabled()){plugin.log.info("[CombatTag] " + loginDataContainer.getPlayerName() +" should be punushed");}
+			if(loginDataContainer.shouldBePunished()){
+				if(plugin.isDebugEnabled()){plugin.log.info("[CombatTag] Getting info from NPC and putting it back into the player");}
+				loginPlayer.setExp(loginDataContainer.getExp());
+				loginPlayer.getInventory().setArmorContents(loginDataContainer.getPlayerArmor());
+				loginPlayer.getInventory().setContents(loginDataContainer.getPlayerInventory());
+				loginPlayer.setHealth(loginDataContainer.getHealth());
+				assert(loginPlayer.getHealth() == loginDataContainer.getHealth());
+				loginPlayer.setLastDamageCause(new EntityDamageEvent(loginPlayer, DamageCause.ENTITY_EXPLOSION, 0));
+			}
+			plugin.removeDataContainer(loginPlayer.getName());
+		}
+	}
 	
+	private void onPlayerJoinTimedMode(Player joinedPlr){
+		//TODO
+	}
+
 
 }

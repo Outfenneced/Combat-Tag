@@ -6,6 +6,8 @@ import java.util.logging.Logger;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -16,7 +18,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.topcat.npclib.NPCManager;
 import com.topcat.npclib.entity.NPC;
-import com.topcat.npclib.nms.NPCEntity;
+import com.trc202.CombatTagListeners.CombatTagCommandPrevention;
 import com.trc202.CombatTagListeners.NoPvpEntityListener;
 import com.trc202.CombatTagListeners.NoPvpPlayerListener;
 import com.trc202.Containers.PlayerDataContainer;
@@ -37,6 +39,7 @@ public class CombatTag extends JavaPlugin {
 
 	private final NoPvpPlayerListener plrListener = new NoPvpPlayerListener(this); 
 	private final NoPvpEntityListener entityListener = new NoPvpEntityListener(this);
+	private final CombatTagCommandPrevention commandPreventer = new CombatTagCommandPrevention(this);
 	
 	private int npcNumber;
 
@@ -70,6 +73,7 @@ public class CombatTag extends JavaPlugin {
 		pm.registerEvent(Event.Type.PLAYER_QUIT, plrListener, Event.Priority.Lowest, this);
 		pm.registerEvent(Event.Type.ENTITY_DAMAGE, entityListener, Event.Priority.Monitor, this);
 		pm.registerEvent(Event.Type.ENTITY_DEATH, entityListener, Event.Priority.Monitor, this);
+		pm.registerEvent(Event.Type.PLAYER_COMMAND_PREPROCESS, commandPreventer, Event.Priority.Normal, this);
 		log.info("["+ getDescription().getName() +"]"+ " has loaded with a tag time of " + settings.getTagDuration() + " seconds");
 	}
 	
@@ -155,6 +159,8 @@ public class CombatTag extends JavaPlugin {
 		}
 		return playerData.get(playerName);
 	}
+	
+	
 	public PlayerDataContainer createPlayerData(String playerName){
 		PlayerDataContainer plr = new PlayerDataContainer(playerName);
 		playerData.put(playerName, plr);
@@ -204,5 +210,27 @@ public class CombatTag extends JavaPlugin {
 	public int getNpcNumber() {
 		npcNumber = npcNumber + 1;
 		return npcNumber;
+	}
+
+	@Override
+	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args)
+	{
+		if(command.getName().equalsIgnoreCase("ct") || (command.getName().equalsIgnoreCase("combattag"))){
+			if(sender instanceof Player){
+				Player player = (Player) sender;
+				if(hasDataContainer(player.getName())){
+					PlayerDataContainer playerDataContainer = getPlayerData(player.getName());
+					player.sendMessage("You are in combat for " + playerDataContainer.getRemainingTagTime()/1000 + " seconds");
+				}else{
+					player.sendMessage("You are not currently in combat!");
+				}
+				return true;
+			}
+		}else{
+			log.info("[CombatTag] Combat Tag can only be used by a player");
+			return true;
+		}
+		return false;
+		
 	}
 }

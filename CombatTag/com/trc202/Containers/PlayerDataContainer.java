@@ -1,11 +1,9 @@
 package com.trc202.Containers;
 
-import java.io.Serializable;
-
 import org.bukkit.inventory.ItemStack;
 
 
-public class PlayerDataContainer implements Serializable {
+public class PlayerDataContainer{
 	/**
 	 * 
 	 */
@@ -96,5 +94,10 @@ public class PlayerDataContainer implements Serializable {
 
 	public void setSpawnedNPC(boolean b) {
 		hasSpawnedNPC = b;
+	}
+	
+	public long getRemainingTagTime(){
+		long endOfTag = (pvpTimeOut - System.currentTimeMillis());
+		return endOfTag;
 	}
 }

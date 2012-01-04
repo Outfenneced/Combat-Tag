@@ -9,6 +9,8 @@ public class SettingsLoader {
 	private static String tagDuration = "Tag-Duration";
 	private static String instaKill = "InstaKill";
 	private static String version = "Version";
+	private static String disabledWorlds = "disabledWorlds";
+	private static String disabledCommands = "disabledCommands";
 
 	public Settings loadSettings(SettingsHelper helper, String version){
 		settings = new Settings();
@@ -29,6 +31,8 @@ public class SettingsLoader {
 		if(helper.getProperty(tagDuration) == null){helper.setProperty(tagDuration, String.valueOf(temp.getTagDuration()));}
 		if(helper.getProperty(instaKill) == null){helper.setProperty(instaKill, Boolean.toString(temp.isInstaKill()));}
 		if(helper.getProperty(SettingsLoader.version) == null){helper.setProperty(SettingsLoader.version, version);}
+		if(helper.getProperty(disabledWorlds) == null){helper.setProperty("disabledWorlds", "[exampleWorld,exampleWorld2]");}
+		if(helper.getProperty(disabledCommands) == null){helper.setProperty("disabledCommands", "[]");}
 	}
 
 	private boolean isLatestVersion(SettingsHelper helper, String version){
@@ -40,7 +44,9 @@ public class SettingsLoader {
 		if((helper.getProperty(version) != null) && 
 		(helper.getProperty(tagDuration) != null) && 
 		(helper.getProperty(debug) != null) && 
-		(helper.getProperty(instaKill) != null)){
+		(helper.getProperty(instaKill) != null) &&
+		(helper.getProperty(disabledCommands) != null) &&
+		(helper.getProperty(disabledWorlds) != null)){
 			return true;
 		}else{
 			return false;
@@ -51,6 +57,12 @@ public class SettingsLoader {
 		settings.setDebugEnabled(Boolean.valueOf(helper.getProperty(debug)));
 		settings.setTagDuration(Integer.valueOf(helper.getProperty(tagDuration)));
 		settings.setInstaKill(Boolean.valueOf(helper.getProperty(instaKill)));
+		String disabledCommandsString = helper.getProperty(disabledCommands).replace("[", "");
+		disabledCommandsString = disabledCommandsString.replace("]", "");
+		settings.setDisabledCommands(disabledCommandsString.split(","));
+		String disabledWorldsString = helper.getProperty(disabledWorlds).replace("[", "");
+		disabledWorldsString = disabledWorldsString.replace("]", "");
+		settings.setDisallowedWorlds(disabledWorldsString.split(","));
 		
 	}
 }

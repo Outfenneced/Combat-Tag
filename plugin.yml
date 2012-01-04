@@ -2,6 +2,7 @@ name: CombatTag
 version: 3.3
 author: Trc202
 main: com.trc202.CombatTag.CombatTag
+commands:
   CombatTag:
     description: Shows the current remaining time in a tag
     aliases: ct

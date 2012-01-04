@@ -18,10 +18,8 @@ public class SettingsLoader {
 		if(hasValidProperties(helper) || !isLatestVersion(helper, version)){
 			addOtherSettingsIfNecessary(helper,version);
 			helper.saveConfig();
-		}
-		else if(true){			
-			loadProperties(helper);
-		}
+		}			
+		loadProperties(helper);
 		return settings;
 	}
 	
@@ -63,6 +61,5 @@ public class SettingsLoader {
 		String disabledWorldsString = helper.getProperty(disabledWorlds).replace("[", "");
 		disabledWorldsString = disabledWorldsString.replace("]", "");
 		settings.setDisallowedWorlds(disabledWorldsString.split(","));
-		
 	}
 }

@@ -218,10 +218,11 @@ public class CombatTag extends JavaPlugin {
 		if(command.getName().equalsIgnoreCase("ct") || (command.getName().equalsIgnoreCase("combattag"))){
 			if(sender instanceof Player){
 				Player player = (Player) sender;
-				if(hasDataContainer(player.getName())){
+				if(hasDataContainer(player.getName()) && !getPlayerData(player.getName()).hasPVPtagExpired()){
 					PlayerDataContainer playerDataContainer = getPlayerData(player.getName());
 					player.sendMessage("You are in combat for " + playerDataContainer.getRemainingTagTime()/1000 + " seconds");
 				}else{
+					removeDataContainer(player.getName());
 					player.sendMessage("You are not currently in combat!");
 				}
 				return true;

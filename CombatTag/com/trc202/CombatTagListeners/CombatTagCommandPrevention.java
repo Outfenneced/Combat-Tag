@@ -24,7 +24,7 @@ public class CombatTagCommandPrevention extends PlayerListener{
 				if(event.getMessage().contains(disabledCommand)){
 					player.sendMessage("This command is disabled while in combat");
 					event.setCancelled(true);
-					break;
+					return;
 				}
 			}
 		}else if(plugin.hasDataContainer(player.getName()) && plugin.getPlayerData(player.getName()).hasPVPtagExpired()){

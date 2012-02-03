@@ -15,7 +15,7 @@ public class SettingsLoader {
 	public Settings loadSettings(SettingsHelper helper, String version){
 		settings = new Settings();
 		helper.loadConfig();
-		if(hasValidProperties(helper) || !isLatestVersion(helper, version)){
+		if(!hasValidProperties(helper) || !isLatestVersion(helper, version)){
 			addOtherSettingsIfNecessary(helper,version);
 			helper.saveConfig();
 		}			
@@ -57,7 +57,12 @@ public class SettingsLoader {
 		settings.setInstaKill(Boolean.valueOf(helper.getProperty(instaKill)));
 		String disabledCommandsString = helper.getProperty(disabledCommands).replace("[", "");
 		disabledCommandsString = disabledCommandsString.replace("]", "");
-		settings.setDisabledCommands(disabledCommandsString.split(","));
+		String disabledCmds[] = disabledCommandsString.split(",");
+		if(disabledCmds.length == 1 && disabledCmds[0].equals("")){
+			settings.setDisabledCommands(new String[0]);
+		}else{
+			settings.setDisabledCommands(disabledCmds);
+		}
 		String disabledWorldsString = helper.getProperty(disabledWorlds).replace("[", "");
 		disabledWorldsString = disabledWorldsString.replace("]", "");
 		settings.setDisallowedWorlds(disabledWorldsString.split(","));

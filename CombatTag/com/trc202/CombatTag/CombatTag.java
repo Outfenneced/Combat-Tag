@@ -9,6 +9,7 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
@@ -86,6 +87,11 @@ public class CombatTag extends JavaPlugin {
 	public NPC spawnNpc(String plr,Location location){
 		if(isDebugEnabled()){log.info("[CombatTag] Spawning NPC");}
 		NPC spawnedNPC = npcm.spawnHumanNPC("PvPLogger" + getNpcNumber(), location , plr);
+		if(spawnedNPC.getBukkitEntity() instanceof HumanEntity){
+			HumanEntity p = (HumanEntity) spawnedNPC.getBukkitEntity();
+			p.setTicksLived(80);
+			p.setNoDamageTicks(0);
+		}
 		return spawnedNPC;
 	}
 	
@@ -232,6 +238,11 @@ public class CombatTag extends JavaPlugin {
 			return true;
 		}
 		return false;
+		
+	}
+
+	
+	public void scheduleDelayedKill(String name) {
 		
 	}
 }

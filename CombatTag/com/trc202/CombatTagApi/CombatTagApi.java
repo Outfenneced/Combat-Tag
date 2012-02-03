@@ -20,6 +20,7 @@ public class CombatTagApi {
 	 * @return true if player is in combat
 	 */
 	public boolean isInCombat(String player){
+		if(player.contains("pvpLogger")){return true;}
 		boolean isInCombat = false;
 		if(plugin.hasDataContainer(player)){
 			PlayerDataContainer container = plugin.getPlayerData(player);
@@ -28,6 +29,12 @@ public class CombatTagApi {
 		return isInCombat;
 	}
 	
+    /**
+	 * Checks to see if the player is in combat. The combat time can be configured by the server owner
+	 * If the player has died while in combat the player is no longer considered in combat and as such will return false
+	 * @param player
+	 * @return true if player is in combat
+	 */
 	public boolean isInCombat(Player player){
 		return isInCombat(player.getName());
 	}

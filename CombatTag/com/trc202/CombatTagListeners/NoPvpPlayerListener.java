@@ -42,7 +42,16 @@ public class NoPvpPlayerListener extends PlayerListener{
 	}
 	
 	private void onPlayerQuitTimedMode(Player quitPlr){
-		//TODO
+		if(plugin.hasDataContainer(quitPlr.getName())){
+			PlayerDataContainer quitDataContainer = plugin.getPlayerData(quitPlr.getName());
+			if(!quitDataContainer.hasPVPtagExpired()){
+				quitDataContainer.setHealth(quitPlr.getHealth());
+				quitDataContainer.setPlayerArmor(quitPlr.getInventory().getArmorContents());
+				quitDataContainer.setPlayerInventory(quitPlr.getInventory().getContents());
+				quitDataContainer.setExp(quitPlr.getExp());
+				plugin.scheduleDelayedKill(quitPlr.getName());	
+				}
+			}
 	}
 	
 	private void onPlayerQuitNPCMode(Player quitPlr){
@@ -92,6 +101,7 @@ public class NoPvpPlayerListener extends PlayerListener{
 				loginPlayer.setLastDamageCause(new EntityDamageEvent(loginPlayer, DamageCause.ENTITY_EXPLOSION, 0));
 			}
 			plugin.removeDataContainer(loginPlayer.getName());
+			plugin.createPlayerData(loginPlayer.getName()).setPvPTimeout(plugin.getTagDuration());
 		}
 	}
 	

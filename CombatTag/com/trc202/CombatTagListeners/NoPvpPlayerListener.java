@@ -1,10 +1,12 @@
 package com.trc202.CombatTagListeners;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.topcat.npclib.entity.NPC;
@@ -12,16 +14,16 @@ import com.trc202.CombatTag.CombatTag;
 import com.trc202.Containers.PlayerDataContainer;
 import com.trc202.Containers.Settings;
 
-public class NoPvpPlayerListener extends PlayerListener{
+public class NoPvpPlayerListener implements Listener{
 	
 	private final CombatTag plugin;
 	public static int explosionDamage = -1;
 	
     public NoPvpPlayerListener(CombatTag instance) {
-        plugin = instance;
+    	plugin = instance;
     }
     
-	@Override
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerJoin(PlayerJoinEvent e){
 		Player loginPlayer = e.getPlayer();
 		if(plugin.settings.getCurrentMode() == Settings.SettingsType.NPC){
@@ -31,7 +33,7 @@ public class NoPvpPlayerListener extends PlayerListener{
 		}
 	}
 	
-	@Override
+    @EventHandler
 	public void onPlayerQuit(PlayerQuitEvent e){
 		Player quitPlr = e.getPlayer();
 		if(plugin.settings.getCurrentMode() == Settings.SettingsType.NPC){

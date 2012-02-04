@@ -1,23 +1,25 @@
 package com.trc202.CombatTagListeners;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.event.entity.EntityListener;
 import com.trc202.CombatTag.CombatTag;
 import com.trc202.Containers.PlayerDataContainer;
 import com.trc202.Containers.Settings;
 
-public class NoPvpEntityListener extends EntityListener{
+public class NoPvpEntityListener implements Listener{
 
 	CombatTag plugin;
 	
 	public NoPvpEntityListener(CombatTag combatTag){
 		this.plugin = combatTag;
 	}
-	
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void onEntityDamage(EntityDamageEvent EntityDamaged){
 		if (EntityDamaged.isCancelled()){return;}
 		if (EntityDamaged.getCause() == DamageCause.ENTITY_ATTACK && (EntityDamaged instanceof EntityDamageByEntityEvent)){
@@ -39,7 +41,7 @@ public class NoPvpEntityListener extends EntityListener{
     		}
 		}
 	}
-
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void onEntityDeath(EntityDeathEvent event){
 		if(plugin.npcm.isNPC(event.getEntity())){
 			onNPCDeath(event);

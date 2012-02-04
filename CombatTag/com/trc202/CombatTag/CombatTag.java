@@ -11,7 +11,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.PluginManager;
@@ -44,7 +43,7 @@ public class CombatTag extends JavaPlugin {
 	
 	private int npcNumber;
 
-	public CombatTag(){
+	public CombatTag() {
 		settings = new Settings();
 		new File(mainDirectory).mkdirs();
 		settingsFile = new File(mainDirectory + File.separator + "settings.prop");
@@ -70,11 +69,9 @@ public class CombatTag extends JavaPlugin {
 		settings = new SettingsLoader().loadSettings(settingsHelper, this.getDescription().getVersion());
 		npcm = new NPCManager(this);
 		PluginManager pm = getServer().getPluginManager();
-		pm.registerEvent(Event.Type.PLAYER_JOIN, plrListener, Event.Priority.Highest, this);
-		pm.registerEvent(Event.Type.PLAYER_QUIT, plrListener, Event.Priority.Lowest, this);
-		pm.registerEvent(Event.Type.ENTITY_DAMAGE, entityListener, Event.Priority.Monitor, this);
-		pm.registerEvent(Event.Type.ENTITY_DEATH, entityListener, Event.Priority.Monitor, this);
-		pm.registerEvent(Event.Type.PLAYER_COMMAND_PREPROCESS, commandPreventer, Event.Priority.Normal, this);
+		pm.registerEvents(plrListener, this);
+		pm.registerEvents(entityListener, this);
+		pm.registerEvents(commandPreventer, this);
 		log.info("["+ getDescription().getName() +"]"+ " has loaded with a tag time of " + settings.getTagDuration() + " seconds");
 	}
 	

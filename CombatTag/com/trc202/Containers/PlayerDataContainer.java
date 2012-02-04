@@ -7,6 +7,7 @@ public class PlayerDataContainer{
 	/**
 	 * 
 	 */
+	@SuppressWarnings("unused")
 	private static final long serialVersionUID = 3478271626107787024L;
 
 	public static final ItemStack[] emptyInventory = new ItemStack[36];

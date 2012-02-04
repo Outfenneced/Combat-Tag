@@ -1,12 +1,14 @@
 package com.trc202.CombatTagListeners;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerListener;
+
 
 import com.trc202.CombatTag.CombatTag;
 
-public class CombatTagCommandPrevention extends PlayerListener{
+public class CombatTagCommandPrevention implements Listener{
 	
 	CombatTag plugin;
 	
@@ -14,7 +16,7 @@ public class CombatTagCommandPrevention extends PlayerListener{
 		this.plugin = plugin;
 	}
 	
-	@Override
+	@EventHandler
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event)
     {
 		if(event.isCancelled()) return;

@@ -1,5 +1,5 @@
 CombatTag:
 	Combat tag is a plugin for bukkit which prevents pvp loggers from getting away with logging.
-	This plugin was orignally made by marinating. 
-Config file explination:
+	This plugin was originally made by marinating. 
+Config file explanation:
 	TagTime: duration of tag (from the time the player is hit by another player)

@@ -21,7 +21,7 @@ public class NoPvpEntityListener implements Listener{
 	}
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onEntityDamage(EntityDamageEvent EntityDamaged){
-		if (EntityDamaged.isCancelled()){return;}
+		if (EntityDamaged.isCancelled() || (EntityDamaged.getDamage() == 0)){return;}
 		if (EntityDamaged.getCause() == DamageCause.ENTITY_ATTACK && (EntityDamaged instanceof EntityDamageByEntityEvent)){
     		EntityDamageByEntityEvent e = (EntityDamageByEntityEvent)EntityDamaged;
     		if ((e.getDamager() instanceof Player) && (e.getEntity() instanceof Player)){//Check to see if the damager and damaged are players

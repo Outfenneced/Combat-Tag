@@ -1,5 +1,5 @@
 name: CombatTag
-version: 3.6
+version: 3.6.5
 author: Trc202
 main: com.trc202.CombatTag.CombatTag
 commands:

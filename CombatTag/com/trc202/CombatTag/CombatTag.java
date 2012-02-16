@@ -83,7 +83,7 @@ public class CombatTag extends JavaPlugin {
 	 */
 	public NPC spawnNpc(String plr,Location location){
 		if(isDebugEnabled()){log.info("[CombatTag] Spawning NPC");}
-		NPC spawnedNPC = npcm.spawnHumanNPC("PvPLogger" + getNpcNumber(), location , plr);
+		NPC spawnedNPC = npcm.spawnHumanNPC(plr, location , plr);
 		if(spawnedNPC.getBukkitEntity() instanceof HumanEntity){
 			HumanEntity p = (HumanEntity) spawnedNPC.getBukkitEntity();
 			p.setTicksLived(80);

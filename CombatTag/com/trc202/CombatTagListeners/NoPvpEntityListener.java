@@ -1,13 +1,14 @@
 package com.trc202.CombatTagListeners;
 
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import com.trc202.CombatTag.CombatTag;
 import com.trc202.Containers.PlayerDataContainer;
 import com.trc202.Containers.Settings;
@@ -22,10 +23,15 @@ public class NoPvpEntityListener implements Listener{
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onEntityDamage(EntityDamageEvent EntityDamaged){
 		if (EntityDamaged.isCancelled() || (EntityDamaged.getDamage() == 0)){return;}
-		if (EntityDamaged.getCause() == DamageCause.ENTITY_ATTACK && (EntityDamaged instanceof EntityDamageByEntityEvent)){
+		if (EntityDamaged instanceof EntityDamageByEntityEvent){
     		EntityDamageByEntityEvent e = (EntityDamageByEntityEvent)EntityDamaged;
-    		if ((e.getDamager() instanceof Player) && (e.getEntity() instanceof Player)){//Check to see if the damager and damaged are players
-    			Player damager = (Player) e.getDamager();
+    		Entity dmgr = e.getDamager();
+    		if(dmgr instanceof Projectile)
+    		{
+    			dmgr = ((Projectile)dmgr).getShooter();
+    		}
+    		if ((dmgr instanceof Player) && (e.getEntity() instanceof Player)){//Check to see if the damager and damaged are players
+    			Player damager = (Player) dmgr;
     			Player tagged = (Player) e.getEntity();
     			for(String disallowedWorlds : plugin.settings.getDisallowedWorlds()){
     				if(damager.getWorld().getName().equalsIgnoreCase(disallowedWorlds)){

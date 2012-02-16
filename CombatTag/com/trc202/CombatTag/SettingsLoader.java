@@ -44,7 +44,8 @@ public class SettingsLoader {
 		(helper.getProperty(debug) != null) && 
 		(helper.getProperty(instaKill) != null) &&
 		(helper.getProperty(disabledCommands) != null) &&
-		(helper.getProperty(disabledWorlds) != null)){
+		(helper.getProperty(disabledWorlds) != null)
+		){
 			return true;
 		}else{
 			return false;

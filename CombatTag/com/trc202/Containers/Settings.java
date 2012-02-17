@@ -10,6 +10,7 @@ public class Settings {
 	private SettingsType currentMode;
 	private String[] disabledCommands;
 	private String[] disallowedWorlds;
+	private String npcName;
 	
 	public Settings(){
 		currentMode = SettingsType.NPC;
@@ -18,6 +19,7 @@ public class Settings {
 		debugEnabled = false;
 		disabledCommands = new String[0];
 		disallowedWorlds = new String[0];
+		npcName = "PvpLogger";
 	}
 
 	public void setDebugEnabled(boolean debugEnabled) {
@@ -61,5 +63,14 @@ public class Settings {
 
 	public String[] getDisallowedWorlds() {
 		return disallowedWorlds;
+	}
+
+	public String getNpcName() {
+		return npcName;
+	}
+
+	public void setNpcName(String npcName) {
+		this.npcName = npcName;
+		
 	}
 }

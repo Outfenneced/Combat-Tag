@@ -82,16 +82,35 @@ public class CombatTag extends JavaPlugin {
 	 * @return
 	 */
 	public NPC spawnNpc(String plr,Location location){
-		if(isDebugEnabled()){log.info("[CombatTag] Spawning NPC");}
-		NPC spawnedNPC = npcm.spawnHumanNPC(plr, location , plr);
-		if(spawnedNPC.getBukkitEntity() instanceof HumanEntity){
-			HumanEntity p = (HumanEntity) spawnedNPC.getBukkitEntity();
-			p.setTicksLived(80);
-			p.setNoDamageTicks(0);
+		NPC spawnedNPC = null;
+		String npcName = getNpcName(plr);
+		if(npcName != null){
+			if(isDebugEnabled()){log.info("[CombatTag] Spawning NPC");}
+			spawnedNPC = npcm.spawnHumanNPC(npcName, location , plr);
+			if(spawnedNPC.getBukkitEntity() instanceof HumanEntity){
+				HumanEntity p = (HumanEntity) spawnedNPC.getBukkitEntity();
+				p.setTicksLived(80);
+				p.setNoDamageTicks(0);
+			}
 		}
 		return spawnedNPC;
 	}
 	
+	private String getNpcName(String plr) {
+		String npcName = settings.getNpcName();
+		if(!(npcName.contains("player") || npcName.contains("number")))
+		{
+			npcName = npcName + getNpcNumber();
+		}
+		if(npcName.contains("player")){
+			npcName = npcName.replace("player", plr);
+		}
+		if(npcName.contains("number")) {
+			npcName = npcName.replace("number", "" + getNpcNumber());
+		}
+		return npcName;
+	}
+
 	/**
 	 * Despawns npc and copys all contents from npc to player data
 	 * @param plrData 

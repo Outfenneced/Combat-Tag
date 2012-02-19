@@ -1,5 +1,6 @@
 package com.trc202.CombatTagListeners;
 
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -38,6 +39,20 @@ public class NoPvpEntityListener implements Listener{
     					//Skip this tag the world they are in is not to be tracked by combat tag
     					return;
     				}
+    			}
+    			boolean isInCombatDamager = false;
+    			if(plugin.hasDataContainer(damager.getName())){
+    				PlayerDataContainer container = plugin.getPlayerData(damager.getName());
+    				isInCombatDamager = !container.hasPVPtagExpired();
+    			}
+    			boolean isInCombatTagged = false;
+    			if(plugin.hasDataContainer(tagged.getName())){
+    				PlayerDataContainer container = plugin.getPlayerData(tagged.getName());
+    				isInCombatTagged = !container.hasPVPtagExpired();
+    			}
+    			if(plugin.settings.isSendMessageWhenTagged() && !isInCombatTagged && !isInCombatDamager){
+    				damager.sendMessage(ChatColor.RED + "[Combat Tag] You are now in combat. Type /ct to check your  remaining tag time.");
+    				tagged.sendMessage(ChatColor.RED + "[Combat Tag] You are now in combat. Type /ct to check your  remaining tag time.");
     			}
     			if(plugin.settings.getCurrentMode() == Settings.SettingsType.NPC){
 	    			onPlayerDamageByPlayerNPCMode(damager,tagged);

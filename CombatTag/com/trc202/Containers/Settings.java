@@ -12,6 +12,7 @@ public class Settings {
 	private String[] disallowedWorlds;
 	private String npcName;
 	private boolean blockEditWhileTagged;
+	private boolean sendMessageWhenTagged;
 	
 	public Settings(){
 		currentMode = SettingsType.NPC;
@@ -22,6 +23,7 @@ public class Settings {
 		disallowedWorlds = new String[0];
 		npcName = "PvpLogger";
 		blockEditWhileTagged = true;
+		sendMessageWhenTagged = false;
 	}
 
 	public void setDebugEnabled(boolean debugEnabled) {
@@ -83,4 +85,13 @@ public class Settings {
 	public void setBlockEditWhileTagged(boolean blockEditWhileTagged) {
 		this.blockEditWhileTagged = blockEditWhileTagged;
 	}
+
+	public boolean isSendMessageWhenTagged() {
+		return sendMessageWhenTagged;
+	}
+	
+	public void setSendMessageWhenTagged(boolean sendMessageWhenTagged) {
+		this.sendMessageWhenTagged = sendMessageWhenTagged;
+	}
+
 }

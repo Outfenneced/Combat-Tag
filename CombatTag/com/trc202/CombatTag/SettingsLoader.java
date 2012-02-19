@@ -13,6 +13,7 @@ public class SettingsLoader {
 	private static String disabledCommands = "disabledCommands";
 	private static String npcName = "npcName";
 	private static String blockEditWhileTagged = "blockEditWhileTagged";
+	private static String sendMessageWhenTagged = "sendMessageWhenTagged";
 
 	public Settings loadSettings(SettingsHelper helper, String version){
 		settings = new Settings();
@@ -35,6 +36,7 @@ public class SettingsLoader {
 		if(helper.getProperty(disabledCommands) == null){helper.setProperty("disabledCommands", "[]");}
 		if(helper.getProperty(npcName) == null){helper.setProperty(npcName, temp.getNpcName());}
 		if(helper.getProperty(blockEditWhileTagged) == null){helper.setProperty(blockEditWhileTagged, Boolean.toString(temp.isBlockEditWhileTagged()));}
+		if(helper.getProperty(sendMessageWhenTagged) == null){helper.setProperty(sendMessageWhenTagged, Boolean.toString(temp.isSendMessageWhenTagged()));}
 	}
 
 	private boolean isLatestVersion(SettingsHelper helper, String vers){
@@ -50,7 +52,8 @@ public class SettingsLoader {
 		(helper.getProperty(disabledCommands) != null) &&
 		(helper.getProperty(disabledWorlds) != null) &&
 		(helper.getProperty(npcName) != null) &&
-		(helper.getProperty(blockEditWhileTagged) != null)
+		(helper.getProperty(blockEditWhileTagged) != null) &&
+		(helper.getProperty(sendMessageWhenTagged) != null)
 		){
 			return true;
 		}else{
@@ -63,6 +66,7 @@ public class SettingsLoader {
 		settings.setTagDuration(Integer.valueOf(helper.getProperty(tagDuration)));
 		settings.setBlockEditWhileTagged(Boolean.valueOf(helper.getProperty(blockEditWhileTagged)));
 		settings.setInstaKill(Boolean.valueOf(helper.getProperty(instaKill)));
+		settings.setSendMessageWhenTagged(Boolean.valueOf(helper.getProperty(sendMessageWhenTagged)));
 		settings.setNpcName(String.valueOf(helper.getProperty(npcName)));
 		String disabledCommandsString = helper.getProperty(disabledCommands).replace("[", "");
 		disabledCommandsString = disabledCommandsString.replace("]", "");

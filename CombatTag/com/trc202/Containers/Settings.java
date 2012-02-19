@@ -11,6 +11,7 @@ public class Settings {
 	private String[] disabledCommands;
 	private String[] disallowedWorlds;
 	private String npcName;
+	private boolean blockEditWhileTagged;
 	
 	public Settings(){
 		currentMode = SettingsType.NPC;
@@ -20,6 +21,7 @@ public class Settings {
 		disabledCommands = new String[0];
 		disallowedWorlds = new String[0];
 		npcName = "PvpLogger";
+		blockEditWhileTagged = true;
 	}
 
 	public void setDebugEnabled(boolean debugEnabled) {
@@ -72,5 +74,13 @@ public class Settings {
 	public void setNpcName(String npcName) {
 		this.npcName = npcName;
 		
+	}
+
+	public boolean isBlockEditWhileTagged() {
+		return blockEditWhileTagged;
+	}
+	
+	public void setBlockEditWhileTagged(boolean blockEditWhileTagged) {
+		this.blockEditWhileTagged = blockEditWhileTagged;
 	}
 }

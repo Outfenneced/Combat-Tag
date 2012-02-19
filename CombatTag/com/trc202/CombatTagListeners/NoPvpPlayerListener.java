@@ -9,6 +9,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import com.topcat.npclib.NPCManager;
 import com.topcat.npclib.entity.NPC;
 import com.trc202.CombatTag.CombatTag;
 import com.trc202.Containers.PlayerDataContainer;
@@ -18,6 +19,7 @@ public class NoPvpPlayerListener implements Listener{
 	
 	private final CombatTag plugin;
 	public static int explosionDamage = -1;
+	public NPCManager npcm;
 	
     public NoPvpPlayerListener(CombatTag instance) {
     	plugin = instance;
@@ -71,6 +73,8 @@ public class NoPvpPlayerListener implements Listener{
 					if(npc.getBukkitEntity() instanceof Player){
 						Player npcPlayer = (Player) npc.getBukkitEntity();
 						plugin.copyContentsNpc(npc, quitPlr);
+						String plrName = quitPlr.getName(); //tempfix
+						plugin.npcm.rename(plrName, plugin.getNpcName(plrName)); //tempfix
 						npcPlayer.setHealth(quitPlr.getHealth());
 						quitDataContainer.setSpawnedNPC(true);
 						quitDataContainer.setNPCId(quitPlr.getName());

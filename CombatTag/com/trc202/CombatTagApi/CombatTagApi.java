@@ -1,5 +1,6 @@
 package com.trc202.CombatTagApi;
 
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import com.trc202.CombatTag.CombatTag;
@@ -57,5 +58,15 @@ public class CombatTagApi {
 		}else{
 			return -2;
 		}
+	}
+	
+	/**
+	 * Returns if the entity is an NPC
+	 * @param player
+	 * @return true if the player is an NPC
+	 */
+	public boolean isNPC(Entity player){
+		if(plugin.npcm.isNPC(player)){return true;}
+		return false;
 	}
 }

@@ -12,6 +12,7 @@ public class SettingsLoader {
 	private static String disabledWorlds = "disabledWorlds";
 	private static String disabledCommands = "disabledCommands";
 	private static String npcName = "npcName";
+	private static String blockEditWhileTagged = "blockEditWhileTagged";
 
 	public Settings loadSettings(SettingsHelper helper, String version){
 		settings = new Settings();
@@ -33,14 +34,11 @@ public class SettingsLoader {
 		if(helper.getProperty(disabledWorlds) == null){helper.setProperty("disabledWorlds", "[exampleWorld,exampleWorld2]");}
 		if(helper.getProperty(disabledCommands) == null){helper.setProperty("disabledCommands", "[]");}
 		if(helper.getProperty(npcName) == null){helper.setProperty(npcName, temp.getNpcName());}
+		if(helper.getProperty(blockEditWhileTagged) == null){helper.setProperty(blockEditWhileTagged, Boolean.toString(temp.isBlockEditWhileTagged()));}
 	}
 
 	private boolean isLatestVersion(SettingsHelper helper, String vers){
-		if(helper.getProperty(version) == null)
-		{
-			return false;
-		}
-		System.out.println(helper.getProperty(version) + "   " + vers);
+		if(helper.getProperty(version) == null){return false;}
 		return helper.getProperty(version).equals(vers);
 	}
 	
@@ -51,7 +49,8 @@ public class SettingsLoader {
 		(helper.getProperty(instaKill) != null) &&
 		(helper.getProperty(disabledCommands) != null) &&
 		(helper.getProperty(disabledWorlds) != null) &&
-		(helper.getProperty(npcName) != null)
+		(helper.getProperty(npcName) != null) &&
+		(helper.getProperty(blockEditWhileTagged) != null)
 		){
 			return true;
 		}else{
@@ -62,6 +61,7 @@ public class SettingsLoader {
 	private void loadProperties(SettingsHelper helper) {
 		settings.setDebugEnabled(Boolean.valueOf(helper.getProperty(debug)));
 		settings.setTagDuration(Integer.valueOf(helper.getProperty(tagDuration)));
+		settings.setBlockEditWhileTagged(Boolean.valueOf(helper.getProperty(blockEditWhileTagged)));
 		settings.setInstaKill(Boolean.valueOf(helper.getProperty(instaKill)));
 		settings.setNpcName(String.valueOf(helper.getProperty(npcName)));
 		String disabledCommandsString = helper.getProperty(disabledCommands).replace("[", "");

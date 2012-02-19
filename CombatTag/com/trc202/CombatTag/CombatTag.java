@@ -19,6 +19,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.topcat.npclib.NPCManager;
 import com.topcat.npclib.entity.NPC;
 import com.trc202.CombatTagListeners.CombatTagCommandPrevention;
+import com.trc202.CombatTagListeners.NoPvpBlockListener;
 import com.trc202.CombatTagListeners.NoPvpEntityListener;
 import com.trc202.CombatTagListeners.NoPvpPlayerListener;
 import com.trc202.Containers.PlayerDataContainer;
@@ -39,6 +40,7 @@ public class CombatTag extends JavaPlugin {
 
 	private final NoPvpPlayerListener plrListener = new NoPvpPlayerListener(this); 
 	private final NoPvpEntityListener entityListener = new NoPvpEntityListener(this);
+	private final NoPvpBlockListener blockListener = new NoPvpBlockListener(this);
 	private final CombatTagCommandPrevention commandPreventer = new CombatTagCommandPrevention(this);
 	
 	private int npcNumber;
@@ -72,6 +74,7 @@ public class CombatTag extends JavaPlugin {
 		pm.registerEvents(plrListener, this);
 		pm.registerEvents(entityListener, this);
 		pm.registerEvents(commandPreventer, this);
+		pm.registerEvents(blockListener, this);
 		log.info("["+ getDescription().getName() +"]"+ " has loaded with a tag time of " + settings.getTagDuration() + " seconds");
 	}
 	
@@ -83,20 +86,17 @@ public class CombatTag extends JavaPlugin {
 	 */
 	public NPC spawnNpc(String plr,Location location){
 		NPC spawnedNPC = null;
-		String npcName = getNpcName(plr);
-		if(npcName != null){
-			if(isDebugEnabled()){log.info("[CombatTag] Spawning NPC");}
-			spawnedNPC = npcm.spawnHumanNPC(npcName, location , plr);
-			if(spawnedNPC.getBukkitEntity() instanceof HumanEntity){
-				HumanEntity p = (HumanEntity) spawnedNPC.getBukkitEntity();
-				p.setTicksLived(80);
-				p.setNoDamageTicks(0);
-			}
+		if(isDebugEnabled()){log.info("[CombatTag] Spawning NPC");}
+		spawnedNPC = npcm.spawnHumanNPC("copyTo", location , plr); //tempfix
+		if(spawnedNPC.getBukkitEntity() instanceof HumanEntity){
+			HumanEntity p = (HumanEntity) spawnedNPC.getBukkitEntity();
+			p.setTicksLived(80);
+			p.setNoDamageTicks(0);
 		}
 		return spawnedNPC;
 	}
 	
-	private String getNpcName(String plr) {
+	public String getNpcName(String plr) {
 		String npcName = settings.getNpcName();
 		if(!(npcName.contains("player") || npcName.contains("number")))
 		{

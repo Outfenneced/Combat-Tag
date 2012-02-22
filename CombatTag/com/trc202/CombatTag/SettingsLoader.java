@@ -14,6 +14,7 @@ public class SettingsLoader {
 	private static String npcName = "npcName";
 	private static String blockEditWhileTagged = "blockEditWhileTagged";
 	private static String sendMessageWhenTagged = "sendMessageWhenTagged";
+	private static String npcDespawnTime = "npcDespawnTime";
 
 	public Settings loadSettings(SettingsHelper helper, String version){
 		settings = new Settings();
@@ -37,6 +38,7 @@ public class SettingsLoader {
 		if(helper.getProperty(npcName) == null){helper.setProperty(npcName, temp.getNpcName());}
 		if(helper.getProperty(blockEditWhileTagged) == null){helper.setProperty(blockEditWhileTagged, Boolean.toString(temp.isBlockEditWhileTagged()));}
 		if(helper.getProperty(sendMessageWhenTagged) == null){helper.setProperty(sendMessageWhenTagged, Boolean.toString(temp.isSendMessageWhenTagged()));}
+		if(helper.getProperty(npcDespawnTime) == null){helper.setProperty(npcDespawnTime, String.valueOf(temp.getNpcDespawnTime()));}
 	}
 
 	private boolean isLatestVersion(SettingsHelper helper, String vers){
@@ -53,7 +55,8 @@ public class SettingsLoader {
 		(helper.getProperty(disabledWorlds) != null) &&
 		(helper.getProperty(npcName) != null) &&
 		(helper.getProperty(blockEditWhileTagged) != null) &&
-		(helper.getProperty(sendMessageWhenTagged) != null)
+		(helper.getProperty(sendMessageWhenTagged) != null) &&
+		(helper.getProperty(npcDespawnTime) != null)
 		){
 			return true;
 		}else{
@@ -64,6 +67,7 @@ public class SettingsLoader {
 	private void loadProperties(SettingsHelper helper) {
 		settings.setDebugEnabled(Boolean.valueOf(helper.getProperty(debug)));
 		settings.setTagDuration(Integer.valueOf(helper.getProperty(tagDuration)));
+		settings.setNpcDespawnTime(Integer.valueOf(helper.getProperty(npcDespawnTime)));
 		settings.setBlockEditWhileTagged(Boolean.valueOf(helper.getProperty(blockEditWhileTagged)));
 		settings.setInstaKill(Boolean.valueOf(helper.getProperty(instaKill)));
 		settings.setSendMessageWhenTagged(Boolean.valueOf(helper.getProperty(sendMessageWhenTagged)));

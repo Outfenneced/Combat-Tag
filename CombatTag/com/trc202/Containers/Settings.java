@@ -13,6 +13,7 @@ public class Settings {
 	private String npcName;
 	private boolean blockEditWhileTagged;
 	private boolean sendMessageWhenTagged;
+	private int npcDespawnTime;
 	
 	public Settings(){
 		currentMode = SettingsType.NPC;
@@ -24,6 +25,7 @@ public class Settings {
 		npcName = "PvpLogger";
 		blockEditWhileTagged = true;
 		sendMessageWhenTagged = false;
+		npcDespawnTime = -1;
 	}
 
 	public void setDebugEnabled(boolean debugEnabled) {
@@ -92,6 +94,14 @@ public class Settings {
 	
 	public void setSendMessageWhenTagged(boolean sendMessageWhenTagged) {
 		this.sendMessageWhenTagged = sendMessageWhenTagged;
+	}
+
+	public int getNpcDespawnTime() {
+		return npcDespawnTime;
+	}
+	
+	public void setNpcDespawnTime(int npcDespawnTime) {
+		this.npcDespawnTime = npcDespawnTime;
 	}
 
 }

@@ -42,13 +42,17 @@ public class NoPvpEntityListener implements Listener{
     			}
     			boolean isInCombatDamager = false;
     			if(plugin.hasDataContainer(damager.getName())){
-    				PlayerDataContainer container = plugin.getPlayerData(damager.getName());
-    				isInCombatDamager = !container.hasPVPtagExpired();
+    				PlayerDataContainer containerDamager = plugin.getPlayerData(damager.getName());
+    				isInCombatDamager = !containerDamager.hasPVPtagExpired();
     			}
     			boolean isInCombatTagged = false;
     			if(plugin.hasDataContainer(tagged.getName())){
-    				PlayerDataContainer container = plugin.getPlayerData(tagged.getName());
-    				isInCombatTagged = !container.hasPVPtagExpired();
+    				if(plugin.npcm.isNPC(tagged)){
+    					isInCombatTagged = true;
+    				} else{
+    					PlayerDataContainer containerTagged = plugin.getPlayerData(tagged.getName());
+    					isInCombatTagged = !containerTagged.hasPVPtagExpired();
+    				}
     			}
     			if(plugin.settings.isSendMessageWhenTagged() && !isInCombatTagged && !isInCombatDamager){
     				damager.sendMessage(ChatColor.RED + "[Combat Tag] You are now in combat. Type /ct to check your  remaining tag time.");
@@ -65,7 +69,7 @@ public class NoPvpEntityListener implements Listener{
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onEntityDeath(EntityDeathEvent event){
 		if(plugin.npcm.isNPC(event.getEntity())){
-			onNPCDeath(event);
+			onNPCDeath(event.getEntity());
 		}
 		//if Player died with a tag duration, cancel the timeout and remove the data container
 		else if(event.getEntity() instanceof Player){
@@ -74,9 +78,15 @@ public class NoPvpEntityListener implements Listener{
 		}
 	}
 	
-	private void onNPCDeath(EntityDeathEvent event){
-		if(plugin.hasDataContainer(plugin.getPlayerName(event.getEntity()))){
-			plugin.killPlayerEmptyInventory(plugin.getPlayerData(plugin.getPlayerName(event.getEntity())));
+	public void onNPCDeath(Entity entity){
+		if(plugin.hasDataContainer(plugin.getPlayerName(entity))){
+			plugin.killPlayerEmptyInventory(plugin.getPlayerData(plugin.getPlayerName(entity)));
+		}
+	}
+	
+	public void onNPCDeath(String plrName){
+		if(plugin.hasDataContainer(plrName)){
+			plugin.killPlayerEmptyInventory(plugin.getPlayerData(plrName));
 		}
 	}
 	

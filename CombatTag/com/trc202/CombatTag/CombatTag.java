@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -39,7 +40,7 @@ public class CombatTag extends JavaPlugin {
 	private static String mainDirectory = "plugins/CombatTag";
 
 	private final NoPvpPlayerListener plrListener = new NoPvpPlayerListener(this); 
-	private final NoPvpEntityListener entityListener = new NoPvpEntityListener(this);
+	public final NoPvpEntityListener entityListener = new NoPvpEntityListener(this);
 	private final NoPvpBlockListener blockListener = new NoPvpBlockListener(this);
 	private final CombatTagCommandPrevention commandPreventer = new CombatTagCommandPrevention(this);
 	
@@ -258,7 +259,16 @@ public class CombatTag extends JavaPlugin {
 	}
 
 	
-	public void scheduleDelayedKill(String name) {
-		
+	public void scheduleDelayedKill(final Player quitPlr, final NPC npc) {
+		long despawnTicks = settings.getNpcDespawnTime() * 20L;
+		final String plrName = quitPlr.getName();
+		final Player plrNpc = (Player) npc.getBukkitEntity();
+		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+			@Override
+			public void run() {
+				plrNpc.setHealth(0);
+				entityListener.onNPCDeath(plrName);
+			}
+		}, despawnTicks);
 	}
 }

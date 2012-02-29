@@ -67,7 +67,7 @@ public class NoPvpPlayerListener implements Listener{
 						quitDataContainer.setNPCId(quitPlr.getName());
 						quitDataContainer.setShouldBePunished(true);
 						quitPlr.getWorld().createExplosion(quitPlr.getLocation(), explosionDamage); //Create the smoke effect //
-						plugin.scheduleDelayedKill(quitPlr, npc);	
+						plugin.scheduleDelayedKill(npc);	
 					}
 				}
 			}

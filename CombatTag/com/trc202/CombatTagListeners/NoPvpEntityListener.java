@@ -84,12 +84,6 @@ public class NoPvpEntityListener implements Listener{
 		}
 	}
 	
-	public void onNPCDeath(String plrName){
-		if(plugin.hasDataContainer(plrName)){
-			plugin.killPlayerEmptyInventory(plugin.getPlayerData(plrName));
-		}
-	}
-	
 	private void onPlayerDeath(Player deadPlayer){
 		if(plugin.hasDataContainer(deadPlayer.getName())){
 			PlayerDataContainer deadPlayerData = plugin.getPlayerData(deadPlayer.getName());

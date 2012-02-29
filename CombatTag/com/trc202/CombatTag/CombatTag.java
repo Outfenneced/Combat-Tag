@@ -259,15 +259,13 @@ public class CombatTag extends JavaPlugin {
 	}
 
 	
-	public void scheduleDelayedKill(final Player quitPlr, final NPC npc) {
+	public void scheduleDelayedKill(final NPC npc) {
 		long despawnTicks = settings.getNpcDespawnTime() * 20L;
-		final String plrName = quitPlr.getName();
 		final Player plrNpc = (Player) npc.getBukkitEntity();
 		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 			@Override
 			public void run() {
 				plrNpc.setHealth(0);
-				entityListener.onNPCDeath(plrName);
 			}
 		}, despawnTicks);
 	}

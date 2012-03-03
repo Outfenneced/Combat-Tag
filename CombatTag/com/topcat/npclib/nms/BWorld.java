@@ -71,12 +71,15 @@ public class BWorld {
 		return wProvider;
 	}
 
-	public boolean createExplosion(double x, double y, double z, float power) {
-		return wServer.a(null, x, y, z, power).wasCanceled ? false : true;
+	public boolean createExplosion(int x, int y, int z, float power) {
+		return wServer.a(null, x, y, z, power) != null;
 	}
 
 	public boolean createExplosion(Location l, float power) {
-		return wServer.a(null, l.getX(), l.getY(), l.getZ(), power).wasCanceled ? false : true;
+		int x = (int) l.getX(); 
+		int y = (int) l.getY(); 
+		int z = (int) l.getZ();
+		return wServer.a(null, x, y, z, power) != null;
 	}
 
 	@SuppressWarnings("unchecked")

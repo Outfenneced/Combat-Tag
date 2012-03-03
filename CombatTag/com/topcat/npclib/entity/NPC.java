@@ -117,7 +117,7 @@ public class NPC {
 				float look = getEntity().pitch;
 				if (last == null || runningPath.checkPath(n, last, true)) {
 					if (last != null) {
-						angle = (float) Math.toDegrees(Math.atan2(last.b.getX() - n.b.getX(), last.b.getZ() - n.b.getZ()));
+						angle = (float) Math.toDegrees(Math.atan2(last.b.getX() - n.b.getX(), n.b.getZ() - last.b.getZ()));
 						look = (float) (Math.toDegrees(Math.asin(last.b.getY() - n.b.getY())) / 2);
 					}
 					getEntity().setPositionRotation(n.b.getX() + 0.5, n.b.getY(), n.b.getZ() + 0.5, angle, look);

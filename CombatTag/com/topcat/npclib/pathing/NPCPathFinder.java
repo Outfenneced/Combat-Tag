@@ -111,7 +111,7 @@ public class NPCPathFinder extends Thread {
 
 	public boolean checkPath(Node node, Node parent, boolean update) {
 		boolean corner = false;
-		if (node.xPos != parent.xPos && node.zPos != parent.zPos || node.xPos != parent.xPos && node.yPos != parent.yPos || node.yPos != parent.yPos && node.zPos != parent.zPos) {
+		if (node.xPos != parent.xPos && node.zPos != parent.zPos) {
 			int xDir = node.xPos - parent.xPos;
 			int zDir = node.zPos - parent.zPos;
 
@@ -119,6 +119,8 @@ public class NPCPathFinder extends Thread {
 			boolean xZCor2 = !getNode(parent.b.getRelative(xDir, 0, 0)).notsolid;
 
 			corner = xZCor1 || xZCor2;
+		} else if (node.xPos != parent.xPos && node.yPos != parent.yPos || node.yPos != parent.yPos && node.zPos != parent.zPos) {
+			corner = node.yPos > parent.yPos ? !getNode(parent.b.getRelative(0, 2, 0)).notsolid : !getNode(node.b.getRelative(0, 2, 0)).notsolid;;
 		}
 
 		Node nodeBelow = getNode(node.b.getRelative(0, -1, 0));

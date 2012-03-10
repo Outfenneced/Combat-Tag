@@ -15,6 +15,7 @@ public class SettingsLoader {
 	private static String blockEditWhileTagged = "blockEditWhileTagged";
 	private static String sendMessageWhenTagged = "sendMessageWhenTagged";
 	private static String npcDespawnTime = "npcDespawnTime";
+	private static String npcDieAfterTime = "npcDieAfterTime";
 
 	public Settings loadSettings(SettingsHelper helper, String version){
 		settings = new Settings();
@@ -39,6 +40,7 @@ public class SettingsLoader {
 		if(helper.getProperty(blockEditWhileTagged) == null){helper.setProperty(blockEditWhileTagged, Boolean.toString(temp.isBlockEditWhileTagged()));}
 		if(helper.getProperty(sendMessageWhenTagged) == null){helper.setProperty(sendMessageWhenTagged, Boolean.toString(temp.isSendMessageWhenTagged()));}
 		if(helper.getProperty(npcDespawnTime) == null){helper.setProperty(npcDespawnTime, String.valueOf(temp.getNpcDespawnTime()));}
+		if(helper.getProperty(npcDieAfterTime) == null){helper.setProperty(npcDieAfterTime, Boolean.toString(temp.isInstaKill()));}
 	}
 
 	private boolean isLatestVersion(SettingsHelper helper, String vers){
@@ -56,7 +58,8 @@ public class SettingsLoader {
 		(helper.getProperty(npcName) != null) &&
 		(helper.getProperty(blockEditWhileTagged) != null) &&
 		(helper.getProperty(sendMessageWhenTagged) != null) &&
-		(helper.getProperty(npcDespawnTime) != null)
+		(helper.getProperty(npcDespawnTime) != null) &&
+		(helper.getProperty(npcDieAfterTime) != null)
 		){
 			return true;
 		}else{
@@ -72,6 +75,7 @@ public class SettingsLoader {
 		settings.setInstaKill(Boolean.valueOf(helper.getProperty(instaKill)));
 		settings.setSendMessageWhenTagged(Boolean.valueOf(helper.getProperty(sendMessageWhenTagged)));
 		settings.setNpcName(String.valueOf(helper.getProperty(npcName)));
+		settings.setNpcDieAfterTime(Boolean.valueOf(helper.getProperty(npcDieAfterTime)));
 		String disabledCommandsString = helper.getProperty(disabledCommands).replace("[", "");
 		disabledCommandsString = disabledCommandsString.replace("]", "");
 		String disabledCmds[] = disabledCommandsString.split(",");

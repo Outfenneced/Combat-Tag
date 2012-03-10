@@ -28,22 +28,18 @@ public class NoPvpPlayerListener implements Listener{
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerJoin(PlayerJoinEvent e){
 		Player loginPlayer = e.getPlayer();
-		if(plugin.settings.getNpcDespawnTime() == -1){
-			onPlayerJoinNPCMode(loginPlayer);
-		}else if(plugin.settings.getNpcDespawnTime() > 0){
-			onPlayerJoinTimedMode(loginPlayer);
-		}else{
-			plugin.log.info("[Combat Tag] Invalid npcDespawnTime");
-		}
+		onPlayerJoinNPCMode(loginPlayer);
 	}
 	
     @EventHandler
 	public void onPlayerQuit(PlayerQuitEvent e){
 		Player quitPlr = e.getPlayer();
-		if(plugin.settings.getNpcDespawnTime() == -1){
+		if(plugin.settings.getNpcDespawnTime() <= -1){
 			onPlayerQuitNPCMode(quitPlr);
 		}else if(plugin.settings.getNpcDespawnTime() > 0){
 			onPlayerQuitTimedMode(quitPlr);
+		}else{
+			plugin.log.info("[Combat Tag] Invalid npcDespawnTime");
 		}
 	}
 	
@@ -119,7 +115,8 @@ public class NoPvpPlayerListener implements Listener{
 				loginPlayer.setExp(loginDataContainer.getExp());
 				loginPlayer.getInventory().setArmorContents(loginDataContainer.getPlayerArmor());
 				loginPlayer.getInventory().setContents(loginDataContainer.getPlayerInventory());
-				loginPlayer.setHealth(loginDataContainer.getHealth());
+				int healthSet = healthCheck(loginDataContainer);
+				loginPlayer.setHealth(healthSet);
 				assert(loginPlayer.getHealth() == loginDataContainer.getHealth());
 				loginPlayer.setLastDamageCause(new EntityDamageEvent(loginPlayer, DamageCause.ENTITY_EXPLOSION, 0));
 			}
@@ -127,7 +124,7 @@ public class NoPvpPlayerListener implements Listener{
 			plugin.createPlayerData(loginPlayer.getName()).setPvPTimeout(plugin.getTagDuration());
 		}
 	}
-	
+/**
 	private void onPlayerJoinTimedMode(Player loginPlayer){
 		if(plugin.hasDataContainer(loginPlayer.getName())){
 			//Player has a data container and is likely to need some sort of punishment
@@ -144,12 +141,24 @@ public class NoPvpPlayerListener implements Listener{
 				loginPlayer.setExp(loginDataContainer.getExp());
 				loginPlayer.getInventory().setArmorContents(loginDataContainer.getPlayerArmor());
 				loginPlayer.getInventory().setContents(loginDataContainer.getPlayerInventory());
-				loginPlayer.setHealth(loginDataContainer.getHealth());
+				int healthSet = healthCheck(loginDataContainer);
+				loginPlayer.setHealth(healthSet);
 				assert(loginPlayer.getHealth() == loginDataContainer.getHealth());
 				loginPlayer.setLastDamageCause(new EntityDamageEvent(loginPlayer, DamageCause.ENTITY_EXPLOSION, 0));
 			}
 			plugin.removeDataContainer(loginPlayer.getName());
 			plugin.createPlayerData(loginPlayer.getName()).setPvPTimeout(plugin.getTagDuration());
 		}
+	}
+**/
+	private int healthCheck(PlayerDataContainer loginDataContainer) {
+		int healthSet = loginDataContainer.getHealth();
+		if(loginDataContainer.getHealth() < 0){
+			healthSet = 0;
+		}
+		if(loginDataContainer.getHealth() > 20){
+			healthSet = 20;
+		}
+		return healthSet;
 	}
 }

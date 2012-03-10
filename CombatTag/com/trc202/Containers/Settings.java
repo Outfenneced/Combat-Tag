@@ -14,6 +14,7 @@ public class Settings {
 	private boolean blockEditWhileTagged;
 	private boolean sendMessageWhenTagged;
 	private int npcDespawnTime;
+	private boolean npcDieAfterTime;
 	
 	public Settings(){
 		currentMode = SettingsType.NPC;
@@ -26,6 +27,7 @@ public class Settings {
 		blockEditWhileTagged = true;
 		sendMessageWhenTagged = false;
 		npcDespawnTime = -1;
+		npcDieAfterTime = false;
 	}
 
 	public void setDebugEnabled(boolean debugEnabled) {
@@ -102,6 +104,15 @@ public class Settings {
 	
 	public void setNpcDespawnTime(int npcDespawnTime) {
 		this.npcDespawnTime = npcDespawnTime;
+	}
+
+	public void setNpcDieAfterTime(Boolean npcDieAfterTime) {
+		this.npcDieAfterTime = npcDieAfterTime;
+		
+	}
+	
+	public boolean isNpcDieAfterTime() {
+		return npcDieAfterTime;
 	}
 
 }

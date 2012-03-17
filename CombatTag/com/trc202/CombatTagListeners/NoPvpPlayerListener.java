@@ -2,7 +2,6 @@ package com.trc202.CombatTagListeners;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -25,9 +24,9 @@ public class NoPvpPlayerListener implements Listener{
     	plugin = instance;
     }
     
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerJoin(PlayerJoinEvent e){
-		Player loginPlayer = e.getPlayer();
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event){
+		Player loginPlayer = event.getPlayer();
 		onPlayerJoinNPCMode(loginPlayer);
 	}
 	
@@ -63,7 +62,7 @@ public class NoPvpPlayerListener implements Listener{
 						quitDataContainer.setNPCId(quitPlr.getName());
 						quitDataContainer.setShouldBePunished(true);
 						quitPlr.getWorld().createExplosion(quitPlr.getLocation(), explosionDamage); //Create the smoke effect //
-						plugin.scheduleDelayedKill(npc);	
+						plugin.scheduleDelayedKill(npc, quitDataContainer);	
 					}
 				}
 			}
@@ -85,8 +84,7 @@ public class NoPvpPlayerListener implements Listener{
 					if(npc.getBukkitEntity() instanceof Player){
 						Player npcPlayer = (Player) npc.getBukkitEntity();
 						plugin.copyContentsNpc(npc, quitPlr);
-						String plrName = quitPlr.getName(); //tempfix
-						plugin.npcm.rename(plrName, plugin.getNpcName(plrName)); //tempfix
+						plugin.npcm.rename(quitPlr.getName(), plugin.getNpcName(quitPlr.getName()));
 						npcPlayer.setHealth(quitPlr.getHealth());
 						quitDataContainer.setSpawnedNPC(true);
 						quitDataContainer.setNPCId(quitPlr.getName());

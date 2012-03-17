@@ -88,7 +88,7 @@ public class CombatTag extends JavaPlugin {
 	public NPC spawnNpc(String plr,Location location){
 		NPC spawnedNPC = null;
 		if(isDebugEnabled()){log.info("[CombatTag] Spawning NPC");}
-		spawnedNPC = npcm.spawnHumanNPC("copyTo", location , plr); //tempfix
+		spawnedNPC = npcm.spawnHumanNPC(getNpcNumber() + "", location , plr);
 		if(spawnedNPC.getBukkitEntity() instanceof HumanEntity){
 			HumanEntity p = (HumanEntity) spawnedNPC.getBukkitEntity();
 			p.setTicksLived(80);
@@ -118,16 +118,18 @@ public class CombatTag extends JavaPlugin {
 	 */
 	public void despawnNPC(PlayerDataContainer plrData) {
 		if(isDebugEnabled()){log.info("[CombatTag] Despawning NPC");}
-		Entity anNPC = npcm.getNPC(plrData.getNPCId()).getBukkitEntity();
-		if(anNPC instanceof Player){
-			Player npc = (Player) anNPC;
-			plrData.setPlayerArmor(npc.getInventory().getArmorContents());
-			plrData.setPlayerInventory(npc.getInventory().getContents());
-			plrData.setHealth(npc.getHealth());
-			plrData.setExp(npc.getExp());
-			npcm.despawnById(plrData.getNPCId());
-			plrData.setNPCId("");
-			plrData.setSpawnedNPC(false);
+		if(npcm.getNPC(plrData.getNPCId()) != null){
+			Entity anNPC = npcm.getNPC(plrData.getNPCId()).getBukkitEntity();
+			if(anNPC instanceof Player){
+				Player npc = (Player) anNPC;
+				plrData.setPlayerArmor(npc.getInventory().getArmorContents());
+				plrData.setPlayerInventory(npc.getInventory().getContents());
+				plrData.setHealth(npc.getHealth());
+				plrData.setExp(npc.getExp());
+				npcm.despawnById(plrData.getNPCId());
+				plrData.setNPCId("");
+				plrData.setSpawnedNPC(false);
+			}
 		}
 	}
 
@@ -259,17 +261,17 @@ public class CombatTag extends JavaPlugin {
 	}
 
 	
-	public void scheduleDelayedKill(final NPC npc) {
+	public void scheduleDelayedKill(final NPC npc, final PlayerDataContainer plrData) {
 		long despawnTicks = settings.getNpcDespawnTime() * 20L;
 		final boolean kill = settings.isNpcDieAfterTime();
-		final Player plrNpc = (Player) npc.getBukkitEntity();
+    	final Player plrNpc = (Player) npc.getBukkitEntity();
 		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 			@Override
 			public void run() {
 				if(kill == true){
 					plrNpc.setHealth(0);
 				} else {
-					npc.removeFromWorld();
+					despawnNPC(plrData);
 				}
 			}
 		}, despawnTicks);

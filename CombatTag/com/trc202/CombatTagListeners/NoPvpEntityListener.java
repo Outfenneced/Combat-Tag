@@ -34,34 +34,36 @@ public class NoPvpEntityListener implements Listener{
     		if ((dmgr instanceof Player) && (e.getEntity() instanceof Player)){//Check to see if the damager and damaged are players
     			Player damager = (Player) dmgr;
     			Player tagged = (Player) e.getEntity();
-    			for(String disallowedWorlds : plugin.settings.getDisallowedWorlds()){
-    				if(damager.getWorld().getName().equalsIgnoreCase(disallowedWorlds)){
-    					//Skip this tag the world they are in is not to be tracked by combat tag
-    					return;
+    			if(damager != tagged){
+    				for(String disallowedWorlds : plugin.settings.getDisallowedWorlds()){
+    					if(damager.getWorld().getName().equalsIgnoreCase(disallowedWorlds)){
+    						//Skip this tag the world they are in is not to be tracked by combat tag
+    						return;
+    					}
     				}
-    			}
-    			boolean isInCombatDamager = false;
-    			if(plugin.hasDataContainer(damager.getName())){
-    				PlayerDataContainer containerDamager = plugin.getPlayerData(damager.getName());
-    				isInCombatDamager = !containerDamager.hasPVPtagExpired();
-    			}
-    			boolean isInCombatTagged = false;
-    			if(plugin.hasDataContainer(tagged.getName())){
-    				if(plugin.npcm.isNPC(tagged)){
-    					isInCombatTagged = true;
-    				} else{
-    					PlayerDataContainer containerTagged = plugin.getPlayerData(tagged.getName());
-    					isInCombatTagged = !containerTagged.hasPVPtagExpired();
+    				boolean isInCombatDamager = false;
+    				if(plugin.hasDataContainer(damager.getName())){
+    					PlayerDataContainer containerDamager = plugin.getPlayerData(damager.getName());
+    					isInCombatDamager = !containerDamager.hasPVPtagExpired();
     				}
-    			}
-    			if(plugin.settings.isSendMessageWhenTagged() && !isInCombatTagged && !isInCombatDamager){
-    				damager.sendMessage(ChatColor.RED + "[Combat Tag] You are now in combat. Type /ct to check your  remaining tag time.");
-    				tagged.sendMessage(ChatColor.RED + "[Combat Tag] You are now in combat. Type /ct to check your  remaining tag time.");
-    			}
-    			if(plugin.settings.getCurrentMode() == Settings.SettingsType.NPC){
-	    			onPlayerDamageByPlayerNPCMode(damager,tagged);
-    			}else if(plugin.settings.getCurrentMode() == Settings.SettingsType.TIMED){
-    				onPlayerDamageByPlayerTimedMode(damager,tagged);
+    				boolean isInCombatTagged = false;
+    				if(plugin.hasDataContainer(tagged.getName())){
+    					if(plugin.npcm.isNPC(tagged)){
+    						isInCombatTagged = true;
+    					} else{
+    						PlayerDataContainer containerTagged = plugin.getPlayerData(tagged.getName());
+    						isInCombatTagged = !containerTagged.hasPVPtagExpired();
+    					}
+    				}
+    				if(plugin.settings.isSendMessageWhenTagged() && !isInCombatTagged && !isInCombatDamager){
+    					damager.sendMessage(ChatColor.RED + "[Combat Tag] You are now in combat. Type /ct to check your  remaining tag time.");
+    					tagged.sendMessage(ChatColor.RED + "[Combat Tag] You are now in combat. Type /ct to check your  remaining tag time.");
+    				}
+    				if(plugin.settings.getCurrentMode() == Settings.SettingsType.NPC){
+	    				onPlayerDamageByPlayerNPCMode(damager,tagged);
+    				}else if(plugin.settings.getCurrentMode() == Settings.SettingsType.TIMED){
+    					//onPlayerDamageByPlayerTimedMode(damager,tagged);
+    				}
     			}
     		}
 		}
@@ -110,24 +112,24 @@ public class NoPvpEntityListener implements Listener{
 		}
 		if(plugin.isDebugEnabled()){plugin.log.info("[CombatTag] Player tagged another player, setting pvp timeout");}
 	}
-	
+/**	
 	private void onPlayerDamageByPlayerTimedMode(Player damager, Player tagged) {
-		// TODO Auto-generated method stub
+		if(plugin.npcm.isNPC(tagged)){return;} //If the damaged player is an npc do nothing
+		PlayerDataContainer damagerData;
+		PlayerDataContainer damagedData;
 		if(!damager.hasPermission("combattag.ignore")){	
-			PlayerDataContainer damagerData;
 			if(plugin.hasDataContainer(damager.getName())){
 				damagerData = plugin.getPlayerData(damager.getName());
 			}else{damagerData = plugin.createPlayerData(damager.getName());}
 			damagerData.setPvPTimeout(plugin.settings.getTagDuration());
 		}
 		if(!tagged.hasPermission("combattag.ignore")){
-			PlayerDataContainer taggedData;
 			if(plugin.hasDataContainer(tagged.getName())){
-				taggedData = plugin.getPlayerData(tagged.getName());
-			}else{taggedData = plugin.createPlayerData(tagged.getName());}
-			taggedData.setPvPTimeout(plugin.settings.getTagDuration());
+				damagedData = plugin.getPlayerData(tagged.getName());
+			}else{damagedData = plugin.createPlayerData(tagged.getName());}
+			damagedData.setPvPTimeout(plugin.settings.getTagDuration());
 		}
 	}
-	
+**/
 	
 }

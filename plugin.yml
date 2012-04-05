@@ -1,6 +1,6 @@
 name: CombatTag
-version: 4.1
-author: Trc202
+version: 4.2
+author: cheddar262
 main: com.trc202.CombatTag.CombatTag
 commands:
   CombatTag:

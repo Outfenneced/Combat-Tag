@@ -6,6 +6,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.topcat.npclib.NPCManager;
@@ -39,6 +40,21 @@ public class NoPvpPlayerListener implements Listener{
 			onPlayerQuitTimedMode(quitPlr);
 		}else{
 			plugin.log.info("[Combat Tag] Invalid npcDespawnTime");
+		}
+	}
+    
+	@EventHandler
+	public void onPlayerKick(PlayerKickEvent event) {
+		Player player = event.getPlayer();
+		if (plugin.hasDataContainer(player.getName())) {
+			PlayerDataContainer kickDataContainer = plugin.getPlayerData(player.getName());
+			if (!kickDataContainer.hasPVPtagExpired()) {
+				if (plugin.settings.dropTagOnKick()) {
+					if (plugin.isDebugEnabled()) {plugin.log.info("[CombatTag] Player tag dropped for being kicked.");}
+					kickDataContainer.setPvPTimeout(0);
+					plugin.removeDataContainer(player.getName());
+				}
+			}
 		}
 	}
 	

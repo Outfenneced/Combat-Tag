@@ -15,6 +15,7 @@ public class Settings {
 	private boolean sendMessageWhenTagged;
 	private int npcDespawnTime;
 	private boolean npcDieAfterTime;
+	private boolean droptagonkick;
 	
 	public Settings(){
 		currentMode = SettingsType.NPC;
@@ -28,6 +29,7 @@ public class Settings {
 		sendMessageWhenTagged = false;
 		npcDespawnTime = -1;
 		npcDieAfterTime = false;
+		droptagonkick = false;
 	}
 
 	public void setDebugEnabled(boolean debugEnabled) {
@@ -54,6 +56,14 @@ public class Settings {
 		return instaKill;
 	}
 	
+	public void setDropTagonKick(boolean droptagonkick) {
+		this.droptagonkick = droptagonkick;
+	}
+	
+	public boolean dropTagOnKick() {
+		return droptagonkick;
+	} 
+	
 	public SettingsType getCurrentMode(){
 		return currentMode;
 	}
@@ -61,6 +71,7 @@ public class Settings {
 	public String[] getDisabledCommands() {
 		return disabledCommands;
 	}
+	
 	public void setDisabledCommands(String[] disabledCommands){
 		this.disabledCommands = disabledCommands;
 	}

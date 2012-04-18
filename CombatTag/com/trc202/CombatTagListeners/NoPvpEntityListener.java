@@ -34,7 +34,7 @@ public class NoPvpEntityListener implements Listener{
     		if ((dmgr instanceof Player) && (e.getEntity() instanceof Player)){//Check to see if the damager and damaged are players
     			Player damager = (Player) dmgr;
     			Player tagged = (Player) e.getEntity();
-    			if(damager != tagged){
+    			if(damager != tagged && damager != null){
     				for(String disallowedWorlds : plugin.settings.getDisallowedWorlds()){
     					if(damager.getWorld().getName().equalsIgnoreCase(disallowedWorlds)){
     						//Skip this tag the world they are in is not to be tracked by combat tag
@@ -56,8 +56,8 @@ public class NoPvpEntityListener implements Listener{
     					}
     				}
     				if(plugin.settings.isSendMessageWhenTagged() && !isInCombatTagged && !isInCombatDamager){
-    					damager.sendMessage(ChatColor.RED + "[Combat Tag] You are now in combat. Type /ct to check your  remaining tag time.");
-    					tagged.sendMessage(ChatColor.RED + "[Combat Tag] You are now in combat. Type /ct to check your  remaining tag time.");
+    					damager.sendMessage(ChatColor.RED + "[CombatTag] You are now in combat. Type /ct to check your  remaining tag time.");
+    					tagged.sendMessage(ChatColor.RED + "[CombatTag] You are now in combat. Type /ct to check your  remaining tag time.");
     				}
     				if(plugin.settings.getCurrentMode() == Settings.SettingsType.NPC){
 	    				onPlayerDamageByPlayerNPCMode(damager,tagged);

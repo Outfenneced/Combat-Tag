@@ -38,7 +38,7 @@ public class NoPvpPlayerListener implements Listener{
 		}else if(plugin.settings.getNpcDespawnTime() > 0){
 			onPlayerQuitTimedMode(quitPlr);
 		}else{
-			plugin.log.info("[Combat Tag] Invalid npcDespawnTime");
+			plugin.log.info("[CombatTag] Invalid npcDespawnTime");
 		}
 	}
 	
@@ -90,7 +90,6 @@ public class NoPvpPlayerListener implements Listener{
 						quitDataContainer.setNPCId(quitPlr.getName());
 						quitDataContainer.setShouldBePunished(true);
 						quitPlr.getWorld().createExplosion(quitPlr.getLocation(), explosionDamage); //Create the smoke effect //
-						
 					}
 				}
 			}
@@ -113,7 +112,7 @@ public class NoPvpPlayerListener implements Listener{
 				loginPlayer.setExp(loginDataContainer.getExp());
 				loginPlayer.getInventory().setArmorContents(loginDataContainer.getPlayerArmor());
 				loginPlayer.getInventory().setContents(loginDataContainer.getPlayerInventory());
-				int healthSet = healthCheck(loginDataContainer);
+				int healthSet = healthCheck(loginDataContainer.getHealth());
 				loginPlayer.setHealth(healthSet);
 				assert(loginPlayer.getHealth() == loginDataContainer.getHealth());
 				loginPlayer.setLastDamageCause(new EntityDamageEvent(loginPlayer, DamageCause.ENTITY_EXPLOSION, 0));
@@ -122,41 +121,14 @@ public class NoPvpPlayerListener implements Listener{
 			plugin.createPlayerData(loginPlayer.getName()).setPvPTimeout(plugin.getTagDuration());
 		}
 	}
-/**
-	private void onPlayerJoinTimedMode(Player loginPlayer){
-		if(plugin.hasDataContainer(loginPlayer.getName())){
-			//Player has a data container and is likely to need some sort of punishment
-			PlayerDataContainer loginDataContainer = plugin.getPlayerData(loginPlayer.getName());
-			if(loginDataContainer.hasSpawnedNPC()){
-				//Player has pvplogged and has not been killed yet
-				//despawn the npc and transfer any effects over to the player
-				if(plugin.isDebugEnabled()){plugin.log.info("[CombatTag] Player logged in and has npc");}
-				plugin.despawnNPC(loginDataContainer);
-			}
-			if(plugin.isDebugEnabled()){plugin.log.info("[CombatTag] " + loginDataContainer.getPlayerName() +" should be punushed");}
-			if(loginDataContainer.shouldBePunished()){
-				if(plugin.isDebugEnabled()){plugin.log.info("[CombatTag] Getting info from NPC and putting it back into the player");}
-				loginPlayer.setExp(loginDataContainer.getExp());
-				loginPlayer.getInventory().setArmorContents(loginDataContainer.getPlayerArmor());
-				loginPlayer.getInventory().setContents(loginDataContainer.getPlayerInventory());
-				int healthSet = healthCheck(loginDataContainer);
-				loginPlayer.setHealth(healthSet);
-				assert(loginPlayer.getHealth() == loginDataContainer.getHealth());
-				loginPlayer.setLastDamageCause(new EntityDamageEvent(loginPlayer, DamageCause.ENTITY_EXPLOSION, 0));
-			}
-			plugin.removeDataContainer(loginPlayer.getName());
-			plugin.createPlayerData(loginPlayer.getName()).setPvPTimeout(plugin.getTagDuration());
+	
+	private int healthCheck(int health) {
+		if(health < 0){
+			health = 0;
 		}
-	}
-**/
-	private int healthCheck(PlayerDataContainer loginDataContainer) {
-		int healthSet = loginDataContainer.getHealth();
-		if(loginDataContainer.getHealth() < 0){
-			healthSet = 0;
+		if(health > 20){
+			health = 20;
 		}
-		if(loginDataContainer.getHealth() > 20){
-			healthSet = 20;
-		}
-		return healthSet;
+		return health;
 	}
 }

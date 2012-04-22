@@ -12,6 +12,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.PluginManager;
@@ -54,12 +55,23 @@ public class CombatTag extends JavaPlugin {
 		npcNumber = 0;
 	}
 	
+	/**
+	 * Change NPCManager to:
+	 * 
+	 * private class SL implements Listener {
+	 *	@SuppressWarnings("unused")
+	 *	public void disableNPCLib() {
+	 *		despawnAll();
+	 *		Bukkit.getServer().getScheduler().cancelTask(taskid);
+	 *	}
+	 *}
+	 */
 	@Override
+	@EventHandler
 	public void onDisable() {
 		for(PlayerDataContainer pdc : playerData.values()){
 			if(pdc.hasSpawnedNPC()){
 				despawnNPC(pdc);
-				log.info(pdc.getPlayerName() + "'s npc was despawned whose ID is " + pdc.getNPCId());
 			}
 			PlayerDataManager.savePlayerData(mainDirectory, pdc);
 		}
@@ -120,10 +132,13 @@ public class CombatTag extends JavaPlugin {
 	public void despawnNPC(PlayerDataContainer plrData) {
 		if(isDebugEnabled()){log.info("[CombatTag] Despawning NPC");}
 		NPC npc1 = npcm.getNPC(plrData.getNPCId());
-		if(isDebugEnabled()){log.info("[CombatTag] Despawning NPC: " + npc1 + " This is for: " + plrData.hasSpawnedNPC());}
+		if(npc1 == null){
+		    System.out.println("Npc: " + plrData.getNPCId() + " is null");
+		}else{
+		    System.out.println("Npc: " + plrData.getNPCId() + " is not null");
+		}
 		if(npc1 != null){
 			Entity anNPC = npcm.getNPC(plrData.getNPCId()).getBukkitEntity();
-			if(isDebugEnabled()){log.info("[CombatTag] Despawning " + plrData.getNPCId() + " as the NPC id for " + plrData.getPlayerName() + " 2");}
 			if(anNPC instanceof Player){
 				Player npc = (Player) anNPC;
 				plrData.setPlayerArmor(npc.getInventory().getArmorContents());

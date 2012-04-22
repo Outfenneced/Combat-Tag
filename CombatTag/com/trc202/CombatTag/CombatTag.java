@@ -59,6 +59,7 @@ public class CombatTag extends JavaPlugin {
 		for(PlayerDataContainer pdc : playerData.values()){
 			if(pdc.hasSpawnedNPC()){
 				despawnNPC(pdc);
+				log.info(pdc.getPlayerName() + "'s npc was despawned whose ID is " + pdc.getNPCId());
 			}
 			PlayerDataManager.savePlayerData(mainDirectory, pdc);
 		}
@@ -118,8 +119,11 @@ public class CombatTag extends JavaPlugin {
 	 */
 	public void despawnNPC(PlayerDataContainer plrData) {
 		if(isDebugEnabled()){log.info("[CombatTag] Despawning NPC");}
-		if(npcm.getNPC(plrData.getNPCId()) != null){
+		NPC npc1 = npcm.getNPC(plrData.getNPCId());
+		if(isDebugEnabled()){log.info("[CombatTag] Despawning NPC: " + npc1 + " This is for: " + plrData.hasSpawnedNPC());}
+		if(npc1 != null){
 			Entity anNPC = npcm.getNPC(plrData.getNPCId()).getBukkitEntity();
+			if(isDebugEnabled()){log.info("[CombatTag] Despawning " + plrData.getNPCId() + " as the NPC id for " + plrData.getPlayerName() + " 2");}
 			if(anNPC instanceof Player){
 				Player npc = (Player) anNPC;
 				plrData.setPlayerArmor(npc.getInventory().getArmorContents());
@@ -226,6 +230,7 @@ public class CombatTag extends JavaPlugin {
 		deadPlayerData.setSpawnedNPC(false);
 		deadPlayerData.setNPCId("");
 		deadPlayerData.setPvPTimeout(0);
+		if (isDebugEnabled()) {log.info("[CombatTag] " + deadPlayerData.getPlayerName() + " has been killed by Combat Tag and their inventory has been emptied.");}
 	}
 	
 	public void removeDataContainer(String playerName){

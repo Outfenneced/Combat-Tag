@@ -29,7 +29,7 @@ public class Settings {
 		sendMessageWhenTagged = false;
 		npcDespawnTime = -1;
 		npcDieAfterTime = false;
-		droptagonkick = false;
+		droptagonkick = true;
 	}
 
 	public void setDebugEnabled(boolean debugEnabled) {

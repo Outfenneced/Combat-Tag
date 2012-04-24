@@ -128,8 +128,12 @@ public class Settings {
 		return npcDieAfterTime;
 	}
 
-	public int getTempBanSeconds() {
-		return tempBanSeconds;
-	}
+    public int getTempBanSeconds() {
+        return tempBanSeconds;
+    }
+
+    public void setTempBanSeconds(int seconds) {
+        tempBanSeconds = seconds;
+    }
 
 }

@@ -95,7 +95,11 @@ public class NoPvpPlayerListener implements Listener{
         // this happens when the user quits
         // and it only will do anything if the player has a data container
         // which means he has been damaged in the past
-        if (plugin.hasDataContainer(player.getName().toLowerCase())) {
+        if (plugin.hasDataContainer(player.getName())) {
+            // if the data container signals us that the PvP timer has expired
+            // then we do not ban them temporarily
+            PlayerDataContainer dataContainer = plugin.getPlayerData(player.getName());
+            if (dataContainer.hasPVPtagExpired()) { return; }
             long tempBanSeconds = plugin.settings.getTempBanSeconds();
             long deadline = (tempBanSeconds * 1000) + System.currentTimeMillis();
             bannedPlayers.put(player.getName(), deadline);
@@ -106,14 +110,14 @@ public class NoPvpPlayerListener implements Listener{
         // this happens when the user joins
         // and it only will do anything if the player is in the list of
         // tempbanned players
-        if (bannedPlayers.containsKey(player.getName().toLowerCase())) {
-            long deadline = bannedPlayers.get(player.getName().toLowerCase());
+        if (bannedPlayers.containsKey(player.getName())) {
+            long deadline = bannedPlayers.get(player.getName());
             if (deadline >= System.currentTimeMillis()) {
                 long duration = ( deadline - System.currentTimeMillis() ) / 1000;
                 player.kickPlayer("You cannot log in again for " + duration + " seconds");
             }
             else {
-                bannedPlayers.remove(player.getName().toLowerCase());
+                bannedPlayers.remove(player.getName());
             }
         }
     }

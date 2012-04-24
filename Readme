@@ -4,7 +4,13 @@ CombatTag:
 Config file explanation:
 	TagTime: duration of tag (from the time the player is hit by another player)
 
--- Configuration --
+-- Setup --
+
+Look at the setup instructions here:
+
+        http://dev.bukkit.org/server-mods/combat-tag/pages/setup/
+
+-- Post-setup configuration --
 
 Look at the settings manifest here:
         http://dev.bukkit.org/server-mods/combat-tag/pages/config-file/

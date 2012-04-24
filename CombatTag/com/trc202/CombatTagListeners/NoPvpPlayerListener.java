@@ -14,26 +14,32 @@ import com.topcat.npclib.entity.NPC;
 import com.trc202.CombatTag.CombatTag;
 import com.trc202.Containers.PlayerDataContainer;
 
+import java.util.HashMap;
+
 public class NoPvpPlayerListener implements Listener{
 	
 	private final CombatTag plugin;
 	public static int explosionDamage = -1;
 	public NPCManager npcm;
 	public NoPvpEntityListener entityListener;
+	private HashMap<String, Long> bannedPlayers;
 	
     public NoPvpPlayerListener(CombatTag instance) {
     	plugin = instance;
+        bannedPlayers = new HashMap<String, Long>();
     }
     
     @EventHandler(ignoreCancelled = true)
     public void onPlayerJoin(PlayerJoinEvent event){
-		Player loginPlayer = event.getPlayer();
-		onPlayerJoinNPCMode(loginPlayer);
+        Player loginPlayer = event.getPlayer();
+        kickIfTempBanned(loginPlayer);
+        onPlayerJoinNPCMode(loginPlayer);
 	}
 	
     @EventHandler(ignoreCancelled = true)
 	public void onPlayerQuit(PlayerQuitEvent e){
 		Player quitPlr = e.getPlayer();
+		tempBanIfPvP(quitPlr);
 		if(plugin.settings.getNpcDespawnTime() <= -1){
 			onPlayerQuitNPCMode(quitPlr);
 		}else if(plugin.settings.getNpcDespawnTime() > 0){
@@ -85,6 +91,33 @@ public class NoPvpPlayerListener implements Listener{
 		}
 	}
 	
+    public void tempBanIfPvP(Player player){
+        // this happens when the user quits
+        // and it only will do anything if the player has a data container
+        // which means he has been damaged in the past
+        if (plugin.hasDataContainer(player.getName().toLowerCase())) {
+            long tempBanSeconds = plugin.settings.getTempBanSeconds();
+            long deadline = (tempBanSeconds * 1000) + System.currentTimeMillis();
+            bannedPlayers.put(player.getName(), deadline);
+        }
+    }
+
+    public void kickIfTempBanned(Player player){
+        // this happens when the user joins
+        // and it only will do anything if the player is in the list of
+        // tempbanned players
+        if (bannedPlayers.containsKey(player.getName().toLowerCase())) {
+            long deadline = bannedPlayers.get(player.getName().toLowerCase());
+            if (deadline >= System.currentTimeMillis()) {
+                long duration = ( deadline - System.currentTimeMillis() ) / 1000;
+                player.kickPlayer("You cannot log in again for " + duration + " seconds");
+            }
+            else {
+                bannedPlayers.remove(player.getName().toLowerCase());
+            }
+        }
+    }
+
 	private void onPlayerQuitNPCMode(Player quitPlr){
 		if(plugin.hasDataContainer(quitPlr.getName())){
 			//Player is likely in pvp

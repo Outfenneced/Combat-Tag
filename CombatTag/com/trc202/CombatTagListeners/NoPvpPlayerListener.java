@@ -6,6 +6,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -32,8 +33,13 @@ public class NoPvpPlayerListener implements Listener{
     @EventHandler(ignoreCancelled = true)
     public void onPlayerJoin(PlayerJoinEvent event){
         Player loginPlayer = event.getPlayer();
-        kickIfTempBanned(loginPlayer);
         onPlayerJoinNPCMode(loginPlayer);
+    }
+    
+    @EventHandler(ignoreCancelled = true)
+    public void onPlayerLogin(PlayerLoginEvent event){
+        Player loginPlayer = event.getPlayer();
+        tryUnbanIfTempBanned(loginPlayer);
 	}
 	
     @EventHandler(ignoreCancelled = true)
@@ -102,21 +108,21 @@ public class NoPvpPlayerListener implements Listener{
             if (dataContainer.hasPVPtagExpired()) { return; }
             long tempBanSeconds = plugin.settings.getTempBanSeconds();
             long deadline = (tempBanSeconds * 1000) + System.currentTimeMillis();
+            plugin.log.info("[CombatTag] Combat-logging by " + player.getName() + " detected.  Banning for " + tempBanSeconds + " seconds.");
             bannedPlayers.put(player.getName(), deadline);
+            player.setBanned(true);
         }
     }
 
-    public void kickIfTempBanned(Player player){
+    public void tryUnbanIfTempBanned(Player player){
         // this happens when the user joins
         // and it only will do anything if the player is in the list of
         // tempbanned players
         if (bannedPlayers.containsKey(player.getName())) {
             long deadline = bannedPlayers.get(player.getName());
-            if (deadline >= System.currentTimeMillis()) {
-                long duration = ( deadline - System.currentTimeMillis() ) / 1000;
-                player.kickPlayer("You cannot log in again for " + duration + " seconds");
-            }
-            else {
+            if (deadline < System.currentTimeMillis()) {
+                plugin.log.info("[CombatTag] Temporary combat-logging ban for " + player.getName() + " expired.  Unbanning.");
+                player.setBanned(false);
                 bannedPlayers.remove(player.getName());
             }
         }

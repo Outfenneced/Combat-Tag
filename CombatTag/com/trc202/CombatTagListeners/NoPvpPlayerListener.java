@@ -149,7 +149,7 @@ public class NoPvpPlayerListener implements Listener{
         // reset his combat ban duration to the default.
         if (banData.containsKey(player.getName())) {
             long resetTime = banData.get(player.getName()).resetTime;
-            if (resetTime > System.currentTimeMillis()) {
+            if (resetTime < System.currentTimeMillis()) {
                 banData.remove(player.getName());
             }
         }

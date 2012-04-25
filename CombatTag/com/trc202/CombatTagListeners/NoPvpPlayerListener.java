@@ -115,9 +115,8 @@ public class NoPvpPlayerListener implements Listener{
     }
 
     public void tryUnbanIfTempBanned(Player player){
-        // this happens when the user joins
-        // and it only will do anything if the player is in the list of
-        // tempbanned players
+        // When user attempts to join, check whether he has a temp ban registered.
+        // If the temp ban has expired, unban the player so he can join.
         if (bannedPlayers.containsKey(player.getName())) {
             long deadline = bannedPlayers.get(player.getName());
             if (deadline < System.currentTimeMillis()) {

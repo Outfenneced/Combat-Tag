@@ -18,6 +18,8 @@ public class SettingsLoader {
 	private static String npcDieAfterTime = "npcDieAfterTime";
 	private static String droptagonkick = "DropTagOnKick";
     private static String tempBanSeconds = "tempBanSeconds";
+    private static String banResetTimeout = "banResetTimeout";
+    private static String banDurationMultiplier = "banDurationMultiplier";
 
 	public Settings loadSettings(SettingsHelper helper, String version){
 		settings = new Settings();
@@ -47,6 +49,14 @@ public class SettingsLoader {
         if (helper.getProperty(tempBanSeconds) == null) {
             helper.setProperty(tempBanSeconds,
                     String.valueOf(temp.getTempBanSeconds()));
+        }
+        if (helper.getProperty(banResetTimeout) == null) {
+            helper.setProperty(banResetTimeout,
+                    String.valueOf(temp.getBanResetTimeout()));
+        }
+        if (helper.getProperty(banDurationMultiplier) == null) {
+            helper.setProperty(banDurationMultiplier,
+                    String.valueOf(temp.getBanDurationMultiplier()));
         }
 	}
 

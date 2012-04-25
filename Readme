@@ -26,7 +26,7 @@ And, to these configuration instructions, there are extra settings:
 
 - tempBanSeconds:
   Integer, positive (zero or negative values have no effect)
-  
+
   Players who log out are banned for this amount of time (default 10 seconds),
   if they have been damaged or if they have damaged someone else within the
   time specified in the setting Tag-Duration.
@@ -34,6 +34,36 @@ And, to these configuration instructions, there are extra settings:
   The tempban is implemented as a volatile (in-RAM) list that is not persisted
   between server restarts, and any user in this list whose tempban has not
   expired, is auto-kicked with a message.
+
+- banDurationMultiplier:
+  Integer (positive), recommended setting 1 or 2
+
+  Repeated combat logging may optionally increase the temporary ban length
+  by a multiplicative factor. The default setting for the multiplier is 2,
+  so a player who combat logs 3 times in a row is banned for 10 seconds the
+  first time, 20 seconds the second time, then 40 seconds the third time.
+
+  If you would prefer that the ban length not increase for repeat offenders,
+  set the banDurationMultiplier to 1.
+
+  Advisory: Using a negative value will result in weirdness where the player is
+  alternately banned and unbanned with every other combat logout. Using a
+  positive value that is too high may result in integer overflow in the ban
+  length, producing the same symptoms as a negative banDurationMultiplier.
+
+- banResetTimeout:
+  Integer, positive (zero or negative values have no effect)
+
+  After repeatedly combat logging, a player's ban length will be increased
+  as per the banDurationMultiplier above. The banResetTimeout represents the
+  length of time after which the ban duration will be reset to the default of
+  tempBanSeconds, once the player has stopped combat logging.
+
+  For example, a player who combat logs 5 times, resulting in a 5 minute ban,
+  then does not logout during combat for 24 hours. After the 24 hours has
+  passed, his ban length next time he combat logs is reset to 10 seconds.
+
+  Default banResetTimeout is one day, given in seconds.
 
 -- Documentation for other relevant settings --
 

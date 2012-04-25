@@ -120,11 +120,11 @@ public class NoPvpPlayerListener implements Listener{
             long tempBanSeconds = plugin.settings.getTempBanSeconds();
             if (banData.containsKey(player.getName())) {
                 // If the player has recently received a temporary ban for combat-logging,
-                // the new ban should be twice as long as the previous one.
-                tempBanSeconds = banData.get(player.getName()).duration * 2;
+                // the new ban should be N times as long as the previous one.
+                tempBanSeconds = banData.get(player.getName()).duration * plugin.settings.getBanDurationMultiplier();
             }
             long deadline = (tempBanSeconds * 1000) + System.currentTimeMillis();
-            long resetTime = 86000 * System.currentTimeMillis();
+            long resetTime = plugin.settings.getBanResetTimeout() * System.currentTimeMillis();
             plugin.log.info("[CombatTag] Combat-logging by " + player.getName() + " detected.  Banning for " + tempBanSeconds + " seconds.");
             banData.put(player.getName(), new Ban(tempBanSeconds, resetTime));
             bannedPlayers.put(player.getName(), deadline);

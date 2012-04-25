@@ -17,6 +17,8 @@ public class Settings {
 	private int tempBanSeconds;
 	private boolean npcDieAfterTime;
 	private boolean droptagonkick;
+	private int banResetTimeout;
+	private int banDurationMultiplier;
 	
 	public Settings(){
 		currentMode = SettingsType.NPC;
@@ -32,6 +34,8 @@ public class Settings {
 		npcDieAfterTime = false;
 		droptagonkick = true;
 		tempBanSeconds = 10;
+		banResetTimeout = 60 * 60 * 24;
+		banDurationMultiplier = 2;
 	}
 
 	public void setDebugEnabled(boolean debugEnabled) {
@@ -134,6 +138,22 @@ public class Settings {
 
     public void setTempBanSeconds(int seconds) {
         tempBanSeconds = seconds;
+    }
+
+    public int getBanResetTimeout() {
+        return banResetTimeout;
+    }
+
+    public void setBanResetTimeout(int timeout) {
+        banResetTimeout = timeout;
+    }
+
+    public int getBanDurationMultiplier() {
+        return banDurationMultiplier;
+    }
+
+    public void setBanDurationMultiplier(int multiplier) {
+        banDurationMultiplier = multiplier;
     }
 
 }

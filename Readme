@@ -1,5 +1,64 @@
+This is the enhanced version of CombatTag.
+
+Enhancements over vanilla CombatTag:
+    Temporary ban of configurable seconds when logging out during combat.
+    Player ban duration multiplies by two for each subsequent incident of combat logging.
+    The player ban duration is reset to the default configured temporary ban after a day (86400 seconds).
+
 CombatTag:
 	Combat tag is a plugin for bukkit which prevents pvp loggers from getting away with logging.
 	This plugin was originally made by marinating. 
 Config file explanation:
 	TagTime: duration of tag (from the time the player is hit by another player)
+
+-- Setup --
+
+Look at the setup instructions here:
+
+        http://dev.bukkit.org/server-mods/combat-tag/pages/setup/
+
+-- Post-setup configuration --
+
+Look at the settings manifest here:
+        http://dev.bukkit.org/server-mods/combat-tag/pages/config-file/
+
+And, to these configuration instructions, there are extra settings:
+
+- tempBanSeconds:
+  Integer, positive (zero or negative values have no effect)
+  
+  Players who log out are banned for this amount of time (default 10 seconds),
+  if they have been damaged or if they have damaged someone else within the
+  time specified in the setting Tag-Duration.
+  
+  The tempban is implemented as a volatile (in-RAM) list that is not persisted
+  between server restarts, and any user in this list whose tempban has not
+  expired, is auto-kicked with a message.
+
+-- Documentation for other relevant settings --
+
+- Tag-Duration:
+  (Yes, the capitalization is retarded. It wasn't me)
+  Integer, positive (zero or negative values will cause a malfunction)
+  
+  This is the amount of seconds between the moment of a a hit/damage and the
+  expiration of the "tag" (that is, when the player was "tagged" as in combat). 
+
+- npcDespawnTime:
+  Integer (-1 or positive).
+  
+  This is the amount of seconds between a player logging out and his NPC
+  despawning automatically.  If -1, it will never despawn.
+
+-- Recommended settings --
+
+- npcDespawnTime=20
+- blockEditWhileTagged=true
+- InstaKill=false
+- sendMessageWhenTagged=true
+- npcDieAfterTime=false
+- disabledCommands=[]
+- Enable-Debugging=false
+- Tag-Duration=10
+- npcName=player
+- tempBanSeconds=10

@@ -17,6 +17,7 @@ public class SettingsLoader {
 	private static String npcDespawnTime = "npcDespawnTime";
 	private static String npcDieAfterTime = "npcDieAfterTime";
 	private static String droptagonkick = "DropTagOnKick";
+    private static String tempBanSeconds = "tempBanSeconds";
 
 	public Settings loadSettings(SettingsHelper helper, String version){
 		settings = new Settings();
@@ -42,7 +43,11 @@ public class SettingsLoader {
 		if(helper.getProperty(sendMessageWhenTagged) == null){helper.setProperty(sendMessageWhenTagged, Boolean.toString(temp.isSendMessageWhenTagged()));}
 		if(helper.getProperty(npcDespawnTime) == null){helper.setProperty(npcDespawnTime, String.valueOf(temp.getNpcDespawnTime()));}
 		if(helper.getProperty(npcDieAfterTime) == null){helper.setProperty(npcDieAfterTime, Boolean.toString(temp.isInstaKill()));}
-		if(helper.getProperty(droptagonkick) == null) {helper.setProperty(droptagonkick, Boolean.toString(temp.dropTagOnKick()));}
+        if(helper.getProperty(droptagonkick) == null) {helper.setProperty(droptagonkick, Boolean.toString(temp.dropTagOnKick()));}
+        if (helper.getProperty(tempBanSeconds) == null) {
+            helper.setProperty(tempBanSeconds,
+                    String.valueOf(temp.getTempBanSeconds()));
+        }
 	}
 
 	private boolean isLatestVersion(SettingsHelper helper, String vers){
@@ -61,7 +66,8 @@ public class SettingsLoader {
 		(helper.getProperty(blockEditWhileTagged) != null) &&
 		(helper.getProperty(sendMessageWhenTagged) != null) &&
 		(helper.getProperty(npcDespawnTime) != null) &&
-		(helper.getProperty(npcDieAfterTime) != null) &&
+        (helper.getProperty(npcDieAfterTime) != null) &&
+        (helper.getProperty(tempBanSeconds) != null) &&
 		(helper.getProperty(droptagonkick) != null) 
 		){
 			return true;
@@ -90,6 +96,7 @@ public class SettingsLoader {
 		String disabledWorldsString = helper.getProperty(disabledWorlds).replace("[", "");
 		disabledWorldsString = disabledWorldsString.replace("]", "");
 		settings.setDisallowedWorlds(disabledWorldsString.split(","));
-		settings.setDropTagonKick(Boolean.valueOf(helper.getProperty(droptagonkick)));
+        settings.setDropTagonKick(Boolean.valueOf(helper.getProperty(droptagonkick)));
+        settings.setTempBanSeconds(Integer.valueOf(helper.getProperty(tempBanSeconds)));
 	}
 }

@@ -14,6 +14,7 @@ public class Settings {
 	private boolean blockEditWhileTagged;
 	private boolean sendMessageWhenTagged;
 	private int npcDespawnTime;
+	private int tempBanSeconds;
 	private boolean npcDieAfterTime;
 	private boolean droptagonkick;
 	
@@ -30,6 +31,7 @@ public class Settings {
 		npcDespawnTime = -1;
 		npcDieAfterTime = false;
 		droptagonkick = true;
+		tempBanSeconds = 10;
 	}
 
 	public void setDebugEnabled(boolean debugEnabled) {
@@ -125,5 +127,13 @@ public class Settings {
 	public boolean isNpcDieAfterTime() {
 		return npcDieAfterTime;
 	}
+
+    public int getTempBanSeconds() {
+        return tempBanSeconds;
+    }
+
+    public void setTempBanSeconds(int seconds) {
+        tempBanSeconds = seconds;
+    }
 
 }

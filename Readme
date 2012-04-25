@@ -1,3 +1,10 @@
+This is the enhanced version of CombatTag.
+
+Enhancements over vanilla CombatTag:
+    Temporary ban of configurable seconds when logging out during combat.
+    Player ban duration multiplies by two for each subsequent incident of combat logging.
+    The player ban duration is reset to the default configured temporary ban after a day (86400 seconds).
+
 CombatTag:
 	Combat tag is a plugin for bukkit which prevents pvp loggers from getting away with logging.
 	This plugin was originally made by marinating. 
@@ -14,7 +21,8 @@ Look at the setup instructions here:
 
 Look at the settings manifest here:
         http://dev.bukkit.org/server-mods/combat-tag/pages/config-file/
-And, to these instructions, add a new setting:
+
+And, to these configuration instructions, there are extra settings:
 
 - tempBanSeconds:
   Integer, positive (zero or negative values have no effect)

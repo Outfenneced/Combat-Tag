@@ -38,8 +38,7 @@ public class NoPvpPlayerListener implements Listener{
     
     @EventHandler(ignoreCancelled = true)
     public void onPlayerLogin(PlayerLoginEvent event){
-        Player loginPlayer = event.getPlayer();
-        tryUnbanIfTempBanned(loginPlayer);
+        tryUnbanIfTempBanned(event);
 	}
 	
     @EventHandler(ignoreCancelled = true)
@@ -114,15 +113,17 @@ public class NoPvpPlayerListener implements Listener{
         }
     }
 
-    public void tryUnbanIfTempBanned(Player player){
+    public void tryUnbanIfTempBanned(PlayerLoginEvent event){
         // When user attempts to join, check whether he has a temp ban registered.
         // If the temp ban has expired, unban the player so he can join.
+        Player player = event.getPlayer();
         if (bannedPlayers.containsKey(player.getName())) {
             long deadline = bannedPlayers.get(player.getName());
             if (deadline < System.currentTimeMillis()) {
                 plugin.log.info("[CombatTag] Temporary combat-logging ban for " + player.getName() + " expired.  Unbanning.");
                 player.setBanned(false);
                 bannedPlayers.remove(player.getName());
+                event.allow();
             }
         }
     }

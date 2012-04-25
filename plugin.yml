@@ -6,6 +6,4 @@ commands:
   CombatTag:
     description: Shows the current remaining time in a tag
     aliases: ct
-    usage: |
-           Incorrect usage of /<command>. Examples:
-           /<command> - shows you the remaining tag duration
+    usage: /ct

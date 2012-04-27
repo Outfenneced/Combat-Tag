@@ -101,7 +101,8 @@ public class NoPvpPlayerListener implements Listener{
 						Player npcPlayer = (Player) npc.getBukkitEntity();
 						plugin.copyContentsNpc(npc, quitPlr);
 						plugin.npcm.rename(quitPlr.getName(), plugin.getNpcName(quitPlr.getName()));
-						npcPlayer.setHealth(quitPlr.getHealth());
+						int healthSet = healthCheck(quitPlr.getHealth(), quitPlr.getName());
+						npcPlayer.setHealth(healthSet);
 						quitDataContainer.setSpawnedNPC(true);
 						quitDataContainer.setNPCId(quitPlr.getName());
 						quitDataContainer.setShouldBePunished(true);
@@ -126,7 +127,7 @@ public class NoPvpPlayerListener implements Listener{
 				loginPlayer.setExp(loginDataContainer.getExp());
 				loginPlayer.getInventory().setArmorContents(loginDataContainer.getPlayerArmor());
 				loginPlayer.getInventory().setContents(loginDataContainer.getPlayerInventory());
-				int healthSet = healthCheck(loginDataContainer.getHealth(), loginDataContainer);
+				int healthSet = healthCheck(loginDataContainer.getHealth(), loginDataContainer.getPlayerName());
 				loginPlayer.setHealth(healthSet);
 				assert(loginPlayer.getHealth() == loginDataContainer.getHealth());
 				loginPlayer.setLastDamageCause(new EntityDamageEvent(loginPlayer, DamageCause.ENTITY_EXPLOSION, 0));
@@ -136,7 +137,7 @@ public class NoPvpPlayerListener implements Listener{
 		}
 	}
 	
-	private int healthCheck(int health, PlayerDataContainer loginDataContainer) {
+	private int healthCheck(int health, String plr) {
 		if(health < 0){
 			health = 0;
 		}
@@ -144,7 +145,7 @@ public class NoPvpPlayerListener implements Listener{
 			health = 20;
 		}
 		if(health == 0){
-			if(plugin.isDebugEnabled()){plugin.log.info("[CombatTag] " + loginDataContainer.getPlayerName() +" has been set a health of 0.");}
+			if(plugin.isDebugEnabled()){plugin.log.info("[CombatTag] " + plr +" has been set a health of 0.");}
 		}
 		return health;
 	}

@@ -4,5 +4,6 @@
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="C:/Users/cheddar262/Desktop/Plugin Development/bukkit-1.2.5-R1.0.jar"/>
 	<classpathentry kind="lib" path="C:/Users/cheddar262/Desktop/CraftBukkit/craftbukkit-1.2.5-R1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/cheddar262/Desktop/CraftBukkit/plugins/Plugin backups/pvparena.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

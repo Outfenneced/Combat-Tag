@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
+import net.slipcor.pvparena.api.PVPArenaAPI;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -46,7 +48,7 @@ public class CombatTag extends JavaPlugin {
 	private final CombatTagCommandPrevention commandPreventer = new CombatTagCommandPrevention(this);
 	
 	private int npcNumber;
-
+	
 	public CombatTag() {
 		settings = new Settings();
 		new File(mainDirectory).mkdirs();
@@ -132,11 +134,6 @@ public class CombatTag extends JavaPlugin {
 	public void despawnNPC(PlayerDataContainer plrData) {
 		if(isDebugEnabled()){log.info("[CombatTag] Despawning NPC");}
 		NPC npc1 = npcm.getNPC(plrData.getNPCId());
-		if(npc1 == null){
-		    System.out.println("Npc: " + plrData.getNPCId() + " is null");
-		}else{
-		    System.out.println("Npc: " + plrData.getNPCId() + " is not null");
-		}
 		if(npc1 != null){
 			Entity anNPC = npcm.getNPC(plrData.getNPCId()).getBukkitEntity();
 			if(anNPC instanceof Player){
@@ -295,5 +292,16 @@ public class CombatTag extends JavaPlugin {
 				}
 			}
 		}, despawnTicks);
+	}
+	
+	public boolean PvPArenaHook(Player damager, Player damaged){
+		PVPArenaAPI pvpArenaApi = null;
+		boolean bothNotInArena = true;
+		if(getServer().getPluginManager().getPlugin("pvparena") != null){
+			pvpArenaApi = new PVPArenaAPI(); 
+		}
+		if(pvpArenaApi != null)
+			bothNotInArena = PVPArenaAPI.getArenaName(damager) == "" && PVPArenaAPI.getArenaName(damaged) == "";
+		return bothNotInArena;
 	}
 }

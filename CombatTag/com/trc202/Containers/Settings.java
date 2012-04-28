@@ -16,6 +16,9 @@ public class Settings {
 	private int npcDespawnTime;
 	private boolean npcDieAfterTime;
 	private boolean droptagonkick;
+	private String tagMessage;
+	private String commandMessageTagged;
+	private String commandMessageNotTagged;
 	
 	public Settings(){
 		currentMode = SettingsType.NPC;
@@ -30,6 +33,10 @@ public class Settings {
 		npcDespawnTime = -1;
 		npcDieAfterTime = false;
 		droptagonkick = true;
+		tagMessage = "You are now in combat. Type /ct to check your remaining tag time.";
+		commandMessageTagged = "You are in combat for [time] seconds.";
+		commandMessageNotTagged = "You are not currently in combat!";
+		
 	}
 
 	public void setDebugEnabled(boolean debugEnabled) {
@@ -124,6 +131,31 @@ public class Settings {
 	
 	public boolean isNpcDieAfterTime() {
 		return npcDieAfterTime;
+	}
+
+	public void setTagMessage(String tagMessage) {
+		this.tagMessage = tagMessage;
+		
+	}
+
+	public String getTagMessage() {
+		return tagMessage;
+	}
+
+	public void setCommandMessageTagged(String message) {
+		this.commandMessageTagged = message;
+	}
+
+	public String getCommandMessageTagged() {
+		return commandMessageTagged;
+	}
+
+	public void setCommandMessageNotTagged(String message) {
+		this.commandMessageNotTagged = message;
+	}
+
+	public String getCommandMessageNotTagged() {
+		return commandMessageNotTagged;
 	}
 
 }

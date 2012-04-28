@@ -262,10 +262,12 @@ public class CombatTag extends JavaPlugin {
 				Player player = (Player) sender;
 				if(hasDataContainer(player.getName()) && !getPlayerData(player.getName()).hasPVPtagExpired()){
 					PlayerDataContainer playerDataContainer = getPlayerData(player.getName());
-					player.sendMessage("You are in combat for " + playerDataContainer.getRemainingTagTime()/1000 + " seconds.");
+					String message = settings.getCommandMessageTagged();
+					message = message.replace("[time]", "" + (playerDataContainer.getRemainingTagTime()/1000));
+					player.sendMessage(message);
 				}else{
 					removeDataContainer(player.getName());
-					player.sendMessage("You are not currently in combat!");
+					player.sendMessage(settings.getCommandMessageNotTagged());
 				}
 				return true;
 			}
@@ -273,8 +275,7 @@ public class CombatTag extends JavaPlugin {
 			log.info("[CombatTag] Combat Tag can only be used by a player");
 			return true;
 		}
-		return false;
-		
+		return false;	
 	}
 
 	

@@ -5,5 +5,5 @@ main: com.trc202.CombatTag.CombatTag
 commands:
   CombatTag:
     description: Shows the current remaining time in a tag
-    aliases: ct
-    usage: /ct
+    aliases: ctag
+    usage: /ctag

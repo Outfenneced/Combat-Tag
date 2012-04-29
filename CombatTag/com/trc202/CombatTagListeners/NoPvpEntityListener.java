@@ -88,7 +88,7 @@ public class NoPvpEntityListener implements Listener{
 				damagerData = plugin.createPlayerData(damager.getName());
 			}
 			if(plugin.settings.isSendMessageWhenTagged() && !plugin.npcm.isNPC(damaged) && damagerData.hasPVPtagExpired())
-				damager.sendMessage(ChatColor.RED + "[CombatTag] You are now in combat. Type /ct to check your  remaining tag time.");
+				damager.sendMessage(ChatColor.RED + "[CombatTag] You are now in combat. Type /ctag to check your  remaining tag time.");
 			damagerData.setPvPTimeout(plugin.getTagDuration());
 		}
 		if(!damaged.hasPermission("combattag.ignore")){	
@@ -99,7 +99,7 @@ public class NoPvpEntityListener implements Listener{
 				damagedData = plugin.createPlayerData(damaged.getName());
 			}
 			if(plugin.settings.isSendMessageWhenTagged() && !plugin.npcm.isNPC(damaged) && damagedData.hasPVPtagExpired())
-				damaged.sendMessage(ChatColor.RED + "[CombatTag] You are now in combat. Type /ct to check your  remaining tag time.");
+				damaged.sendMessage(ChatColor.RED + "[CombatTag] You are now in combat. Type /ctag to check your  remaining tag time.");
 			damagedData.setPvPTimeout(plugin.getTagDuration());
 		}
 		//if(plugin.isDebugEnabled()){plugin.log.info("[CombatTag] Player tagged another player, setting pvp timeout");}

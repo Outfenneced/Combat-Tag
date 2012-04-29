@@ -260,7 +260,7 @@ public class CombatTag extends JavaPlugin {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args)
 	{
-		if(command.getName().equalsIgnoreCase("ct") || (command.getName().equalsIgnoreCase("combattag"))){
+		if(command.getName().equalsIgnoreCase("ctag") || (command.getName().equalsIgnoreCase("combattag"))){
 			if(sender instanceof Player){
 				Player player = (Player) sender;
 				if(hasDataContainer(player.getName()) && !getPlayerData(player.getName()).hasPVPtagExpired()){

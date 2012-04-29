@@ -92,3 +92,5 @@ And, to these configuration instructions, there are extra settings:
 - Tag-Duration=10
 - npcName=player
 - tempBanSeconds=10
+- banDurationMultiplier=2
+- banResetTimeout=86400

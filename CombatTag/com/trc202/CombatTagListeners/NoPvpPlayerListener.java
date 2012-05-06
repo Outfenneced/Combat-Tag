@@ -62,8 +62,9 @@ public class NoPvpPlayerListener implements Listener{
 		if(plugin.hasDataContainer(quitPlr.getName())){
 			PlayerDataContainer quitDataContainer = plugin.getPlayerData(quitPlr.getName());
 			if(!quitDataContainer.hasPVPtagExpired()){
-				//if(plugin.isDebugEnabled()){plugin.log.info("[CombatTag] Player has logged of during pvp!");}
+				if(plugin.isDebugEnabled()){plugin.log.info("[CombatTag] " + quitPlr.getName() + " has logged of during pvp!");}
 				if(plugin.settings.isInstaKill()){
+					quitPlr.damage(1000);
 					quitPlr.setHealth(0);
 					plugin.removeDataContainer(quitPlr.getName());
 				}else{
@@ -91,8 +92,9 @@ public class NoPvpPlayerListener implements Listener{
 			PlayerDataContainer quitDataContainer = plugin.getPlayerData(quitPlr.getName());
 			if(!quitDataContainer.hasPVPtagExpired()){
 				//Player has logged out before the pvp battle is considered over by the plugin
-				//if(plugin.isDebugEnabled()){plugin.log.info("[CombatTag] Player has logged of during pvp!");}
+				if(plugin.isDebugEnabled()){plugin.log.info("[CombatTag] " + quitPlr.getName() + " has logged of during pvp!");}
 				if(plugin.settings.isInstaKill()){
+					quitPlr.damage(1000);
 					quitPlr.setHealth(0);
 					plugin.removeDataContainer(quitPlr.getName());
 				}else{
@@ -128,7 +130,12 @@ public class NoPvpPlayerListener implements Listener{
 				loginPlayer.getInventory().setArmorContents(loginDataContainer.getPlayerArmor());
 				loginPlayer.getInventory().setContents(loginDataContainer.getPlayerInventory());
 				int healthSet = healthCheck(loginDataContainer.getHealth(), loginDataContainer.getPlayerName());
-				loginPlayer.setHealth(healthSet);
+				if(healthSet == 0){
+					loginPlayer.damage(1000);
+					loginPlayer.setHealth(0);
+				}else{
+					loginPlayer.setHealth(healthSet);
+				}
 				assert(loginPlayer.getHealth() == loginDataContainer.getHealth());
 				loginPlayer.setLastDamageCause(new EntityDamageEvent(loginPlayer, DamageCause.ENTITY_EXPLOSION, 0));
 			}

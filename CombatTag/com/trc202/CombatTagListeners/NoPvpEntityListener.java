@@ -102,7 +102,9 @@ public class NoPvpEntityListener implements Listener{
 				}
 				if(plugin.settings.isSendMessageWhenTagged() && !plugin.npcm.isNPC(damaged) && damagedData.hasPVPtagExpired()){
 					damaged.sendMessage(ChatColor.RED + "[CombatTag] " + plugin.settings.getTagMessage());
-					if(plugin.isDebugEnabled()){plugin.log.info("[CombatTag] " + damager.getName() + " tagged " + damaged.getName() + ", setting pvp timeout");}
+				}
+				if(plugin.isDebugEnabled() && !plugin.npcm.isNPC(damaged) && damagedData.hasPVPtagExpired()){
+					plugin.log.info("[CombatTag] " + damager.getName() + " tagged " + damaged.getName() + ", setting pvp timeout");
 				}
 				damagedData.setPvPTimeout(plugin.getTagDuration());
 			}

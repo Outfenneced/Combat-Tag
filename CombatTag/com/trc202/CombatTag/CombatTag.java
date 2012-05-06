@@ -102,7 +102,7 @@ public class CombatTag extends JavaPlugin {
 	 */
 	public NPC spawnNpc(String plr,Location location){
 		NPC spawnedNPC = null;
-		if(isDebugEnabled()){log.info("[CombatTag] Spawning NPC");}
+		if(isDebugEnabled()){log.info("[CombatTag] Spawning NPC for " + plr);}
 		spawnedNPC = npcm.spawnHumanNPC(getNpcNumber() + "", location , plr);
 		if(spawnedNPC.getBukkitEntity() instanceof HumanEntity){
 			HumanEntity p = (HumanEntity) spawnedNPC.getBukkitEntity();
@@ -132,7 +132,7 @@ public class CombatTag extends JavaPlugin {
 	 * @param plrData 
 	 */
 	public void despawnNPC(PlayerDataContainer plrData) {
-		if(isDebugEnabled()){log.info("[CombatTag] Despawning NPC");}
+		if(isDebugEnabled()){log.info("[CombatTag] Despawning NPC for " + plrData.getPlayerName());}
 		NPC npc1 = npcm.getNPC(plrData.getNPCId());
 		if(npc1 != null){
 			Entity anNPC = npcm.getNPC(plrData.getNPCId()).getBukkitEntity();

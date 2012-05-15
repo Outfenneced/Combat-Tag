@@ -72,7 +72,6 @@ public class NoPvpEntityListener implements Listener{
 		if(plugin.hasDataContainer(deadPlayer.getName())){
 			PlayerDataContainer deadPlayerData = plugin.getPlayerData(deadPlayer.getName());
 			deadPlayerData.setPvPTimeout(0);
-			plugin.removeDataContainer(deadPlayer.getName());
 		}
 	}
 	

@@ -59,7 +59,6 @@ public class NoPvpPlayerListener implements Listener{
     			if (plugin.settings.dropTagOnKick()) {
     				if (plugin.isDebugEnabled()) {plugin.log.info("[CombatTag] Player tag dropped for being kicked.");}
     				kickDataContainer.setPvPTimeout(0);
-    				plugin.removeDataContainer(player.getName());
     			}
     		}
     	}
@@ -72,7 +71,6 @@ public class NoPvpPlayerListener implements Listener{
 				//if(plugin.isDebugEnabled()){plugin.log.info("[CombatTag] Player has logged of during pvp!");}
 				if(plugin.settings.isInstaKill()){
 					quitPlr.setHealth(0);
-					plugin.removeDataContainer(quitPlr.getName());
 				}else{
 					final NPC npc = plugin.spawnNpc(quitPlr.getName(),quitPlr.getLocation());
 					if(npc.getBukkitEntity() instanceof Player){
@@ -101,11 +99,12 @@ public class NoPvpPlayerListener implements Listener{
             // then we do not ban them temporarily
             PlayerDataContainer dataContainer = plugin.getPlayerData(player.getName());
             if (dataContainer.hasPVPtagExpired()) { return; }
-            long banDuration = plugin.settings.getTempBanSeconds();
-            if (dataContainer.banDuration != 0) {
-                // If the player has recently received a temporary ban for combat-logging,
-                // the new ban should be N times as long as the previous one.
-                banDuration = dataContainer.banDuration * plugin.settings.getBanDurationMultiplier();
+            plugin.log.info("[CombatTag] Previous ban duration is " + dataContainer.banDuration);
+            // If the player has recently received a temporary ban for combat-logging,
+            // the new ban should be N times as long as the previous one.
+            long banDuration = dataContainer.banDuration * plugin.settings.getBanDurationMultiplier();
+            if (banDuration == 0) {
+                banDuration = plugin.settings.getTempBanSeconds();
             }
             long banExpireTime = banDuration + ( System.currentTimeMillis() / 1000 );
             long banDurationResetTime = plugin.settings.getBanResetTimeout() + ( System.currentTimeMillis() / 1000 );
@@ -146,7 +145,6 @@ public class NoPvpPlayerListener implements Listener{
 				//if(plugin.isDebugEnabled()){plugin.log.info("[CombatTag] Player has logged of during pvp!");}
 				if(plugin.settings.isInstaKill()){
 					quitPlr.setHealth(0);
-					plugin.removeDataContainer(quitPlr.getName());
 				}else{
 					NPC npc = plugin.spawnNpc(quitPlr.getName(), quitPlr.getLocation());
 					if(npc.getBukkitEntity() instanceof Player){
@@ -183,8 +181,6 @@ public class NoPvpPlayerListener implements Listener{
 				assert(loginPlayer.getHealth() == loginDataContainer.getHealth());
 				loginPlayer.setLastDamageCause(new EntityDamageEvent(loginPlayer, DamageCause.ENTITY_EXPLOSION, 0));
 			}
-			plugin.removeDataContainer(loginPlayer.getName());
-			plugin.createPlayerData(loginPlayer.getName()).setPvPTimeout(plugin.getTagDuration());
 		}
 	}
 	

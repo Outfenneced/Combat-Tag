@@ -31,7 +31,7 @@ public class CombatTagCommandPrevention implements Listener{
 				}
 			}
 		}else if(plugin.hasDataContainer(player.getName()) && plugin.getPlayerData(player.getName()).hasPVPtagExpired()){
-			plugin.removeDataContainer(player.getName());
+			// do nothing
 		}
 	}
 

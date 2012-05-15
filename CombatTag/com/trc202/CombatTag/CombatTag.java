@@ -199,7 +199,6 @@ public class CombatTag extends JavaPlugin {
 	public PlayerDataContainer getPlayerData(String playerName){
 		if(!playerData.containsKey(playerName)){
 			playerData.put(playerName,PlayerDataManager.loadPlayerData(mainDirectory, playerName));
-			PlayerDataManager.deletePlayerData(mainDirectory,playerName);
 		}
 		return playerData.get(playerName);
 	}
@@ -248,10 +247,6 @@ public class CombatTag extends JavaPlugin {
 		if (isDebugEnabled()) {log.info("[CombatTag] " + deadPlayerData.getPlayerName() + " has been killed by Combat Tag and their inventory has been emptied.");}
 	}
 	
-	public void removeDataContainer(String playerName){
-		playerData.remove(playerName);
-	}
-
 	public int getNpcNumber() {
 		npcNumber = npcNumber + 1;
 		return npcNumber;
@@ -267,7 +262,6 @@ public class CombatTag extends JavaPlugin {
 					PlayerDataContainer playerDataContainer = getPlayerData(player.getName());
 					player.sendMessage("You are in combat for " + playerDataContainer.getRemainingTagTime()/1000 + " seconds.");
 				}else{
-					removeDataContainer(player.getName());
 					player.sendMessage("You are not currently in combat!");
 				}
 				return true;

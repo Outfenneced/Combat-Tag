@@ -23,6 +23,9 @@ public class PlayerDataManager {
 		settings.setProperty("Health", String.valueOf(playerContainer.getHealth()));
 		settings.setProperty("Experience", String.valueOf(playerContainer.getExp()));
 		settings.setProperty("Should-Be-Punished", String.valueOf(playerContainer.shouldBePunished()));
+        settings.setProperty("Ban-Expire-Time", String.valueOf(playerContainer.banExpireTime));
+        settings.setProperty("Ban-Duration", String.valueOf(playerContainer.banDuration));
+        settings.setProperty("Ban-Duration-Reset-Time", String.valueOf(playerContainer.banDurationResetTime));
 		String[] items;
 		if(playerContainer.getPlayerInventory() == null){
 			 items = itemsToString(new ItemStack[inventorySlots]);
@@ -77,13 +80,25 @@ public class PlayerDataManager {
 		int health = Integer.valueOf(settings.getProperty("Health"));
 		float experience = Float.valueOf(settings.getProperty("Experience"));
 		boolean punish = Boolean.valueOf(settings.getProperty("Should-Be-Punished"));
-
+        long banExpireTime = 0;
+        long banDuration = 0;
+        long banDurationResetTime = 0;
+        try {
+            banExpireTime = Long.valueOf(settings.getProperty("Ban-Expire-Time"));
+            banDuration = Long.valueOf(settings.getProperty("Ban-Duration"));
+            banDurationResetTime = Long.valueOf(settings.getProperty("Ban-Duration-Reset-Time"));
+        } catch (Exception e) {
+            // do nothing because it's an old property file that has not been updated
+        }
 		PlayerDataContainer pdc = new PlayerDataContainer(playerName);
 		pdc.setPlayerInventory(inventoryItems);
 		pdc.setPlayerArmor(armorItems);
 		pdc.setExp(experience);
 		pdc.setHealth(health);
 		pdc.setShouldBePunished(punish);
+		pdc.banExpireTime = banExpireTime;
+		pdc.banDuration = banDuration;
+		pdc.banDurationResetTime = banDurationResetTime;
 		return pdc;
 	}
 	

@@ -23,6 +23,10 @@ public class PlayerDataContainer{
 	private ItemStack[] playerInventory;
 	private ItemStack[] playerArmor;
 	
+	public long banExpireTime;
+	public long banDuration;
+	public long banDurationResetTime;
+	
 	public PlayerDataContainer(String playerName){
 		setSpawnedNPC(false);
 		this.playerName = playerName;
@@ -30,6 +34,9 @@ public class PlayerDataContainer{
 		this.setShouldBePunished(false);
 		setHealth(0);
 		pvpTimeOut = 0L;
+		banExpireTime = 0;
+		banDuration = 0;
+		banDurationResetTime = 0;
 	}
 	
 	public void setNPCId(String npcId){

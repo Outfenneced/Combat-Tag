@@ -3,8 +3,8 @@ package com.trc202.CombatTagListeners;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+//import org.bukkit.event.entity.EntityDamageEvent;
+//import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -34,13 +34,8 @@ public class NoPvpPlayerListener implements Listener{
     @EventHandler(ignoreCancelled = true)
 	public void onPlayerQuit(PlayerQuitEvent e){
 		Player quitPlr = e.getPlayer();
-		if(plugin.settings.getNpcDespawnTime() <= -1){
-			onPlayerQuitNPCMode(quitPlr);
-		}else if(plugin.settings.getNpcDespawnTime() > 0){
-			onPlayerQuitTimedMode(quitPlr);
-		}else{
-			plugin.log.info("[CombatTag] Invalid npcDespawnTime");
-		}
+		onPlayerQuitNPCMode(quitPlr);
+		
 	}
 	
     @EventHandler(ignoreCancelled = true)
@@ -57,7 +52,7 @@ public class NoPvpPlayerListener implements Listener{
     		}
     	}
     } 
-    
+    /*
 	private void onPlayerQuitTimedMode(Player quitPlr){
 		if(plugin.hasDataContainer(quitPlr.getName())){
 			PlayerDataContainer quitDataContainer = plugin.getPlayerData(quitPlr.getName());
@@ -85,7 +80,7 @@ public class NoPvpPlayerListener implements Listener{
 			}
 		}
 	}
-	
+	*/
 	private void onPlayerQuitNPCMode(Player quitPlr){
 		if(plugin.hasDataContainer(quitPlr.getName())){
 			//Player is likely in pvp
@@ -109,6 +104,9 @@ public class NoPvpPlayerListener implements Listener{
 						quitDataContainer.setNPCId(quitPlr.getName());
 						quitDataContainer.setShouldBePunished(true);
 						quitPlr.getWorld().createExplosion(quitPlr.getLocation(), explosionDamage); //Create the smoke effect //
+						if(plugin.settings.getNpcDespawnTime() > 0){
+							plugin.scheduleDelayedKill(npc, quitDataContainer);
+						}
 					}
 				}
 			}
@@ -123,22 +121,21 @@ public class NoPvpPlayerListener implements Listener{
 				//Player has pvplogged and has not been killed yet
 				//despawn the npc and transfer any effects over to the player
 				//if(plugin.isDebugEnabled()){plugin.log.info("[CombatTag] Player logged in and has npc");}
+				loginPlayer.setNoDamageTicks(0);
 				plugin.despawnNPC(loginDataContainer);
 			}
+			/*
 			if(loginDataContainer.shouldBePunished()){
 				loginPlayer.setExp(loginDataContainer.getExp());
 				loginPlayer.getInventory().setArmorContents(loginDataContainer.getPlayerArmor());
 				loginPlayer.getInventory().setContents(loginDataContainer.getPlayerInventory());
 				int healthSet = healthCheck(loginDataContainer.getHealth(), loginDataContainer.getPlayerName());
-				if(healthSet == 0){
-					loginPlayer.damage(1000);
-					loginPlayer.setHealth(0);
-				}else{
-					loginPlayer.setHealth(healthSet);
-				}
+				loginPlayer.setHealth(healthSet);
 				assert(loginPlayer.getHealth() == loginDataContainer.getHealth());
 				loginPlayer.setLastDamageCause(new EntityDamageEvent(loginPlayer, DamageCause.ENTITY_EXPLOSION, 0));
+				loginPlayer.setNoDamageTicks(1);
 			}
+			*/
 			plugin.removeDataContainer(loginPlayer.getName());
 			plugin.createPlayerData(loginPlayer.getName()).setPvPTimeout(plugin.getTagDuration());
 		}

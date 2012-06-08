@@ -10,6 +10,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+
+import com.topcat.npclib.entity.NPC;
 import com.trc202.CombatTag.CombatTag;
 import com.trc202.Containers.PlayerDataContainer;
 import com.trc202.Containers.Settings;
@@ -65,6 +67,9 @@ public class NoPvpEntityListener implements Listener{
 	public void onNPCDeath(Entity entity){
 		if(plugin.hasDataContainer(plugin.getPlayerName(entity))){
 			plugin.killPlayerEmptyInventory(plugin.getPlayerData(plugin.getPlayerName(entity)));
+			String id = plugin.getPlayerName(entity);
+			NPC npc = plugin.npcm.getNPC(id);
+			plugin.updatePlayerData(npc, id);
 		}
 	}
 	
@@ -90,7 +95,7 @@ public class NoPvpEntityListener implements Listener{
 					damagerData = plugin.createPlayerData(damager.getName());
 				}
 				if(plugin.settings.isSendMessageWhenTagged() && !plugin.npcm.isNPC(damaged) && damagerData.hasPVPtagExpired())
-					damager.sendMessage(ChatColor.RED + "[CombatTag] You are now in combat. Type /ct to check your  remaining tag time.");
+					damager.sendMessage(ChatColor.RED + "[CombatTag] " + plugin.settings.getTagMessage());
 				damagerData.setPvPTimeout(plugin.getTagDuration());
 			}
 			if(!damaged.hasPermission("combattag.ignore")){	

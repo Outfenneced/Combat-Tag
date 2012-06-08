@@ -4,6 +4,10 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
+import net.minecraft.server.EntityHuman;
+import net.minecraft.server.EntityPlayer;
+import net.minecraft.server.ItemInWorldManager;
+import net.minecraft.server.MinecraftServer;
 import net.slipcor.pvparena.api.PVPArenaAPI;
 
 import org.bukkit.Bukkit;
@@ -11,10 +15,11 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.CraftServer;
+import org.bukkit.craftbukkit.entity.CraftHumanEntity;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.PluginManager;
@@ -69,13 +74,14 @@ public class CombatTag extends JavaPlugin {
 	 *}
 	 */
 	@Override
-	@EventHandler
 	public void onDisable() {
 		for(PlayerDataContainer pdc : playerData.values()){
-			if(pdc.hasSpawnedNPC()){
+			NPC npc = npcm.getNPC(pdc.getPlayerName());
+			if(npc != null){
+				if(isDebugEnabled()){log.info("[CombatTag] Disable npc for: " + pdc.getPlayerName() + " !");}
+				updatePlayerData(npc, pdc.getPlayerName());
 				despawnNPC(pdc);
 			}
-			PlayerDataManager.savePlayerData(mainDirectory, pdc);
 		}
 		//Just in case...
 		log.info("[CombatTag] Disabled");
@@ -107,7 +113,7 @@ public class CombatTag extends JavaPlugin {
 		if(spawnedNPC.getBukkitEntity() instanceof HumanEntity){
 			HumanEntity p = (HumanEntity) spawnedNPC.getBukkitEntity();
 			p.setTicksLived(80);
-			p.setNoDamageTicks(0);
+			p.setNoDamageTicks(1);
 		}
 		return spawnedNPC;
 	}
@@ -133,22 +139,15 @@ public class CombatTag extends JavaPlugin {
 	 */
 	public void despawnNPC(PlayerDataContainer plrData) {
 		if(isDebugEnabled()){log.info("[CombatTag] Despawning NPC for " + plrData.getPlayerName());}
-		NPC npc1 = npcm.getNPC(plrData.getNPCId());
-		if(npc1 != null){
-			Entity anNPC = npcm.getNPC(plrData.getNPCId()).getBukkitEntity();
-			if(anNPC instanceof Player){
-				Player npc = (Player) anNPC;
-				plrData.setPlayerArmor(npc.getInventory().getArmorContents());
-				plrData.setPlayerInventory(npc.getInventory().getContents());
-				plrData.setHealth(npc.getHealth());
-				plrData.setExp(npc.getExp());
-				npcm.despawnById(plrData.getNPCId());
-				plrData.setNPCId("");
-				plrData.setSpawnedNPC(false);
-			}
+		NPC npc = npcm.getNPC(plrData.getNPCId());
+		if(npc != null){			
+			updatePlayerData(npc, plrData.getPlayerName());
+			npcm.despawnById(plrData.getNPCId());
+			plrData.setNPCId("");
+			plrData.setSpawnedNPC(false);
 		}
 	}
-
+	
 	public String getPlayerName(Entity entity){
 		if(npcm.isNPC(entity))return npcm.getNPCIdFromEntity(entity);
 		return "entity match failure";
@@ -174,6 +173,7 @@ public class CombatTag extends JavaPlugin {
 	 * @param npc
 	 * @param plr
 	 */
+	/*
 	public void copyContentsPlayer(NPC npc, Player plr) {
 		if(npc.getBukkitEntity() instanceof Player){
 			Player playerNPC = (Player) npc.getBukkitEntity();
@@ -182,9 +182,37 @@ public class CombatTag extends JavaPlugin {
 			plrInv.setArmorContents(npcInv.getArmorContents());
 			plrInv.setContents(npcInv.getContents());
 			plr.setExp(playerNPC.getExp());
+			int healthSet = playerNPC.getHealth();
+			log.info("" + healthSet);
+			if(healthSet > 20){
+				healthSet = 20;
+			} else if(healthSet < 0){
+				healthSet = 0;
+			}
+			plr.setHealth(healthSet);
 		}
 	}
-
+	
+	public void copyContentsCraftPlayer(NPC npc, Player plr) {
+		if(npc.getBukkitEntity() instanceof Player){
+			Player playerNPC = (Player) npc.getBukkitEntity();
+			PlayerInventory npcInv = playerNPC.getInventory();
+			PlayerInventory plrInv = plr.getInventory();
+			plrInv.setArmorContents(npcInv.getArmorContents());
+			plrInv.setContents(npcInv.getContents());
+			plr.setExp(playerNPC.getExp());
+			int healthSet = playerNPC.getHealth();
+			log.info("" + healthSet);
+			if(healthSet > 20){
+				healthSet = 20;
+			} else if(healthSet < 0){
+				healthSet = 0;
+			}
+			plr.setHealth(healthSet);
+			plr.saveData();
+		}
+	}
+	*/
 	public boolean hasDataContainer(String playerName){
 		if(playerData.containsKey(playerName)){
 			return playerData.containsKey(playerName);
@@ -245,6 +273,14 @@ public class CombatTag extends JavaPlugin {
 		if (isDebugEnabled()) {log.info("[CombatTag] " + deadPlayerData.getPlayerName() + " has been killed by Combat Tag and their inventory has been emptied.");}
 	}
 	
+	public void emptyInventory(Player target) {
+		PlayerInventory targetInv = target.getInventory();
+		targetInv.clear();
+		if (isDebugEnabled()) {log.info("[CombatTag] " + target.getName() + " has been killed by Combat Tag and their inventory has been emptied.");}
+	}
+	
+	
+	
 	public void removeDataContainer(String playerName){
 		playerData.remove(playerName);
 	}
@@ -286,8 +322,11 @@ public class CombatTag extends JavaPlugin {
 		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 			@Override
 			public void run() {
-				if(kill == true){
-					plrNpc.setHealth(0);
+				if((kill == false) && (kill == true)){
+					if(npcm.getNPC(plrData.getNPCId()) != null){
+						plrNpc.setHealth(0);
+						updatePlayerData(npc, plrData.getPlayerName());
+					}
 				} else {
 					despawnNPC(plrData);
 				}
@@ -305,4 +344,45 @@ public class CombatTag extends JavaPlugin {
 			bothNotInArena = PVPArenaAPI.getArenaName(damager) == "" && PVPArenaAPI.getArenaName(damaged) == "";
 		return bothNotInArena;
 	}
+	
+    /**
+     * Loads the player data using bukkit and moves the data from the npc to the offline players file
+     * @param npc
+     * @param playerName
+     */
+    public void updatePlayerData(NPC npc, String playerName){
+    	Player target = this.getServer().getPlayer(playerName); //Could return the player or null
+    	if(target == null){ //If player is offline
+    		if(isDebugEnabled()){log.info("[CombatTag] Update player data for " + playerName + " !");}
+    		//Create an entity to load the player data
+    		MinecraftServer server = ((CraftServer)this.getServer()).getServer();
+    		EntityPlayer entity = new EntityPlayer(server, server.getWorldServer(0), playerName, new ItemInWorldManager(server.getWorldServer(0)));
+    		target = (entity == null) ? null : (Player) entity.getBukkitEntity();
+            //Equivalent to
+            /*
+            if(entity == null){
+                target = null;
+            }else{
+                target = entity.getBukkitEntity();
+            }
+            */
+            if(target != null){
+                target.loadData();
+            }
+            log.info(target + "");
+    	}
+    	if(target instanceof CraftHumanEntity && npc.getBukkitEntity() instanceof CraftHumanEntity){
+    		EntityHuman humanTarget = ((CraftHumanEntity) target).getHandle();
+    		EntityHuman humanNpc = ((CraftHumanEntity) npc.getBukkitEntity()).getHandle();
+    		humanTarget.copyTo(humanNpc); //Actually means copy from
+    		if(humanNpc.getHealth() <= 0){
+    			emptyInventory(target);
+    		}
+    	} else {
+    		log.info("[" + this.getDescription().getName() + "] Something went wrong!");
+    		log.info("[" + this.getDescription().getName() + "] The target or source of copyTo is not a Human Entity");
+    	}
+    	target.saveData();
+        //copyContentsCraftPlayer(npc, target);
+    }
 }

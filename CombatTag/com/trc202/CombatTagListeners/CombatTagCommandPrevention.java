@@ -35,5 +35,4 @@ public class CombatTagCommandPrevention implements Listener{
 			plugin.removeDataContainer(player.getName());
 		}
 	}
-
 }

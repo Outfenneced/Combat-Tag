@@ -19,6 +19,7 @@ public class Settings {
 	private String tagMessage;
 	private String commandMessageTagged;
 	private String commandMessageNotTagged;
+	private boolean blockTeleport;
 	
 	public Settings(){
 		currentMode = SettingsType.NPC;
@@ -36,6 +37,7 @@ public class Settings {
 		tagMessage = "You are now in combat. Type /ct to check your remaining tag time.";
 		commandMessageTagged = "You are in combat for [time] seconds.";
 		commandMessageNotTagged = "You are not currently in combat!";
+		blockTeleport = false;
 		
 	}
 
@@ -157,5 +159,12 @@ public class Settings {
 	public String getCommandMessageNotTagged() {
 		return commandMessageNotTagged;
 	}
-
+	
+	public void setBlockTeleport(boolean blockTeleport) {
+		this.blockTeleport = blockTeleport;
+	}
+	
+	public boolean blockTeleport() {
+		return blockTeleport;
+	}
 }

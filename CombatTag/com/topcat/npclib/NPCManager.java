@@ -81,8 +81,8 @@ public class NPCManager {
 	private class SL implements Listener {
 		@SuppressWarnings("unused")
 		public void disableNPCLib() {
-			despawnAll();
-			Bukkit.getServer().getScheduler().cancelTask(taskid);
+		despawnAll();
+		Bukkit.getServer().getScheduler().cancelTask(taskid);
 		}
 	}
 

@@ -1,13 +1,11 @@
 package com.topcat.npclib.entity;
 
-//import net.minecraft.server.EntityPlayer;
+import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.Packet18ArmAnimation;
 import net.minecraft.server.WorldServer;
 
-//import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-//import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
@@ -61,7 +59,8 @@ public class HumanNPC extends NPC {
 	public void setSneaking() {
 		getEntity().setSneak(true);
 	}
-/**
+
+	/*
 	public SpoutPlayer getSpoutPlayer() {
 		try {
 			Class.forName("org.getspout.spout.Spout");
@@ -76,7 +75,7 @@ public class HumanNPC extends NPC {
 		}
 		return null;
 	}
-**/
+	*/
 	public void lookAtPoint(Location point) {
 		if (getEntity().getBukkitEntity().getWorld() != point.getWorld()) {
 			return;
@@ -94,6 +93,7 @@ public class HumanNPC extends NPC {
 		}
 		getEntity().yaw = (float) (newYaw - 90);
 		getEntity().pitch = (float) newPitch;
+		((EntityPlayer)getEntity()).X = (float)(newYaw - 90);
 	}
 
 }

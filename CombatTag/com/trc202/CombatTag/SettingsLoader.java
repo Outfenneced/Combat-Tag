@@ -20,6 +20,7 @@ public class SettingsLoader {
 	private static String tagMessage = "tagMessage";
 	private static String commandMessageTagged = "commandMessageTagged";
 	private static String commandMessageNotTagged = "commandMessageNotTagged";
+	private static String blockTeleport = "blockTeleport";
 
 	public Settings loadSettings(SettingsHelper helper, String version){
 		settings = new Settings();
@@ -49,6 +50,7 @@ public class SettingsLoader {
 		if(helper.getProperty(tagMessage) == null) {helper.setProperty(tagMessage, temp.getTagMessage());}
 		if(helper.getProperty(commandMessageTagged) == null) {helper.setProperty(commandMessageTagged, temp.getCommandMessageTagged());}
 		if(helper.getProperty(commandMessageNotTagged) == null) {helper.setProperty(commandMessageNotTagged, temp.getCommandMessageNotTagged());}
+		if(helper.getProperty(blockTeleport) == null) {helper.setProperty(blockTeleport, Boolean.toString(temp.blockTeleport()));}
 	}
 
 	private boolean isLatestVersion(SettingsHelper helper, String vers){
@@ -71,7 +73,8 @@ public class SettingsLoader {
 		(helper.getProperty(droptagonkick) != null) &&
 		(helper.getProperty(tagMessage) != null) &&
 		(helper.getProperty(commandMessageTagged) != null) &&
-		(helper.getProperty(commandMessageNotTagged) != null)
+		(helper.getProperty(commandMessageNotTagged) != null) &&
+		(helper.getProperty(blockTeleport) != null)
 		){
 			return true;
 		}else{
@@ -103,5 +106,6 @@ public class SettingsLoader {
 		settings.setTagMessage(helper.getProperty(tagMessage));
 		settings.setCommandMessageTagged(helper.getProperty(commandMessageTagged));
 		settings.setCommandMessageNotTagged(helper.getProperty(commandMessageNotTagged));
+		settings.setBlockTeleport(Boolean.valueOf(helper.getProperty(blockTeleport)));
 	}
 }

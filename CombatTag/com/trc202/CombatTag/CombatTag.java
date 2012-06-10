@@ -168,51 +168,7 @@ public class CombatTag extends JavaPlugin {
 			npcInv.setContents(plrInv.getContents());
 		}
 	}
-	/**
-	 * Copys inventory from the NPC to the player
-	 * @param npc
-	 * @param plr
-	 */
-	/*
-	public void copyContentsPlayer(NPC npc, Player plr) {
-		if(npc.getBukkitEntity() instanceof Player){
-			Player playerNPC = (Player) npc.getBukkitEntity();
-			PlayerInventory npcInv = playerNPC.getInventory();
-			PlayerInventory plrInv = plr.getInventory();
-			plrInv.setArmorContents(npcInv.getArmorContents());
-			plrInv.setContents(npcInv.getContents());
-			plr.setExp(playerNPC.getExp());
-			int healthSet = playerNPC.getHealth();
-			log.info("" + healthSet);
-			if(healthSet > 20){
-				healthSet = 20;
-			} else if(healthSet < 0){
-				healthSet = 0;
-			}
-			plr.setHealth(healthSet);
-		}
-	}
 	
-	public void copyContentsCraftPlayer(NPC npc, Player plr) {
-		if(npc.getBukkitEntity() instanceof Player){
-			Player playerNPC = (Player) npc.getBukkitEntity();
-			PlayerInventory npcInv = playerNPC.getInventory();
-			PlayerInventory plrInv = plr.getInventory();
-			plrInv.setArmorContents(npcInv.getArmorContents());
-			plrInv.setContents(npcInv.getContents());
-			plr.setExp(playerNPC.getExp());
-			int healthSet = playerNPC.getHealth();
-			log.info("" + healthSet);
-			if(healthSet > 20){
-				healthSet = 20;
-			} else if(healthSet < 0){
-				healthSet = 0;
-			}
-			plr.setHealth(healthSet);
-			plr.saveData();
-		}
-	}
-	*/
 	public boolean hasDataContainer(String playerName){
 		if(playerData.containsKey(playerName)){
 			return playerData.containsKey(playerName);
@@ -369,7 +325,6 @@ public class CombatTag extends JavaPlugin {
             if(target != null){
                 target.loadData();
             }
-            log.info(target + "");
     	}
     	if(target instanceof CraftHumanEntity && npc.getBukkitEntity() instanceof CraftHumanEntity){
     		EntityHuman humanTarget = ((CraftHumanEntity) target).getHandle();
@@ -383,6 +338,5 @@ public class CombatTag extends JavaPlugin {
     		log.info("[" + this.getDescription().getName() + "] The target or source of copyTo is not a Human Entity");
     	}
     	target.saveData();
-        //copyContentsCraftPlayer(npc, target);
     }
 }

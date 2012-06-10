@@ -14,7 +14,7 @@ public class NullSocket extends Socket {
 
 	@Override
 	public InputStream getInputStream() {
-		byte[] buf = new byte[1];
+		byte[] buf = new byte[5];
 		return new ByteArrayInputStream(buf);
 	}
 

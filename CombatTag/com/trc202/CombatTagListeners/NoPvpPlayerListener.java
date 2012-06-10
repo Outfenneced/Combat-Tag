@@ -1,13 +1,19 @@
 package com.trc202.CombatTagListeners;
 
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 //import org.bukkit.event.entity.EntityDamageEvent;
 //import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
 import com.topcat.npclib.NPCManager;
 import com.topcat.npclib.entity.NPC;
@@ -52,35 +58,7 @@ public class NoPvpPlayerListener implements Listener{
     		}
     	}
     } 
-    /*
-	private void onPlayerQuitTimedMode(Player quitPlr){
-		if(plugin.hasDataContainer(quitPlr.getName())){
-			PlayerDataContainer quitDataContainer = plugin.getPlayerData(quitPlr.getName());
-			if(!quitDataContainer.hasPVPtagExpired()){
-				if(plugin.isDebugEnabled()){plugin.log.info("[CombatTag] " + quitPlr.getName() + " has logged of during pvp!");}
-				if(plugin.settings.isInstaKill()){
-					quitPlr.damage(1000);
-					quitPlr.setHealth(0);
-					plugin.removeDataContainer(quitPlr.getName());
-				}else{
-					final NPC npc = plugin.spawnNpc(quitPlr.getName(),quitPlr.getLocation());
-					if(npc.getBukkitEntity() instanceof Player){
-						Player npcPlayer = (Player) npc.getBukkitEntity();
-						plugin.copyContentsNpc(npc, quitPlr);
-						String plrName = quitPlr.getName(); //tempfix
-						plugin.npcm.rename(plrName, plugin.getNpcName(plrName)); //tempfix
-						npcPlayer.setHealth(quitPlr.getHealth());
-						quitDataContainer.setSpawnedNPC(true);
-						quitDataContainer.setNPCId(quitPlr.getName());
-						quitDataContainer.setShouldBePunished(true);
-						quitPlr.getWorld().createExplosion(quitPlr.getLocation(), explosionDamage); //Create the smoke effect //
-						plugin.scheduleDelayedKill(npc, quitDataContainer);	
-					}
-				}
-			}
-		}
-	}
-	*/
+
 	private void onPlayerQuitNPCMode(Player quitPlr){
 		if(plugin.hasDataContainer(quitPlr.getName())){
 			//Player is likely in pvp
@@ -102,7 +80,7 @@ public class NoPvpPlayerListener implements Listener{
 						npcPlayer.setHealth(healthSet);
 						quitDataContainer.setSpawnedNPC(true);
 						quitDataContainer.setNPCId(quitPlr.getName());
-						quitDataContainer.setShouldBePunished(true);
+						quitDataContainer.setShouldBePunished(false);
 						quitPlr.getWorld().createExplosion(quitPlr.getLocation(), explosionDamage); //Create the smoke effect //
 						if(plugin.settings.getNpcDespawnTime() > 0){
 							plugin.scheduleDelayedKill(npc, quitDataContainer);
@@ -124,7 +102,6 @@ public class NoPvpPlayerListener implements Listener{
 				loginPlayer.setNoDamageTicks(0);
 				plugin.despawnNPC(loginDataContainer);
 			}
-			/*
 			if(loginDataContainer.shouldBePunished()){
 				loginPlayer.setExp(loginDataContainer.getExp());
 				loginPlayer.getInventory().setArmorContents(loginDataContainer.getPlayerArmor());
@@ -133,11 +110,13 @@ public class NoPvpPlayerListener implements Listener{
 				loginPlayer.setHealth(healthSet);
 				assert(loginPlayer.getHealth() == loginDataContainer.getHealth());
 				loginPlayer.setLastDamageCause(new EntityDamageEvent(loginPlayer, DamageCause.ENTITY_EXPLOSION, 0));
-				loginPlayer.setNoDamageTicks(1);
+				loginPlayer.setNoDamageTicks(0);
+				loginDataContainer.setShouldBePunished(false);
 			}
-			*/
 			plugin.removeDataContainer(loginPlayer.getName());
 			plugin.createPlayerData(loginPlayer.getName()).setPvPTimeout(plugin.getTagDuration());
+			loginDataContainer = plugin.getPlayerData(loginPlayer.getName());
+			loginDataContainer.setShouldBePunished(false);
 		}
 	}
 	
@@ -152,5 +131,19 @@ public class NoPvpPlayerListener implements Listener{
 			if(plugin.isDebugEnabled()){plugin.log.info("[CombatTag] " + plr +" has been set a health of 0.");}
 		}
 		return health;
+	}
+	
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onTeleport(PlayerTeleportEvent event){
+		if(plugin.hasDataContainer(event.getPlayer().getName())){
+			PlayerDataContainer playerData = plugin.getPlayerData(event.getPlayer().getName());
+			if(plugin.settings.blockTeleport() == true && !playerData.hasPVPtagExpired()){
+				TeleportCause cause = event.getCause();
+				if(cause == TeleportCause.PLUGIN || cause == TeleportCause.COMMAND){
+					event.getPlayer().sendMessage(ChatColor.RED + "[CombatTag] You can't teleport while tagged");
+					event.setCancelled(true);
+				}
+			}
+		}
 	}
 }

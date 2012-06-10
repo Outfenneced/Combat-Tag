@@ -11,7 +11,7 @@ import net.minecraft.server.PropertyManager;
 import net.minecraft.server.ServerConfigurationManager;
 import net.minecraft.server.WorldServer;
 
-import jline.ConsoleReader;
+import jline.console.ConsoleReader;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Server;

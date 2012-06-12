@@ -99,7 +99,6 @@ public class NoPvpPlayerListener implements Listener{
 				//Player has pvplogged and has not been killed yet
 				//despawn the npc and transfer any effects over to the player
 				//if(plugin.isDebugEnabled()){plugin.log.info("[CombatTag] Player logged in and has npc");}
-				loginPlayer.setNoDamageTicks(0);
 				plugin.despawnNPC(loginDataContainer);
 			}
 			if(loginDataContainer.shouldBePunished()){

@@ -332,6 +332,12 @@ public class CombatTag extends JavaPlugin {
     		humanTarget.copyTo(humanNpc); //Actually means copy from
     		if(humanNpc.getHealth() <= 0){
     			emptyInventory(target);
+    			ItemStack airItem = new ItemStack(Material.AIR);
+    			ItemStack[] emptyArmorStack = new ItemStack[4];
+    			for(int x = 0; x < emptyArmorStack.length; x++){
+    				emptyArmorStack[x] = airItem;
+    			}
+    			target.getInventory().setArmorContents(emptyArmorStack);
     		}
     	} else {
     		log.info("[" + this.getDescription().getName() + "] Something went wrong!");

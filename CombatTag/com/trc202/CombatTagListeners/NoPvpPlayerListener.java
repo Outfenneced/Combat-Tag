@@ -1,6 +1,9 @@
 package com.trc202.CombatTagListeners;
 
+import net.minecraft.server.EntityPlayer;
+
 import org.bukkit.ChatColor;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -99,6 +102,9 @@ public class NoPvpPlayerListener implements Listener{
 				//Player has pvplogged and has not been killed yet
 				//despawn the npc and transfer any effects over to the player
 				//if(plugin.isDebugEnabled()){plugin.log.info("[CombatTag] Player logged in and has npc");}
+				CraftPlayer cPlayer = (CraftPlayer) loginPlayer;
+				EntityPlayer ePlayer = cPlayer.getHandle();
+				ePlayer.invulnerableTicks = 1;
 				plugin.despawnNPC(loginDataContainer);
 			}
 			if(loginDataContainer.shouldBePunished()){

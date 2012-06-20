@@ -11,6 +11,7 @@ import net.minecraft.server.MinecraftServer;
 import net.slipcor.pvparena.api.PVPArenaAPI;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -250,22 +251,40 @@ public class CombatTag extends JavaPlugin {
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args)
 	{
 		if(command.getName().equalsIgnoreCase("ct") || (command.getName().equalsIgnoreCase("combattag"))){
-			if(sender instanceof Player){
-				Player player = (Player) sender;
-				if(hasDataContainer(player.getName()) && !getPlayerData(player.getName()).hasPVPtagExpired()){
-					PlayerDataContainer playerDataContainer = getPlayerData(player.getName());
-					String message = settings.getCommandMessageTagged();
-					message = message.replace("[time]", "" + (playerDataContainer.getRemainingTagTime()/1000));
-					player.sendMessage(message);
+			if(!args[0].equalsIgnoreCase("reload")){
+				if(sender instanceof Player){
+					Player player = (Player) sender;
+					if(hasDataContainer(player.getName()) && !getPlayerData(player.getName()).hasPVPtagExpired()){
+						PlayerDataContainer playerDataContainer = getPlayerData(player.getName());
+						String message = settings.getCommandMessageTagged();
+						message = message.replace("[time]", "" + (playerDataContainer.getRemainingTagTime()/1000));
+						player.sendMessage(message);
+					}else{
+						removeDataContainer(player.getName());
+						player.sendMessage(settings.getCommandMessageNotTagged());
+					}
+					return true;
 				}else{
-					removeDataContainer(player.getName());
-					player.sendMessage(settings.getCommandMessageNotTagged());
+					log.info("[CombatTag] Combat Tag can only be used by a player");
+					return true;
+				}
+			} else{
+				if(sender.hasPermission("combattag.reload")){
+					settings = new SettingsLoader().loadSettings(settingsHelper, this.getDescription().getVersion());
+					if(sender instanceof Player){
+						sender.sendMessage(ChatColor.RED + "[CombatTag] Settings were reloaded!");
+					} else {
+						log.info("[CombatTag] Settings were reloaded!");
+					}
+				} else {
+					if(sender instanceof Player){
+						sender.sendMessage(ChatColor.RED + "[CombatTag] You don't have the permission 'combattag.reload'!");
+					} else {
+						log.info("[CombatTag] You don't have the permission 'combattag.reload'!");
+					}
 				}
 				return true;
 			}
-		}else{
-			log.info("[CombatTag] Combat Tag can only be used by a player");
-			return true;
 		}
 		return false;	
 	}

@@ -37,13 +37,13 @@ public class NoPvpPlayerListener implements Listener{
     @EventHandler(ignoreCancelled = true)
     public void onPlayerJoin(PlayerJoinEvent event){
 		Player loginPlayer = event.getPlayer();
-		onPlayerJoinNPCMode(loginPlayer);
+		onPlayerJoin(loginPlayer);
 	}
 	
     @EventHandler(ignoreCancelled = true)
 	public void onPlayerQuit(PlayerQuitEvent e){
 		Player quitPlr = e.getPlayer();
-		onPlayerQuitNPCMode(quitPlr);
+		onPlayerQuit(quitPlr);
 		
 	}
 	
@@ -62,7 +62,7 @@ public class NoPvpPlayerListener implements Listener{
     	}
     } 
 
-	private void onPlayerQuitNPCMode(Player quitPlr){
+	private void onPlayerQuit(Player quitPlr){
 		if(plugin.hasDataContainer(quitPlr.getName())){
 			//Player is likely in pvp
 			PlayerDataContainer quitDataContainer = plugin.getPlayerData(quitPlr.getName());
@@ -94,7 +94,7 @@ public class NoPvpPlayerListener implements Listener{
 		}
 	}
 
-	private void onPlayerJoinNPCMode(Player loginPlayer){
+	private void onPlayerJoin(Player loginPlayer){
 		if(plugin.hasDataContainer(loginPlayer.getName())){
 			//Player has a data container and is likely to need some sort of punishment
 			PlayerDataContainer loginDataContainer = plugin.getPlayerData(loginPlayer.getName());

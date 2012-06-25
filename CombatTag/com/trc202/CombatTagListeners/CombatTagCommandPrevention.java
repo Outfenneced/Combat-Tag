@@ -17,7 +17,7 @@ public class CombatTagCommandPrevention implements Listener{
 		this.plugin = plugin;
 	}
 	
-	@EventHandler(priority = EventPriority.HIGHEST)
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event)
     {
 		if(event.isCancelled()) return;

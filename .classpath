@@ -3,6 +3,7 @@
 	<classpathentry kind="src" path="CombatTag"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="C:/Users/cheddar262/Desktop/CraftBukkit/plugins/Plugin backups/pvparena.jar"/>
-	<classpathentry kind="lib" path="C:/Users/cheddar262/Desktop/Plugin Development/craftbukkit-1.2.5-R3.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/cheddar262/Desktop/Plugin Development/Dependencies/Combat Tag/War-v1.7.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/cheddar262/Desktop/Plugin Development/craftbukkit-1.2.5-R4.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

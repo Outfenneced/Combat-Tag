@@ -116,12 +116,12 @@ public class NoPvpPlayerListener implements Listener{
 				assert(loginPlayer.getHealth() == loginDataContainer.getHealth());
 				loginPlayer.setLastDamageCause(new EntityDamageEvent(loginPlayer, DamageCause.ENTITY_EXPLOSION, 0));
 				loginPlayer.setNoDamageTicks(0);
-				loginDataContainer.setShouldBePunished(false);
 			}
-			plugin.removeDataContainer(loginPlayer.getName());
-			plugin.createPlayerData(loginPlayer.getName()).setPvPTimeout(plugin.getTagDuration());
-			loginDataContainer = plugin.getPlayerData(loginPlayer.getName());
+			if(loginPlayer.getHealth() > 0){
+				loginDataContainer.setPvPTimeout(plugin.getTagDuration());
+			}
 			loginDataContainer.setShouldBePunished(false);
+			loginDataContainer.setSpawnedNPC(false);
 		}
 	}
 	

@@ -85,7 +85,7 @@ public class NoPvpEntityListener implements Listener{
 		if(plugin.npcm.isNPC(damaged)){return;} //If the damaged player is an npc do nothing
 		PlayerDataContainer damagerData;
 		PlayerDataContainer damagedData;
-		boolean bothNotInArena = plugin.PvPArenaHook(damager, damaged);
+		boolean bothNotInArena = plugin.PvPArenaHook(damager) && plugin.PvPArenaHook(damaged) && plugin.WarArenaHook(damager) && plugin.WarArenaHook(damaged);
 		if(bothNotInArena){
 			if(!damager.hasPermission("combattag.ignore")){	
 				//Get damager player data container

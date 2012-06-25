@@ -26,6 +26,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.tommytony.war.Warzone;
 import com.topcat.npclib.NPCManager;
 import com.topcat.npclib.entity.NPC;
 import com.trc202.CombatTagListeners.CombatTagCommandPrevention;
@@ -38,11 +39,11 @@ import com.trc202.Containers.Settings;
 import com.trc202.helpers.SettingsHelper;
 
 public class CombatTag extends JavaPlugin {
-	
+
 	private SettingsHelper settingsHelper;
 	private	File settingsFile;
 	public Settings settings;
-	
+
 	public final Logger log = Logger.getLogger("Minecraft");
 	public NPCManager npcm;
 	private HashMap<String,PlayerDataContainer> playerData;
@@ -52,9 +53,9 @@ public class CombatTag extends JavaPlugin {
 	public final NoPvpEntityListener entityListener = new NoPvpEntityListener(this);
 	private final NoPvpBlockListener blockListener = new NoPvpBlockListener(this);
 	private final CombatTagCommandPrevention commandPreventer = new CombatTagCommandPrevention(this);
-	
+
 	private int npcNumber;
-	
+
 	public CombatTag() {
 		settings = new Settings();
 		new File(mainDirectory).mkdirs();
@@ -62,7 +63,7 @@ public class CombatTag extends JavaPlugin {
 		settingsHelper = new SettingsHelper(settingsFile, "CombatTag");
 		npcNumber = 0;
 	}
-	
+
 	/**
 	 * Change NPCManager to:
 	 * 
@@ -100,7 +101,7 @@ public class CombatTag extends JavaPlugin {
 		pm.registerEvents(blockListener, this);
 		log.info("["+ getDescription().getName() +"]"+ " has loaded with a tag time of " + settings.getTagDuration() + " seconds");
 	}
-	
+
 	/**
 	 * Spawns an npc with the name PvPLogger at the given location, sets the npc id to be the players name
 	 * @param plr
@@ -118,7 +119,7 @@ public class CombatTag extends JavaPlugin {
 		}
 		return spawnedNPC;
 	}
-	
+
 	public String getNpcName(String plr) {
 		String npcName = settings.getNpcName();
 		if(!(npcName.contains("player") || npcName.contains("number")))
@@ -148,12 +149,12 @@ public class CombatTag extends JavaPlugin {
 			plrData.setSpawnedNPC(false);
 		}
 	}
-	
+
 	public String getPlayerName(Entity entity){
 		if(npcm.isNPC(entity))return npcm.getNPCIdFromEntity(entity);
 		return "entity match failure";
 	}
-	
+
 	/**
 	 * Copys inventory from the Player to the NPC
 	 * @param npc Npc
@@ -169,7 +170,7 @@ public class CombatTag extends JavaPlugin {
 			npcInv.setContents(plrInv.getContents());
 		}
 	}
-	
+
 	public boolean hasDataContainer(String playerName){
 		if(playerData.containsKey(playerName)){
 			return playerData.containsKey(playerName);
@@ -185,8 +186,8 @@ public class CombatTag extends JavaPlugin {
 		}
 		return playerData.get(playerName);
 	}
-	
-	
+
+
 	public PlayerDataContainer createPlayerData(String playerName){
 		PlayerDataContainer plr = new PlayerDataContainer(playerName);
 		playerData.put(playerName, plr);
@@ -205,7 +206,7 @@ public class CombatTag extends JavaPlugin {
 	public boolean isDebugEnabled(){
 		return settings.isDebugEnabled();
 	}
-	
+
 	/**
 	 * Kills player and sets their inventory to an empty stack
 	 * @param deadPlayerData
@@ -229,15 +230,15 @@ public class CombatTag extends JavaPlugin {
 		deadPlayerData.setPvPTimeout(0);
 		if (isDebugEnabled()) {log.info("[CombatTag] " + deadPlayerData.getPlayerName() + " has been killed by Combat Tag and their inventory has been emptied.");}
 	}
-	
+
 	public void emptyInventory(Player target) {
 		PlayerInventory targetInv = target.getInventory();
 		targetInv.clear();
 		if (isDebugEnabled()) {log.info("[CombatTag] " + target.getName() + " has been killed by Combat Tag and their inventory has been emptied.");}
 	}
-	
-	
-	
+
+
+
 	public void removeDataContainer(String playerName){
 		playerData.remove(playerName);
 	}
@@ -251,7 +252,7 @@ public class CombatTag extends JavaPlugin {
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args)
 	{
 		if(command.getName().equalsIgnoreCase("ct") || (command.getName().equalsIgnoreCase("combattag"))){
-			if(!args[0].equalsIgnoreCase("reload")){
+			if(args.length == 0){
 				if(sender instanceof Player){
 					Player player = (Player) sender;
 					if(hasDataContainer(player.getName()) && !getPlayerData(player.getName()).hasPVPtagExpired()){
@@ -263,12 +264,11 @@ public class CombatTag extends JavaPlugin {
 						removeDataContainer(player.getName());
 						player.sendMessage(settings.getCommandMessageNotTagged());
 					}
-					return true;
 				}else{
-					log.info("[CombatTag] Combat Tag can only be used by a player");
-					return true;
+					log.info("[CombatTag] /ct can only be used by a player!");
 				}
-			} else{
+				return true;
+			} else if(args[0].equals("reload")){
 				if(sender.hasPermission("combattag.reload")){
 					settings = new SettingsLoader().loadSettings(settingsHelper, this.getDescription().getVersion());
 					if(sender instanceof Player){
@@ -279,21 +279,21 @@ public class CombatTag extends JavaPlugin {
 				} else {
 					if(sender instanceof Player){
 						sender.sendMessage(ChatColor.RED + "[CombatTag] You don't have the permission 'combattag.reload'!");
-					} else {
-						log.info("[CombatTag] You don't have the permission 'combattag.reload'!");
 					}
 				}
 				return true;
 			}
+			sender.sendMessage(ChatColor.RED + "[CombatTag] That is not a valid command!");
+			return true;
 		}
 		return false;	
 	}
 
-	
+
 	public void scheduleDelayedKill(final NPC npc, final PlayerDataContainer plrData) {
 		long despawnTicks = settings.getNpcDespawnTime() * 20L;
 		final boolean kill = settings.isNpcDieAfterTime();
-    	final Player plrNpc = (Player) npc.getBukkitEntity();
+		final Player plrNpc = (Player) npc.getBukkitEntity();
 		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 			@Override
 			public void run() {
@@ -308,60 +308,71 @@ public class CombatTag extends JavaPlugin {
 			}
 		}, despawnTicks);
 	}
-	
-	public boolean PvPArenaHook(Player damager, Player damaged){
+
+	public boolean PvPArenaHook(Player plr){
 		PVPArenaAPI pvpArenaApi = null;
-		boolean bothNotInArena = true;
+		boolean notInArena = true;
 		if(getServer().getPluginManager().getPlugin("pvparena") != null){
 			pvpArenaApi = new PVPArenaAPI(); 
 		}
 		if(pvpArenaApi != null)
-			bothNotInArena = PVPArenaAPI.getArenaName(damager) == "" && PVPArenaAPI.getArenaName(damaged) == "";
-		return bothNotInArena;
+			notInArena = PVPArenaAPI.getArenaName(plr) == "" && PVPArenaAPI.getArenaName(plr) == "";
+		return notInArena;
 	}
-	
-    /**
-     * Loads the player data using bukkit and moves the data from the npc to the offline players file
-     * @param npc
-     * @param playerName
-     */
-    public void updatePlayerData(NPC npc, String playerName){
-    	Player target = this.getServer().getPlayer(playerName); //Could return the player or null
-    	if(target == null){ //If player is offline
-    		if(isDebugEnabled()){log.info("[CombatTag] Update player data for " + playerName + " !");}
-    		//Create an entity to load the player data
-    		MinecraftServer server = ((CraftServer)this.getServer()).getServer();
-    		EntityPlayer entity = new EntityPlayer(server, server.getWorldServer(0), playerName, new ItemInWorldManager(server.getWorldServer(0)));
-    		target = (entity == null) ? null : (Player) entity.getBukkitEntity();
-            //Equivalent to
-            /*
+
+	public boolean WarArenaHook(Player plr){
+		boolean notInArena = true;
+		if(getServer().getPluginManager().getPlugin("War") != null){
+			notInArena = Warzone.getZoneByPlayerName(plr.getName()) == null && Warzone.getZoneByPlayerName(plr.getName()) == null;
+		}
+		return notInArena;
+	}
+
+	/**
+	 * Loads the player data using bukkit and moves the data from the npc to the offline players file
+	 * @param npc
+	 * @param playerName
+	 */
+	public void updatePlayerData(NPC npc, String playerName){
+		Player target = this.getServer().getPlayer(playerName); //Could return the player or null
+		if(target == null){ //If player is offline
+			if(isDebugEnabled()){log.info("[CombatTag] Update player data for " + playerName + " !");}
+			//Create an entity to load the player data
+			MinecraftServer server = ((CraftServer)this.getServer()).getServer();
+			EntityPlayer entity = new EntityPlayer(server, server.getWorldServer(0), playerName, new ItemInWorldManager(server.getWorldServer(0)));
+			target = (entity == null) ? null : (Player) entity.getBukkitEntity();
+			//Equivalent to
+			/*
             if(entity == null){
                 target = null;
             }else{
                 target = entity.getBukkitEntity();
             }
-            */
-            if(target != null){
-                target.loadData();
-            }
-    	}
-    	if(target instanceof CraftHumanEntity && npc.getBukkitEntity() instanceof CraftHumanEntity){
-    		EntityHuman humanTarget = ((CraftHumanEntity) target).getHandle();
-    		EntityHuman humanNpc = ((CraftHumanEntity) npc.getBukkitEntity()).getHandle();
-    		humanTarget.copyTo(humanNpc); //Actually means copy from
-    		if(humanNpc.getHealth() <= 0){
-    			emptyInventory(target);
-    			ItemStack airItem = new ItemStack(Material.AIR);
-    			ItemStack[] emptyArmorStack = new ItemStack[4];
-    			for(int x = 0; x < emptyArmorStack.length; x++){
-    				emptyArmorStack[x] = airItem;
-    			}
-    			target.getInventory().setArmorContents(emptyArmorStack);
-    		}
-    	} else {
-    		log.info("[" + this.getDescription().getName() + "] Something went wrong!");
-    		log.info("[" + this.getDescription().getName() + "] The target or source of copyTo is not a Human Entity");
-    	}
-    	target.saveData();
-    }
+			 */
+			if(target != null){
+				target.loadData();
+			}
+		}
+		if(target instanceof CraftHumanEntity && npc.getBukkitEntity() instanceof CraftHumanEntity){
+			EntityHuman humanTarget = ((CraftHumanEntity) target).getHandle();
+			EntityHuman humanNpc = ((CraftHumanEntity) npc.getBukkitEntity()).getHandle();
+			humanTarget.copyTo(humanNpc); //Actually means copy from
+			if(humanNpc.getHealth() <= 0){
+				emptyInventory(target);
+				ItemStack airItem = new ItemStack(Material.AIR);
+				ItemStack[] emptyArmorStack = new ItemStack[4];
+				for(int x = 0; x < emptyArmorStack.length; x++){
+					emptyArmorStack[x] = airItem;
+				}
+				target.getInventory().setArmorContents(emptyArmorStack);
+				humanTarget.setHealth(0);
+				PlayerDataContainer playerData = getPlayerData(playerName);
+				playerData.setPvPTimeout(0);
+			}
+		} else {
+			log.info("[" + this.getDescription().getName() + "] Something went wrong!");
+			log.info("[" + this.getDescription().getName() + "] The target or source of copyTo is not a Human Entity");
+		}
+		target.saveData();
+	}
 }

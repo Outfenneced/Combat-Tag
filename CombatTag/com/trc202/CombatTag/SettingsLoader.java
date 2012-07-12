@@ -17,10 +17,12 @@ public class SettingsLoader {
 	private static String npcDespawnTime = "npcDespawnTime";
 	private static String npcDieAfterTime = "npcDieAfterTime";
 	private static String droptagonkick = "DropTagOnKick";
-	private static String tagMessage = "tagMessage";
+	private static String tagMessageDamager = "tagMessageDamager";
+	private static String tagMessageDamaged = "tagMessageDamaged";
 	private static String commandMessageTagged = "commandMessageTagged";
 	private static String commandMessageNotTagged = "commandMessageNotTagged";
 	private static String blockTeleport = "blockTeleport";
+	private static String dontSpawnInWG = "dontSpawnInWG";
 
 	public Settings loadSettings(SettingsHelper helper, String version){
 		settings = new Settings();
@@ -47,10 +49,12 @@ public class SettingsLoader {
 		if(helper.getProperty(npcDespawnTime) == null){helper.setProperty(npcDespawnTime, String.valueOf(temp.getNpcDespawnTime()));}
 		if(helper.getProperty(npcDieAfterTime) == null){helper.setProperty(npcDieAfterTime, Boolean.toString(temp.isInstaKill()));}
 		if(helper.getProperty(droptagonkick) == null) {helper.setProperty(droptagonkick, Boolean.toString(temp.dropTagOnKick()));}
-		if(helper.getProperty(tagMessage) == null) {helper.setProperty(tagMessage, temp.getTagMessage());}
+		if(helper.getProperty(tagMessageDamager) == null) {helper.setProperty(tagMessageDamager, temp.getTagMessageDamager());}
+		if(helper.getProperty(tagMessageDamaged) == null) {helper.setProperty(tagMessageDamaged, temp.getTagMessageDamaged());}
 		if(helper.getProperty(commandMessageTagged) == null) {helper.setProperty(commandMessageTagged, temp.getCommandMessageTagged());}
 		if(helper.getProperty(commandMessageNotTagged) == null) {helper.setProperty(commandMessageNotTagged, temp.getCommandMessageNotTagged());}
 		if(helper.getProperty(blockTeleport) == null) {helper.setProperty(blockTeleport, Boolean.toString(temp.blockTeleport()));}
+		if(helper.getProperty(dontSpawnInWG) == null) {helper.setProperty(dontSpawnInWG, Boolean.toString(temp.dontSpawnInWG()));}
 	}
 
 	private boolean isLatestVersion(SettingsHelper helper, String vers){
@@ -71,10 +75,12 @@ public class SettingsLoader {
 		(helper.getProperty(npcDespawnTime) != null) &&
 		(helper.getProperty(npcDieAfterTime) != null) &&
 		(helper.getProperty(droptagonkick) != null) &&
-		(helper.getProperty(tagMessage) != null) &&
+		(helper.getProperty(tagMessageDamager) != null) &&
+		(helper.getProperty(tagMessageDamaged) != null) &&
 		(helper.getProperty(commandMessageTagged) != null) &&
 		(helper.getProperty(commandMessageNotTagged) != null) &&
-		(helper.getProperty(blockTeleport) != null)
+		(helper.getProperty(blockTeleport) != null) &&
+		(helper.getProperty(dontSpawnInWG) != null)
 		){
 			return true;
 		}else{
@@ -103,9 +109,11 @@ public class SettingsLoader {
 		disabledWorldsString = disabledWorldsString.replace("]", "");
 		settings.setDisallowedWorlds(disabledWorldsString.split(","));
 		settings.setDropTagonKick(Boolean.valueOf(helper.getProperty(droptagonkick)));
-		settings.setTagMessage(helper.getProperty(tagMessage));
+		settings.setTagMessageDamager(helper.getProperty(tagMessageDamager));
+		settings.setTagMessageDamaged(helper.getProperty(tagMessageDamaged));
 		settings.setCommandMessageTagged(helper.getProperty(commandMessageTagged));
 		settings.setCommandMessageNotTagged(helper.getProperty(commandMessageNotTagged));
 		settings.setBlockTeleport(Boolean.valueOf(helper.getProperty(blockTeleport)));
+		settings.setDontSpawnInWG(Boolean.valueOf(helper.getProperty(dontSpawnInWG)));
 	}
 }

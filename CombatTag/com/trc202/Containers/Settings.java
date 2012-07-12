@@ -16,10 +16,12 @@ public class Settings {
 	private int npcDespawnTime;
 	private boolean npcDieAfterTime;
 	private boolean droptagonkick;
-	private String tagMessage;
 	private String commandMessageTagged;
 	private String commandMessageNotTagged;
+	private String tagMessageDamager;
+	private String tagMessageDamaged;
 	private boolean blockTeleport;
+	private boolean dontSpawnInWG;
 	
 	public Settings(){
 		currentMode = SettingsType.NPC;
@@ -34,10 +36,12 @@ public class Settings {
 		npcDespawnTime = -1;
 		npcDieAfterTime = false;
 		droptagonkick = true;
-		tagMessage = "You are now in combat. Type /ct to check your remaining tag time.";
 		commandMessageTagged = "You are in combat for [time] seconds.";
 		commandMessageNotTagged = "You are not currently in combat!";
+		tagMessageDamager = "You have hit [player]. Type /ct to check your remaining tag time.";
+		tagMessageDamaged = "You have been hit by [player]. Type /ct to check your remaining tag time.";
 		blockTeleport = false;
+		dontSpawnInWG = false;
 		
 	}
 
@@ -135,15 +139,6 @@ public class Settings {
 		return npcDieAfterTime;
 	}
 
-	public void setTagMessage(String tagMessage) {
-		this.tagMessage = tagMessage;
-		
-	}
-
-	public String getTagMessage() {
-		return tagMessage;
-	}
-
 	public void setCommandMessageTagged(String message) {
 		this.commandMessageTagged = message;
 	}
@@ -166,5 +161,29 @@ public class Settings {
 	
 	public boolean blockTeleport() {
 		return blockTeleport;
+	}
+
+	public void setDontSpawnInWG(boolean dontSpawnInWG) {
+		this.dontSpawnInWG = dontSpawnInWG;
+	}
+	
+	public boolean dontSpawnInWG(){
+		return dontSpawnInWG;
+	}
+
+	public void setTagMessageDamaged(String tagMessageDamaged) {
+		this.tagMessageDamaged = tagMessageDamaged;
+	}
+	
+	public String getTagMessageDamaged() {
+		return tagMessageDamaged;
+	}
+	
+	public void setTagMessageDamager(String tagMessageDamager) {
+		this.tagMessageDamager = tagMessageDamager;
+	}
+	
+	public String getTagMessageDamager() {
+		return tagMessageDamager;
 	}
 }

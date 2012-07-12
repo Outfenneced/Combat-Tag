@@ -69,24 +69,29 @@ public class NoPvpPlayerListener implements Listener{
 			if(!quitDataContainer.hasPVPtagExpired()){
 				//Player has logged out before the pvp battle is considered over by the plugin
 				if(plugin.isDebugEnabled()){plugin.log.info("[CombatTag] " + quitPlr.getName() + " has logged of during pvp!");}
-				if(plugin.settings.isInstaKill()){
-					quitPlr.damage(1000);
+				if(plugin.settings.isInstaKill() || quitPlr.getHealth() <= 0){
 					quitPlr.setHealth(0);
 					plugin.removeDataContainer(quitPlr.getName());
 				}else{
-					NPC npc = plugin.spawnNpc(quitPlr.getName(), quitPlr.getLocation());
-					if(npc.getBukkitEntity() instanceof Player){
-						Player npcPlayer = (Player) npc.getBukkitEntity();
-						plugin.copyContentsNpc(npc, quitPlr);
-						plugin.npcm.rename(quitPlr.getName(), plugin.getNpcName(quitPlr.getName()));
-						int healthSet = healthCheck(quitPlr.getHealth(), quitPlr.getName());
-						npcPlayer.setHealth(healthSet);
-						quitDataContainer.setSpawnedNPC(true);
-						quitDataContainer.setNPCId(quitPlr.getName());
-						quitDataContainer.setShouldBePunished(false);
-						quitPlr.getWorld().createExplosion(quitPlr.getLocation(), explosionDamage); //Create the smoke effect //
-						if(plugin.settings.getNpcDespawnTime() > 0){
-							plugin.scheduleDelayedKill(npc, quitDataContainer);
+					boolean willSpawn = true;
+					if(plugin.settings.dontSpawnInWG()){
+						willSpawn = plugin.InWGCheck(quitPlr);
+					}
+					if(willSpawn){
+						NPC npc = plugin.spawnNpc(quitPlr.getName(), quitPlr.getLocation());
+						if(npc.getBukkitEntity() instanceof Player){
+							Player npcPlayer = (Player) npc.getBukkitEntity();
+							plugin.copyContentsNpc(npc, quitPlr);
+							plugin.npcm.rename(quitPlr.getName(), plugin.getNpcName(quitPlr.getName()));
+							int healthSet = healthCheck(quitPlr.getHealth(), quitPlr.getName());
+							npcPlayer.setHealth(healthSet);
+							quitDataContainer.setSpawnedNPC(true);
+							quitDataContainer.setNPCId(quitPlr.getName());
+							quitDataContainer.setShouldBePunished(false);
+							quitPlr.getWorld().createExplosion(quitPlr.getLocation(), explosionDamage); //Create the smoke effect //
+							if(plugin.settings.getNpcDespawnTime() > 0){
+								plugin.scheduleDelayedKill(npc, quitDataContainer);
+							}
 						}
 					}
 				}

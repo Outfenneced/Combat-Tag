@@ -23,9 +23,16 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.flags.DefaultFlag;
+import com.sk89q.worldguard.protection.managers.RegionManager;
+import static com.sk89q.worldguard.bukkit.BukkitUtil.*;
 import com.tommytony.war.Warzone;
 import com.topcat.npclib.NPCManager;
 import com.topcat.npclib.entity.NPC;
@@ -282,6 +289,18 @@ public class CombatTag extends JavaPlugin {
 					}
 				}
 				return true;
+			} else if(args[0].equals("wipe")){
+				if(sender.hasPermission("combattag.wipe")){
+					int numNPC = 0;
+					for(NPC npc: npcm.getNPCs()){
+						log.info(npcm.getNPCIdFromEntity(npc.getBukkitEntity())); //
+						updatePlayerData(npc, npcm.getNPCIdFromEntity(npc.getBukkitEntity()));
+						npcm.despawnById(npcm.getNPCIdFromEntity(npc.getBukkitEntity()));
+						numNPC++;
+					}
+					sender.sendMessage("[CombatTag] Wiped " + numNPC + " pvploggers!");
+				}
+				return true;
 			}
 			sender.sendMessage(ChatColor.RED + "[CombatTag] That is not a valid command!");
 			return true;
@@ -326,6 +345,34 @@ public class CombatTag extends JavaPlugin {
 			notInArena = Warzone.getZoneByPlayerName(plr.getName()) == null && Warzone.getZoneByPlayerName(plr.getName()) == null;
 		}
 		return notInArena;
+	}
+	
+	public WorldGuardPlugin getWorldGuard() {
+	    Plugin plugin = getServer().getPluginManager().getPlugin("WorldGuard");
+	 
+	    // WorldGuard may not be loaded
+	    if (plugin == null || !(plugin instanceof WorldGuardPlugin)) {
+	        return null; // Maybe you want throw an exception instead
+	    }
+	 
+	    return (WorldGuardPlugin) plugin;
+	}
+	
+	public boolean InWGCheck(Player plr){
+		WorldGuardPlugin wg = getWorldGuard();
+		if (wg != null) {
+			Location plrLoc = plr.getLocation();
+			Vector pt = toVector(plrLoc);
+			
+			RegionManager regionManager = wg.getRegionManager(plr.getWorld());
+			ApplicableRegionSet set = regionManager.getApplicableRegions(pt);
+			if(set != null){
+				return set.allows(DefaultFlag.PVP) && !set.allows(DefaultFlag.INVINCIBILITY);
+			} else {
+				return true;
+			}
+		}
+		return true;
 	}
 
 	/**

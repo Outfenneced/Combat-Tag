@@ -20,7 +20,6 @@ public class CombatTagCommandPrevention implements Listener{
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event)
     {
-		if(event.isCancelled()) return;
 		Player player = event.getPlayer();
 		if(plugin.hasDataContainer(player.getName()) && !plugin.getPlayerData(player.getName()).hasPVPtagExpired()){
 			for(String disabledCommand : plugin.settings.getDisabledCommands()){

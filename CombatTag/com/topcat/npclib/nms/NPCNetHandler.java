@@ -40,15 +40,11 @@ public class NPCNetHandler extends NetServerHandler {
 	}
 
 	@Override
-	public void a() {
+	public void d() {
 	};
 
 	@Override
 	public void a(Packet10Flying packet10flying) {
-	};
-
-	@Override
-	public void sendMessage(String s) {
 	};
 
 	@Override

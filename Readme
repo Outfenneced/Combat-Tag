@@ -1,5 +1,41 @@
 CombatTag:
 	Combat tag is a plugin for bukkit which prevents pvp loggers from getting away with logging.
-	This plugin was originally made by marinating. 
+	This plugin was originally created by marinating. 
+
+
+
 Config file explanation:
-	TagTime: duration of tag (from the time the player is hit by another player)
+
+npcName: 
+This is the name of the NPC that you want to spawn. If you input "number", it will replace "number" with the NPC's number. If you put "player", it will replace "player" with the player's name. You can also put something like "playernumberxx". If I were to pvp log the NPC would be named something like "cheddar2621xx". If you don't put "player" or "number", the plugin will automatically append a number to the end of the name.
+Beware: Putting the NPC name as just "player" will cause an incompatibility with Heroes, but it will allow their skins to show.
+
+disabledWorlds: 
+Worlds which will not spawn NPCs
+
+Tag-Duration: 
+Amount of seconds for a combat tag to last
+
+disabledCommands: 
+Commands which are disabled while in combat. Example: [/warp,/home,/spawn]
+
+Enable-Debugging: 
+Debug mode on/off
+
+Version: 
+Version of the plugin. DO NOT TOUCH THIS!
+
+InstaKill:
+Whether a person automatically dies when they PvP log (true) or if it'll spawn an NPC (false)
+
+npcDespawnTime: 
+The time it takes for and Npc to despawn in seconds after the person pvp logs. "-1" for the npcs not to despawn.
+
+blockEditWhileTagged: 
+Whether people can edit blocks while tagged or not.
+
+sendMessageWhenTagged: 
+Sends a message to both people when they get tagged
+
+npcDieAfterTime: 
+If the npc (when it despawns due to npcDespawnTime) dies and drops their stuff (true) or the npc despawns and the person keeps their stuff (false)

@@ -37,14 +37,73 @@ public class NoPvpPlayerListener implements Listener{
     @EventHandler(ignoreCancelled = true)
     public void onPlayerJoin(PlayerJoinEvent event){
 		Player loginPlayer = event.getPlayer();
-		onPlayerJoin(loginPlayer);
+		if(plugin.hasDataContainer(loginPlayer.getName())){
+			//Player has a data container and is likely to need some sort of punishment
+			PlayerDataContainer loginDataContainer = plugin.getPlayerData(loginPlayer.getName());
+			if(loginDataContainer.hasSpawnedNPC()){
+				//Player has pvplogged and has not been killed yet
+				//despawn the npc and transfer any effects over to the player
+				CraftPlayer cPlayer = (CraftPlayer) loginPlayer;
+				EntityPlayer ePlayer = cPlayer.getHandle();
+				ePlayer.invulnerableTicks = 2;
+				plugin.despawnNPC(loginDataContainer);
+			}
+			if(loginDataContainer.shouldBePunished()){
+				loginPlayer.setExp(loginDataContainer.getExp());
+				loginPlayer.getInventory().setArmorContents(loginDataContainer.getPlayerArmor());
+				loginPlayer.getInventory().setContents(loginDataContainer.getPlayerInventory());
+				int healthSet = plugin.healthCheck(loginDataContainer.getHealth());
+				loginPlayer.setHealth(healthSet);
+				assert(loginPlayer.getHealth() == loginDataContainer.getHealth());
+				loginPlayer.setLastDamageCause(new EntityDamageEvent(loginPlayer, DamageCause.ENTITY_EXPLOSION, 0));
+				loginPlayer.setNoDamageTicks(2);
+			}
+			if(loginPlayer.getHealth() > 0){
+				loginDataContainer.setPvPTimeout(plugin.getTagDuration());
+			}
+			loginDataContainer.setShouldBePunished(false);
+			loginDataContainer.setSpawnedNPC(false);
+		}
 	}
 	
     @EventHandler(ignoreCancelled = true)
 	public void onPlayerQuit(PlayerQuitEvent e){
 		Player quitPlr = e.getPlayer();
-		onPlayerQuit(quitPlr);
-		
+		if(plugin.hasDataContainer(quitPlr.getName())){
+			//Player is likely in pvp
+			PlayerDataContainer quitDataContainer = plugin.getPlayerData(quitPlr.getName());
+			if(!quitDataContainer.hasPVPtagExpired()){
+				//Player has logged out before the pvp battle is considered over by the plugin
+				if(plugin.isDebugEnabled()){plugin.log.info("[CombatTag] " + quitPlr.getName() + " has logged of during pvp!");}
+				if(plugin.settings.isInstaKill() || quitPlr.getHealth() <= 0){
+					plugin.log.info("[CombatTag] " + quitPlr.getName() + " has been instakilled!");
+					quitPlr.damage(100000);
+					plugin.removeDataContainer(quitPlr.getName());
+				}else{
+					boolean willSpawn = true;
+					if(plugin.settings.dontSpawnInWG()){
+						willSpawn = plugin.InWGCheck(quitPlr);
+					}
+					if(willSpawn){
+						NPC npc = plugin.spawnNpc(quitPlr, quitPlr.getLocation());
+						if(npc.getBukkitEntity() instanceof Player){
+							Player npcPlayer = (Player) npc.getBukkitEntity();
+							plugin.copyContentsNpc(npc, quitPlr);
+							//plugin.npcm.rename(quitPlr.getName(), plugin.getNpcName(quitPlr.getName()));
+							int healthSet = plugin.healthCheck(quitPlr.getHealth());
+							npcPlayer.setHealth(healthSet);
+							quitDataContainer.setSpawnedNPC(true);
+							quitDataContainer.setNPCId(quitPlr.getName());
+							quitDataContainer.setShouldBePunished(false);
+							quitPlr.getWorld().createExplosion(quitPlr.getLocation(), explosionDamage); //Create the smoke effect //
+							if(plugin.settings.getNpcDespawnTime() > 0){
+								plugin.scheduleDelayedKill(npc, quitDataContainer);
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 	
     @EventHandler(ignoreCancelled = true)
@@ -60,88 +119,7 @@ public class NoPvpPlayerListener implements Listener{
     			}
     		}
     	}
-    } 
-
-	private void onPlayerQuit(Player quitPlr){
-		if(plugin.hasDataContainer(quitPlr.getName())){
-			//Player is likely in pvp
-			PlayerDataContainer quitDataContainer = plugin.getPlayerData(quitPlr.getName());
-			if(!quitDataContainer.hasPVPtagExpired()){
-				//Player has logged out before the pvp battle is considered over by the plugin
-				if(plugin.isDebugEnabled()){plugin.log.info("[CombatTag] " + quitPlr.getName() + " has logged of during pvp!");}
-				if(plugin.settings.isInstaKill() || quitPlr.getHealth() <= 0){
-					quitPlr.setHealth(0);
-					plugin.removeDataContainer(quitPlr.getName());
-				}else{
-					boolean willSpawn = true;
-					if(plugin.settings.dontSpawnInWG()){
-						willSpawn = plugin.InWGCheck(quitPlr);
-					}
-					if(willSpawn){
-						NPC npc = plugin.spawnNpc(quitPlr.getName(), quitPlr.getLocation());
-						if(npc.getBukkitEntity() instanceof Player){
-							Player npcPlayer = (Player) npc.getBukkitEntity();
-							plugin.copyContentsNpc(npc, quitPlr);
-							plugin.npcm.rename(quitPlr.getName(), plugin.getNpcName(quitPlr.getName()));
-							int healthSet = healthCheck(quitPlr.getHealth(), quitPlr.getName());
-							npcPlayer.setHealth(healthSet);
-							quitDataContainer.setSpawnedNPC(true);
-							quitDataContainer.setNPCId(quitPlr.getName());
-							quitDataContainer.setShouldBePunished(false);
-							quitPlr.getWorld().createExplosion(quitPlr.getLocation(), explosionDamage); //Create the smoke effect //
-							if(plugin.settings.getNpcDespawnTime() > 0){
-								plugin.scheduleDelayedKill(npc, quitDataContainer);
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
-	private void onPlayerJoin(Player loginPlayer){
-		if(plugin.hasDataContainer(loginPlayer.getName())){
-			//Player has a data container and is likely to need some sort of punishment
-			PlayerDataContainer loginDataContainer = plugin.getPlayerData(loginPlayer.getName());
-			if(loginDataContainer.hasSpawnedNPC()){
-				//Player has pvplogged and has not been killed yet
-				//despawn the npc and transfer any effects over to the player
-				//if(plugin.isDebugEnabled()){plugin.log.info("[CombatTag] Player logged in and has npc");}
-				CraftPlayer cPlayer = (CraftPlayer) loginPlayer;
-				EntityPlayer ePlayer = cPlayer.getHandle();
-				ePlayer.invulnerableTicks = 1;
-				plugin.despawnNPC(loginDataContainer);
-			}
-			if(loginDataContainer.shouldBePunished()){
-				loginPlayer.setExp(loginDataContainer.getExp());
-				loginPlayer.getInventory().setArmorContents(loginDataContainer.getPlayerArmor());
-				loginPlayer.getInventory().setContents(loginDataContainer.getPlayerInventory());
-				int healthSet = healthCheck(loginDataContainer.getHealth(), loginDataContainer.getPlayerName());
-				loginPlayer.setHealth(healthSet);
-				assert(loginPlayer.getHealth() == loginDataContainer.getHealth());
-				loginPlayer.setLastDamageCause(new EntityDamageEvent(loginPlayer, DamageCause.ENTITY_EXPLOSION, 0));
-				loginPlayer.setNoDamageTicks(0);
-			}
-			if(loginPlayer.getHealth() > 0){
-				loginDataContainer.setPvPTimeout(plugin.getTagDuration());
-			}
-			loginDataContainer.setShouldBePunished(false);
-			loginDataContainer.setSpawnedNPC(false);
-		}
-	}
-	
-	private int healthCheck(int health, String plr) {
-		if(health < 0){
-			health = 0;
-		}
-		if(health > 20){
-			health = 20;
-		}
-		if(health == 0){
-			if(plugin.isDebugEnabled()){plugin.log.info("[CombatTag] " + plr +" has been set a health of 0.");}
-		}
-		return health;
-	}
+    }
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onTeleport(PlayerTeleportEvent event){

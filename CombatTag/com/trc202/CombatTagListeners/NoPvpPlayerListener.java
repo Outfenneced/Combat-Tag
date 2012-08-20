@@ -77,7 +77,7 @@ public class NoPvpPlayerListener implements Listener{
 				if(plugin.isDebugEnabled()){plugin.log.info("[CombatTag] " + quitPlr.getName() + " has logged of during pvp!");}
 				if(plugin.settings.isInstaKill() || quitPlr.getHealth() <= 0){
 					plugin.log.info("[CombatTag] " + quitPlr.getName() + " has been instakilled!");
-					quitPlr.damage(100000);
+					quitPlr.setHealth(0);
 					plugin.removeDataContainer(quitPlr.getName());
 				}else{
 					boolean willSpawn = true;

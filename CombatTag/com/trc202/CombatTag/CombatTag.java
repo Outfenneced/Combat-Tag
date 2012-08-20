@@ -102,6 +102,7 @@ public class CombatTag extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
+		if(getHeroes() != null){log.info(ChatColor.RED + "[CombatTag] BEWARE! COMBAT TAG IS INCOMPATIBLE WITH HEROES!");}
 		playerData = new HashMap<String,PlayerDataContainer>();
 		settings = new SettingsLoader().loadSettings(settingsHelper, this.getDescription().getVersion());
 		npcm = new NPCManager(this);
@@ -375,13 +376,13 @@ public class CombatTag extends JavaPlugin {
 	    return plugin;
 	}
 	
-	public void heroesSyncHealth(Player player){
+	public void heroesSyncHealth(Player player, int health){
 		Plugin heroes = getHeroes();
 		if(heroes == null){return;}
 		CharacterManager hcm = new CharacterManager((Heroes) heroes);
 		Hero hero = hcm.getHero(player);
-		hero.setHealth(0);
-		log.info("[CombatTag] Synced health!");
+		hero.setHealth(health);
+		hero.syncHealth();
 	}
 	
 	public boolean InWGCheck(Player plr){
@@ -437,7 +438,6 @@ public class CombatTag extends JavaPlugin {
 					emptyArmorStack[x] = airItem;
 				}
 				target.getInventory().setArmorContents(emptyArmorStack);
-				target.damage(100000);
 				humanTarget.setHealth(0);
 				PlayerDataContainer playerData = getPlayerData(playerName);
 				playerData.setPvPTimeout(0);
@@ -466,7 +466,7 @@ public class CombatTag extends JavaPlugin {
 			EntityHuman humanTarget = ((CraftHumanEntity) target).getHandle();
 			int healthSet = healthCheck(source.getHealth());
 			humanTarget.setHealth(healthSet);
-			heroesSyncHealth(target);
+			heroesSyncHealth(target, healthSet);
 		} else{
 			log.info("[CombatTag] An error has occurred! Target is not a HumanEntity!");
 		}

@@ -182,6 +182,7 @@ public class CombatTag extends JavaPlugin {
 			PlayerInventory plrInv = plr.getInventory();
 			npcInv.setArmorContents(plrInv.getArmorContents());
 			playerNPC.setExp(plr.getExp());
+			playerNPC.setLevel(plr.getLevel());
 			npcInv.setContents(plrInv.getContents());
 		}
 	}

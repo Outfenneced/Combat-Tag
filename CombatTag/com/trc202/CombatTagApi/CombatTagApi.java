@@ -69,4 +69,18 @@ public class CombatTagApi {
 		if(plugin.npcm.isNPC(player)){return true;}
 		return false;
 	}
+	/**
+	 * 
+	 * Returns the username of the Player that the NPC corresponds to
+	 * Returns "" if the player is not an NPC
+	 * @param player
+	 * @return username if the player is an NPC or "" otherwise
+	 */
+	public String getNPCPlayerName(Entity entity) {
+		if (this.isNPC(entity)) {
+			return plugin.getPlayerName(entity);
+		} else {
+			return "";
+		}
+	}
 }

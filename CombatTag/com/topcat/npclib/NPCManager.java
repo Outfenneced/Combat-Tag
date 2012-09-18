@@ -19,6 +19,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.logging.Level;
@@ -39,7 +40,12 @@ public class NPCManager {
 	public NPCManager(JavaPlugin plugin) {
 		server = BServer.getInstance();
 
-		npcNetworkManager = new NPCNetworkManager();
+		try {
+			npcNetworkManager = new NPCNetworkManager();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		NPCManager.plugin = plugin;
 		taskid = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
 			@Override

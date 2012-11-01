@@ -1,19 +1,21 @@
 package com.topcat.npclib.nms;
 
-import jline.console.ConsoleReader;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.PropertyManager;
-import net.minecraft.server.ServerConfigurationManager;
-import net.minecraft.server.WorldServer;
-import org.bukkit.Bukkit;
-import org.bukkit.Server;
-import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.CraftServer;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import net.minecraft.server.DedicatedServer;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.PropertyManager;
+import net.minecraft.server.ServerConfigurationManager;
+import net.minecraft.server.WorldServer;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Server;
+import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.CraftServer;
+import org.bukkit.craftbukkit.libs.jline.console.ConsoleReader;
 
 /**
  * Server hacks for Bukkit
@@ -64,7 +66,7 @@ public class BServer {
 
 	public void sendConsoleCommand(String cmd) {
 		if (mcServer.isRunning()) {
-			mcServer.e(cmd);
+			((DedicatedServer) mcServer).issueCommand(cmd, mcServer);
 		}
 	}
 

@@ -1,9 +1,12 @@
 package com.topcat.npclib.entity;
 
-import com.topcat.npclib.nms.NPCEntity;
+import java.util.Arrays;
+
 import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.Packet18ArmAnimation;
+import net.minecraft.server.Packet5EntityEquipment;
 import net.minecraft.server.WorldServer;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
@@ -11,7 +14,11 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
+import com.topcat.npclib.NPCUtils;
+import com.topcat.npclib.nms.NPCEntity;
+
 public class HumanNPC extends NPC {
+    private net.minecraft.server.ItemStack[] previousEquipment = { null, null, null, null, null };
 
 	public HumanNPC(NPCEntity npcEntity) {
 		super(npcEntity);
@@ -45,6 +52,25 @@ public class HumanNPC extends NPC {
 		return ((HumanEntity) getEntity().getBukkitEntity()).getInventory();
 	}
 
+	public void updateEquipment() {
+	    int changes = 0;
+	    
+        for (int i = 0; i < previousEquipment.length; i++) {
+            net.minecraft.server.ItemStack previous = previousEquipment[i];
+            net.minecraft.server.ItemStack current = ((EntityPlayer)getEntity()).getEquipment(i);
+            if (current == null) { continue; }
+            
+            if (!net.minecraft.server.ItemStack.equals(previous, current) || (previous != null && !previous.equals(current))) {
+                NPCUtils.sendPacketNearby(getBukkitEntity().getLocation(), new Packet5EntityEquipment(getEntity().id, i, current));
+                ++changes;
+            }
+        }
+        
+        if (changes > 0) {
+            previousEquipment = Arrays.copyOf(((EntityPlayer)getEntity()).getEquipment(), previousEquipment.length);
+        }
+    }
+
 	public void putInBed(Location bed) {
 		getEntity().setPosition(bed.getX(), bed.getY(), bed.getZ());
 		getEntity().a((int) bed.getX(), (int) bed.getY(), (int) bed.getZ());
@@ -75,7 +101,7 @@ public class HumanNPC extends NPC {
 		}
 		getEntity().yaw = (float) (newYaw - 90);
 		getEntity().pitch = (float) newPitch;
-		((EntityPlayer)getEntity()).as = (float)(newYaw - 90);
+		((EntityPlayer)getEntity()).bS = (float)(newYaw - 90);
 	}
 
 }

@@ -1,10 +1,11 @@
 package com.topcat.npclib.nms;
 
+import java.io.IOException;
+import java.lang.reflect.Field;
+
 import net.minecraft.server.NetHandler;
 import net.minecraft.server.NetworkManager;
 import net.minecraft.server.Packet;
-
-import java.lang.reflect.Field;
 
 /**
  *
@@ -12,13 +13,13 @@ import java.lang.reflect.Field;
  */
 public class NPCNetworkManager extends NetworkManager {
 
-	public NPCNetworkManager() {
+	public NPCNetworkManager() throws IOException {
 		super(new NullSocket(), "NPC Manager", new NetHandler() {
-            @Override
-            public boolean a() {
-                return false;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-        },null);
+			@Override
+			public boolean a() {
+				return true;
+			}
+		}, null);
 		try {
 			Field f = NetworkManager.class.getDeclaredField("m");
 			f.setAccessible(true);

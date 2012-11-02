@@ -123,7 +123,7 @@ public class CombatTag extends JavaPlugin {
 	public NPC spawnNpc(Player plr,Location location){
 		NPC spawnedNPC = null;
 		if(isDebugEnabled()){log.info("[CombatTag] Spawning NPC for " + plr.getName());}
-		spawnedNPC = npcm.spawnHumanNPC(getNpcName(plr.getName()), location , plr.getName());
+		spawnedNPC = npcm.spawnHumanNPC(getNpcNumber()+"", location , plr.getName());
 		if(spawnedNPC.getBukkitEntity() instanceof HumanEntity){
 			HumanEntity p = (HumanEntity) spawnedNPC.getBukkitEntity();
 			p.setNoDamageTicks(1);
@@ -139,10 +139,13 @@ public class CombatTag extends JavaPlugin {
 		}
 		else if(npcName.contains("player")){
 			npcName = npcName.replace("player", plr);
+			/**
 			if(npcName.length() >= 9){
 				npcName = npcName.substring(0, 8);	
 			}
-			npcName = npcName + "_PvPL" + getNpcNumber();
+			//npcName = npcName + "_PvPL";
+			 * 
+			 */
 		}
 		else if(npcName.contains("number")) {
 			npcName = npcName.replace("number", "" + getNpcNumber());

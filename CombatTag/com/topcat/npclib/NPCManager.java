@@ -45,6 +45,7 @@ public class NPCManager {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
 		NPCManager.plugin = plugin;
 		taskid = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
 			@Override
@@ -52,7 +53,7 @@ public class NPCManager {
 				HashSet<String> toRemove = new HashSet<String>();
 				for (String i : npcs.keySet()) {
 					Entity j = npcs.get(i).getEntity();
-					j.z();
+					j.y();
 					if (j.dead) {
 						toRemove.add(i);
 					}

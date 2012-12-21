@@ -21,8 +21,8 @@ public class CombatTagApi {
 	 * @return true if player is in combat
 	 */
 	public boolean isInCombat(String player){
-		if(player.contains("pvpLogger")){return true;}
 		boolean isInCombat = false;
+		if(player.contains("pvpLogger")){return false;}
 		if(plugin.hasDataContainer(player)){
 			PlayerDataContainer container = plugin.getPlayerData(player);
 			isInCombat = !container.hasPVPtagExpired();

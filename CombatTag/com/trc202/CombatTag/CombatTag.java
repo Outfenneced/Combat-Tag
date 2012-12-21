@@ -4,10 +4,10 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
-import net.minecraft.server.EntityHuman;
-import net.minecraft.server.EntityPlayer;
-import net.minecraft.server.ItemInWorldManager;
-import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.v1_4_5.EntityHuman;
+import net.minecraft.server.v1_4_5.EntityPlayer;
+import net.minecraft.server.v1_4_5.ItemInWorldManager;
+import net.minecraft.server.v1_4_5.MinecraftServer;
 //import net.slipcor.pvparena.PVPArena;
 //import net.slipcor.pvparena.api.PVPArenaAPI;
 
@@ -17,8 +17,8 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.CraftServer;
-import org.bukkit.craftbukkit.entity.CraftHumanEntity;
+import org.bukkit.craftbukkit.v1_4_5.CraftServer;
+import org.bukkit.craftbukkit.v1_4_5.entity.CraftHumanEntity;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;

@@ -1,26 +1,26 @@
 package com.topcat.npclib.nms;
 
-import net.minecraft.server.EntityPlayer;
-import net.minecraft.server.NetServerHandler;
-import net.minecraft.server.Packet;
-import net.minecraft.server.Packet101CloseWindow;
-import net.minecraft.server.Packet102WindowClick;
-import net.minecraft.server.Packet106Transaction;
-import net.minecraft.server.Packet10Flying;
-import net.minecraft.server.Packet130UpdateSign;
-import net.minecraft.server.Packet14BlockDig;
-import net.minecraft.server.Packet15Place;
-import net.minecraft.server.Packet16BlockItemSwitch;
-import net.minecraft.server.Packet18ArmAnimation;
-import net.minecraft.server.Packet19EntityAction;
-import net.minecraft.server.Packet255KickDisconnect;
-import net.minecraft.server.Packet3Chat;
-import net.minecraft.server.Packet7UseEntity;
-import net.minecraft.server.Packet9Respawn;
+import net.minecraft.server.v1_4_5.EntityPlayer;
+import net.minecraft.server.v1_4_5.NetServerHandler;
+import net.minecraft.server.v1_4_5.Packet;
+import net.minecraft.server.v1_4_5.Packet101CloseWindow;
+import net.minecraft.server.v1_4_5.Packet102WindowClick;
+import net.minecraft.server.v1_4_5.Packet106Transaction;
+import net.minecraft.server.v1_4_5.Packet10Flying;
+import net.minecraft.server.v1_4_5.Packet130UpdateSign;
+import net.minecraft.server.v1_4_5.Packet14BlockDig;
+import net.minecraft.server.v1_4_5.Packet15Place;
+import net.minecraft.server.v1_4_5.Packet16BlockItemSwitch;
+import net.minecraft.server.v1_4_5.Packet18ArmAnimation;
+import net.minecraft.server.v1_4_5.Packet19EntityAction;
+import net.minecraft.server.v1_4_5.Packet255KickDisconnect;
+import net.minecraft.server.v1_4_5.Packet3Chat;
+import net.minecraft.server.v1_4_5.Packet7UseEntity;
+import net.minecraft.server.v1_4_5.Packet9Respawn;
 
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.CraftServer;
-import org.bukkit.craftbukkit.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_4_5.CraftServer;
+import org.bukkit.craftbukkit.v1_4_5.entity.CraftPlayer;
 
 import com.topcat.npclib.NPCManager;
 

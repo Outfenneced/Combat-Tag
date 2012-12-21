@@ -1,13 +1,13 @@
 package com.topcat.npclib.nms;
 
-import net.minecraft.server.Entity;
-import net.minecraft.server.EntityHuman;
-import net.minecraft.server.EntityPlayer;
-import net.minecraft.server.EnumGamemode;
-import net.minecraft.server.ItemInWorldManager;
-import net.minecraft.server.WorldServer;
+import net.minecraft.server.v1_4_5.Entity;
+import net.minecraft.server.v1_4_5.EntityHuman;
+import net.minecraft.server.v1_4_5.EntityPlayer;
+import net.minecraft.server.v1_4_5.EnumGamemode;
+import net.minecraft.server.v1_4_5.ItemInWorldManager;
+import net.minecraft.server.v1_4_5.WorldServer;
 
-import org.bukkit.craftbukkit.CraftServer;
+import org.bukkit.craftbukkit.v1_4_5.CraftServer;
 import org.bukkit.event.entity.EntityTargetEvent;
 
 import com.topcat.npclib.NPCManager;
@@ -40,12 +40,12 @@ public class NPCEntity extends EntityPlayer {
 	}
 
 	@Override
-	public boolean c(EntityHuman entity) {
+	public boolean a(EntityHuman entity) {
 		EntityTargetEvent event = new NpcEntityTargetEvent(getBukkitEntity(), entity.getBukkitEntity(), NpcEntityTargetEvent.NpcTargetReason.NPC_RIGHTCLICKED);
 		CraftServer server = ((WorldServer) world).getServer();
 		server.getPluginManager().callEvent(event);
 
-		return super.c(entity);
+		return super.a(entity);
 	}
 
 	public void i(EntityHuman entity) {

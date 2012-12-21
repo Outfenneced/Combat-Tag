@@ -1,13 +1,13 @@
 package com.topcat.npclib.nms;
 
-import net.minecraft.server.v1_4_5.Entity;
-import net.minecraft.server.v1_4_5.EntityHuman;
-import net.minecraft.server.v1_4_5.EntityPlayer;
-import net.minecraft.server.v1_4_5.EnumGamemode;
-import net.minecraft.server.v1_4_5.ItemInWorldManager;
-import net.minecraft.server.v1_4_5.WorldServer;
+import net.minecraft.server.v1_4_6.Entity;
+import net.minecraft.server.v1_4_6.EntityHuman;
+import net.minecraft.server.v1_4_6.EntityPlayer;
+import net.minecraft.server.v1_4_6.EnumGamemode;
+import net.minecraft.server.v1_4_6.PlayerInteractManager;
+import net.minecraft.server.v1_4_6.WorldServer;
 
-import org.bukkit.craftbukkit.v1_4_5.CraftServer;
+import org.bukkit.craftbukkit.v1_4_6.CraftServer;
 import org.bukkit.event.entity.EntityTargetEvent;
 
 import com.topcat.npclib.NPCManager;
@@ -22,12 +22,12 @@ public class NPCEntity extends EntityPlayer {
 	private long lastBounceTick;
 	private int lastBounceId;
 
-	public NPCEntity(NPCManager npcManager, BWorld world, String s, ItemInWorldManager itemInWorldManager) {
+	public NPCEntity(NPCManager npcManager, BWorld world, String s, PlayerInteractManager itemInWorldManager) {
 		super(npcManager.getServer().getMCServer(), world.getWorldServer(), s, itemInWorldManager);
 
 		itemInWorldManager.b(EnumGamemode.SURVIVAL); //Test
 
-		netServerHandler = new NPCNetHandler(npcManager, this);
+		playerConnection = new NPCNetHandler(npcManager, this);
 		lastTargetId = -1;
 		lastBounceId = -1;
 		lastBounceTick = 0;

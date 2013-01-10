@@ -32,7 +32,7 @@ public class NoPvpPlayerListener implements Listener{
     	plugin = instance;
     }
     
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerJoin(PlayerJoinEvent event){
 		Player loginPlayer = event.getPlayer();
 		if(plugin.hasDataContainer(loginPlayer.getName())){
@@ -43,7 +43,7 @@ public class NoPvpPlayerListener implements Listener{
 				//despawn the npc and transfer any effects over to the player
 				CraftPlayer cPlayer = (CraftPlayer) loginPlayer;
 				EntityPlayer ePlayer = cPlayer.getHandle();
-				ePlayer.invulnerableTicks = 2;
+				ePlayer.invulnerableTicks = 0;
 				plugin.despawnNPC(loginDataContainer);
 			}
 			if(loginDataContainer.shouldBePunished()){
@@ -54,7 +54,7 @@ public class NoPvpPlayerListener implements Listener{
 				loginPlayer.setHealth(healthSet);
 				assert(loginPlayer.getHealth() == loginDataContainer.getHealth());
 				loginPlayer.setLastDamageCause(new EntityDamageEvent(loginPlayer, DamageCause.ENTITY_EXPLOSION, 0));
-				loginPlayer.setNoDamageTicks(2);
+				loginPlayer.setNoDamageTicks(0);
 			}
 			if(loginPlayer.getHealth() > 0){
 				loginDataContainer.setPvPTimeout(plugin.getTagDuration());
@@ -64,10 +64,13 @@ public class NoPvpPlayerListener implements Listener{
 		}
 	}
 	
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPlayerQuit(PlayerQuitEvent e){
 		Player quitPlr = e.getPlayer();
-		if(plugin.hasDataContainer(quitPlr.getName())){
+		if(quitPlr.isDead()){
+			plugin.entityListener.onPlayerDeath(quitPlr);
+		}
+		else if(plugin.hasDataContainer(quitPlr.getName())){
 			//Player is likely in pvp
 			PlayerDataContainer quitDataContainer = plugin.getPlayerData(quitPlr.getName());
 			if(!quitDataContainer.hasPVPtagExpired()){
@@ -80,7 +83,7 @@ public class NoPvpPlayerListener implements Listener{
 				}else{
 					boolean willSpawn = true;
 					if(plugin.settings.dontSpawnInWG()){
-						willSpawn = plugin.InWGCheck(quitPlr);
+						willSpawn = plugin.ctIncompatible.InWGCheck(quitPlr);
 					}
 					if(willSpawn){
 						NPC npc = plugin.spawnNpc(quitPlr, quitPlr.getLocation());
@@ -119,7 +122,7 @@ public class NoPvpPlayerListener implements Listener{
     	}
     }
 	
-	@EventHandler(priority = EventPriority.HIGHEST)
+	@EventHandler(priority = EventPriority.LOWEST)
 	public void onTeleport(PlayerTeleportEvent event){
 		if(plugin.hasDataContainer(event.getPlayer().getName())){
 			PlayerDataContainer playerData = plugin.getPlayerData(event.getPlayer().getName());

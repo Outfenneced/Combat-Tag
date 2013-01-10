@@ -52,7 +52,7 @@ public class NoPvpEntityListener implements Listener{
     		}
 		}
 	}
-	@EventHandler(priority = EventPriority.MONITOR)
+	@EventHandler(priority = EventPriority.LOWEST)
 	public void onEntityDeath(EntityDeathEvent event){
 		if(plugin.npcm.isNPC(event.getEntity())){
 			onNPCDeath(event.getEntity());
@@ -73,7 +73,7 @@ public class NoPvpEntityListener implements Listener{
 		}
 	}
 	
-	private void onPlayerDeath(Player deadPlayer){
+	public void onPlayerDeath(Player deadPlayer){
 		if(plugin.hasDataContainer(deadPlayer.getName())){
 			PlayerDataContainer deadPlayerData = plugin.getPlayerData(deadPlayer.getName());
 			deadPlayerData.setPvPTimeout(0);
@@ -85,8 +85,8 @@ public class NoPvpEntityListener implements Listener{
 		if(plugin.npcm.isNPC(damaged)){return;} //If the damaged player is an npc do nothing
 		PlayerDataContainer damagerData;
 		PlayerDataContainer damagedData;
-		boolean bothNotInArena = plugin.PvPArenaHook(damager) && plugin.PvPArenaHook(damaged) && plugin.WarArenaHook(damager) && plugin.WarArenaHook(damaged);
-		if(bothNotInArena){
+		
+		if(plugin.ctIncompatible.notInArena(damaged,damager)){
 			if(!damager.hasPermission("combattag.ignore")){	
 				//Get damager player data container
 				if(plugin.hasDataContainer(damager.getName())){

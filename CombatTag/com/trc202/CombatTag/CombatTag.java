@@ -8,8 +8,6 @@ import net.minecraft.server.v1_4_6.EntityHuman;
 import net.minecraft.server.v1_4_6.EntityPlayer;
 import net.minecraft.server.v1_4_6.PlayerInteractManager;
 import net.minecraft.server.v1_4_6.MinecraftServer;
-//import net.slipcor.pvparena.PVPArena;
-//import net.slipcor.pvparena.api.PVPArenaAPI;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -31,13 +29,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.CharacterManager;
 import com.herocraftonline.heroes.characters.Hero;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import com.sk89q.worldguard.protection.ApplicableRegionSet;
-import com.sk89q.worldguard.protection.flags.DefaultFlag;
-import com.sk89q.worldguard.protection.managers.RegionManager;
-import static com.sk89q.worldguard.bukkit.BukkitUtil.*;
-import com.tommytony.war.Warzone;
 import com.topcat.npclib.NPCManager;
 import com.topcat.npclib.entity.NPC;
 import com.trc202.CombatTagListeners.CombatTagCommandPrevention;
@@ -60,6 +51,7 @@ public class CombatTag extends JavaPlugin {
 	private HashMap<String,PlayerDataContainer> playerData;
 	private static String mainDirectory = "plugins/CombatTag";
 
+	public final CombatTagIncompatibles ctIncompatible= new CombatTagIncompatibles(this); 
 	private final NoPvpPlayerListener plrListener = new NoPvpPlayerListener(this); 
 	public final NoPvpEntityListener entityListener = new NoPvpEntityListener(this);
 	private final NoPvpBlockListener blockListener = new NoPvpBlockListener(this);
@@ -102,7 +94,8 @@ public class CombatTag extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		if(getHeroes() != null){log.info(ChatColor.RED + "[CombatTag] BEWARE! COMBAT TAG IS INCOMPATIBLE WITH HEROES!");}
+		if(ctIncompatible.getHeroes() != null){log.info(ChatColor.RED + "[CombatTag] BEWARE! COMBAT TAG IS INCOMPATIBLE WITH HEROES!");}
+		if(ctIncompatible.getMcMMO() != null){log.info(ChatColor.RED + "[CombatTag] BEWARE! COMBAT TAG IS INCOMPATIBLE WITH SERRATED STRIKES!");}
 		playerData = new HashMap<String,PlayerDataContainer>();
 		settings = new SettingsLoader().loadSettings(settingsHelper, this.getDescription().getVersion());
 		npcm = new NPCManager(this);
@@ -337,72 +330,14 @@ public class CombatTag extends JavaPlugin {
 			}
 		}, despawnTicks);
 	}
-
-	public boolean PvPArenaHook(Player plr){
-		//Plugin plugin = getServer().getPluginManager().getPlugin("pvparena");
-		boolean notInArena = true;
-		/*
-		if(plugin != null && (plugin instanceof PVPArena)){
-			PVPArenaAPI pvpArenaApi = new PVPArenaAPI(); 
-			if(pvpArenaApi != null)
-				notInArena = PVPArenaAPI.getArenaName(plr) == "" && PVPArenaAPI.getArenaName(plr) == "";
-		}
-		*/
-		return notInArena;
-	}
-
-	public boolean WarArenaHook(Player plr){
-		boolean notInArena = true;
-		if(getServer().getPluginManager().getPlugin("War") != null){
-			notInArena = Warzone.getZoneByPlayerName(plr.getName()) == null && Warzone.getZoneByPlayerName(plr.getName()) == null;
-		}
-		return notInArena;
-	}
-	
-	public WorldGuardPlugin getWorldGuard() {
-	    Plugin plugin = getServer().getPluginManager().getPlugin("WorldGuard");
-	 
-	    // WorldGuard may not be loaded
-	    if (plugin == null || !(plugin instanceof WorldGuardPlugin)) {
-	        return null; // Maybe you want throw an exception instead
-	    }
-	 
-	    return (WorldGuardPlugin) plugin;
-	}
-	
-	public Plugin getHeroes() {
-	    Plugin plugin = getServer().getPluginManager().getPlugin("Heroes");
-	 
-	    if (plugin == null || !(plugin instanceof Heroes)) {
-	        return null;
-	    }
-	    return plugin;
-	}
 	
 	public void heroesSyncHealth(Player player, int health){
-		Plugin heroes = getHeroes();
+		Plugin heroes = ctIncompatible.getHeroes();
 		if(heroes == null){return;}
 		CharacterManager hcm = new CharacterManager((Heroes) heroes);
 		Hero hero = hcm.getHero(player);
 		hero.setHealth(health);
 		hero.syncHealth();
-	}
-	
-	public boolean InWGCheck(Player plr){
-		WorldGuardPlugin wg = getWorldGuard();
-		if (wg != null) {
-			Location plrLoc = plr.getLocation();
-			Vector pt = toVector(plrLoc);
-			
-			RegionManager regionManager = wg.getRegionManager(plr.getWorld());
-			ApplicableRegionSet set = regionManager.getApplicableRegions(pt);
-			if(set != null){
-				return set.allows(DefaultFlag.PVP) && !set.allows(DefaultFlag.INVINCIBILITY);
-			} else {
-				return true;
-			}
-		}
-		return true;
 	}
 
 	/**

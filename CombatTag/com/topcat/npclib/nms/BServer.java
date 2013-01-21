@@ -5,16 +5,16 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.minecraft.server.v1_4_6.DedicatedServer;
-import net.minecraft.server.v1_4_6.MinecraftServer;
-import net.minecraft.server.v1_4_6.PropertyManager;
-import net.minecraft.server.v1_4_6.PlayerList;
-import net.minecraft.server.v1_4_6.WorldServer;
+import net.minecraft.server.v1_4_R1.DedicatedServer;
+import net.minecraft.server.v1_4_R1.MinecraftServer;
+import net.minecraft.server.v1_4_R1.PropertyManager;
+import net.minecraft.server.v1_4_R1.PlayerList;
+import net.minecraft.server.v1_4_R1.WorldServer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_4_6.CraftServer;
+import org.bukkit.craftbukkit.v1_4_R1.CraftServer;
 import org.bukkit.craftbukkit.libs.jline.console.ConsoleReader;
 
 /**

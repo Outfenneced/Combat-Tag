@@ -3,9 +3,9 @@ package com.topcat.npclib.nms;
 import java.io.IOException;
 import java.lang.reflect.Field;
 
-import net.minecraft.server.v1_4_6.Connection;
-import net.minecraft.server.v1_4_6.NetworkManager;
-import net.minecraft.server.v1_4_6.Packet;
+import net.minecraft.server.v1_4_R1.Connection;
+import net.minecraft.server.v1_4_R1.NetworkManager;
+import net.minecraft.server.v1_4_R1.Packet;
 
 /**
  *

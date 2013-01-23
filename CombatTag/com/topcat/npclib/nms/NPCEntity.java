@@ -8,6 +8,7 @@ import net.minecraft.server.v1_4_R1.PlayerInteractManager;
 import net.minecraft.server.v1_4_R1.WorldServer;
 
 import org.bukkit.craftbukkit.v1_4_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_4_R1.entity.CraftEntity;
 import org.bukkit.event.entity.EntityTargetEvent;
 
 import com.topcat.npclib.NPCManager;
@@ -35,7 +36,7 @@ public class NPCEntity extends EntityPlayer {
 		fauxSleeping = true;
 	}
 
-	public void setBukkitEntity(org.bukkit.entity.Entity entity) {
+	public void setBukkitEntity(CraftEntity entity) {
 		bukkitEntity = entity;
 	}
 

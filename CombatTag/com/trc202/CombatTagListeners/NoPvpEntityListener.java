@@ -23,6 +23,34 @@ public class NoPvpEntityListener implements Listener{
 	public NoPvpEntityListener(CombatTag combatTag){
 		this.plugin = combatTag;
 	}
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+		Entity damager = event.getDamager();
+		Entity damaged = event.getEntity();
+		if (damager instanceof Projectile) {
+			damager = ((Projectile) damager).getShooter();
+		}
+		if ((damager instanceof Player) && (damaged instanceof Player)) {
+			Player tagged = (Player) damaged;
+			for (String diallowedWorlds : plugin.settings.getDisallowedWorlds()) {
+				if(damaged.getWorld().getName().equalsIgnoreCase(disallowedWorlds)){
+					//Ignore this event -- the damaged player isn't supposed to be tracked by CombatTag
+					return;
+				}
+			}
+			if (plugin.settings.isBlockPvpProtectionWhileTagged() && !dmgd.hasPermission("combattag.ignore")) {
+				String damagedName = damaged.getName();
+				if(plugin.hasDataContainer(damagedName)){
+					damagedData = plugin.getPlayerData(damagedName);
+				}else{
+					damagedData = plugin.createPlayerData(damagedName);
+				}
+				if (!damagedData.hasPVPtagExpired()) {
+					event.setCancelled(false);
+				}
+			}
+		}
+	}
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onEntityDamage(EntityDamageEvent EntityDamaged){
 		if (EntityDamaged.isCancelled() || (EntityDamaged.getDamage() == 0)){return;}

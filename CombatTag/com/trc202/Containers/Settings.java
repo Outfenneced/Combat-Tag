@@ -12,6 +12,7 @@ public class Settings {
 	private String[] disallowedWorlds;
 	private String npcName;
 	private boolean blockEditWhileTagged;
+	private boolean blockPvpProtectionWhileTagged;
 	private boolean sendMessageWhenTagged;
 	private int npcDespawnTime;
 	private boolean npcDieAfterTime;
@@ -32,6 +33,7 @@ public class Settings {
 		disallowedWorlds = new String[0];
 		npcName = "PvpLogger";
 		blockEditWhileTagged = true;
+		blockPvpProtectionWhileTagged = true;
 		sendMessageWhenTagged = false;
 		npcDespawnTime = -1;
 		npcDieAfterTime = false;
@@ -112,6 +114,14 @@ public class Settings {
 	
 	public void setBlockEditWhileTagged(boolean blockEditWhileTagged) {
 		this.blockEditWhileTagged = blockEditWhileTagged;
+	}
+
+	public boolean isBlockPvpProtectionWhileTagged() {
+		return blockPvpProtectionWhileTagged;
+	}
+
+	public void setBlockPvpProtectionWhileTagged(boolean blockPvpProtectionWhileTagged) {
+		this.blockPvpProtectionWhileTagged = blockPvpProtectionWhileTagged;
 	}
 
 	public boolean isSendMessageWhenTagged() {

@@ -25,6 +25,8 @@ npcDespawnTime: The time it takes for and Npc to despawn in seconds after the pe
 
 blockEditWhileTagged: Whether people can edit blocks while tagged or not.
 
+blockPvpProtectionWhileTagged: If set to true, will force-allow all PVP-related damage on a tagged player. Basically, tagged players won't be protected from PVP by safezones.
+
 npcDieAfterTime: If the npc (when it despawns due to npcDespawnTime) dies and drops their stuff (true) or the npc despawns and the person keeps their stuff (false)
 
 tagMessageDamaged: Allows server owners to set custom tag messages. Sent to attacked person. [player] is replaced by player who hit them.

@@ -42,3 +42,7 @@ blockTeleport: When set to true, blocks teleports caused by plugins (BEWARE, THI
 tagMessageDamager: Sent to attacker. [player] is replaced with the player they hit.
 
 DropTagOnKick: When set to true, will cause players to stop being tagged when they get kicked from the server.
+
+blockEnderPearl: When set to true, will block ender pearl teleports when tagged
+
+onlyDamagerTagger: When set to true, will only tag the attacker and not the person who is hit

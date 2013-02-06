@@ -3,13 +3,16 @@ package com.trc202.CombatTagListeners;
 import net.minecraft.server.v1_4_R1.EntityPlayer;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_4_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -121,7 +124,18 @@ public class NoPvpPlayerListener implements Listener{
     		}
     	}
     }
-	
+    
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerInteract(PlayerInteractEvent event){
+    	if(plugin.hasDataContainer(event.getPlayer().getName())){
+    		PlayerDataContainer playerData = plugin.getPlayerData(event.getPlayer().getName());
+    		if ((event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) && event.getItem().getType() == Material.ENDER_PEARL && !playerData.hasPVPtagExpired() && plugin.settings.blockEnderPearl()){
+    			event.getPlayer().sendMessage(ChatColor.RED + "[CombatTag] You can't ender pearl while tagged.");
+    			event.setCancelled(true);
+    		}
+    	}
+    }
+    
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onTeleport(PlayerTeleportEvent event){
 		if(plugin.hasDataContainer(event.getPlayer().getName())){
@@ -129,7 +143,7 @@ public class NoPvpPlayerListener implements Listener{
 			if(plugin.settings.blockTeleport() == true && !playerData.hasPVPtagExpired()){
 				TeleportCause cause = event.getCause();
 				if(cause == TeleportCause.PLUGIN || cause == TeleportCause.COMMAND){
-					event.getPlayer().sendMessage(ChatColor.RED + "[CombatTag] You can't teleport while tagged");
+					event.getPlayer().sendMessage(ChatColor.RED + "[CombatTag] You can't teleport while tagged.");
 					event.setCancelled(true);
 				}
 			}

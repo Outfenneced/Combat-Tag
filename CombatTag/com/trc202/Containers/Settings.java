@@ -21,7 +21,9 @@ public class Settings {
 	private String tagMessageDamager;
 	private String tagMessageDamaged;
 	private boolean blockTeleport;
+	private boolean blockEnderPearl;
 	private boolean dontSpawnInWG;
+	private boolean onlyDamagerTagged;
 	
 	public Settings(){
 		currentMode = SettingsType.NPC;
@@ -41,7 +43,9 @@ public class Settings {
 		tagMessageDamager = "You have hit [player]. Type /ct to check your remaining tag time.";
 		tagMessageDamaged = "You have been hit by [player]. Type /ct to check your remaining tag time.";
 		blockTeleport = false;
+		blockEnderPearl = false;
 		dontSpawnInWG = false;
+		onlyDamagerTagged = false;
 		
 	}
 
@@ -185,5 +189,21 @@ public class Settings {
 	
 	public String getTagMessageDamager() {
 		return tagMessageDamager;
+	}
+
+	public void setBlockEnderPearl(boolean blockEnderPearl) {
+		this.blockEnderPearl = blockEnderPearl;
+	}
+	
+	public boolean blockEnderPearl() {
+		return blockEnderPearl;
+	}
+
+	public void setOnlyDamager(boolean onlyDamagerTagged) {
+		this.onlyDamagerTagged = onlyDamagerTagged;
+	}
+	
+	public boolean onlyDamagerTagged() {
+		return onlyDamagerTagged;
 	}
 }

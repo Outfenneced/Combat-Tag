@@ -69,4 +69,37 @@ public class CombatTagApi {
 		if(plugin.npcm.isNPC(player)){return true;}
 		return false;
 	}
+	
+	/**
+	 * Tags player
+	 * @param player
+	 * @return true if the action is successful, false if not
+	 */
+	public boolean tagPlayer(Player player){
+		if(player.isOnline()){
+			PlayerDataContainer playerData;
+			if(plugin.hasDataContainer(player.getName())){
+				playerData = plugin.getPlayerData(player.getName());
+			}else{
+				playerData = plugin.createPlayerData(player.getName());
+			}
+			playerData.setPvPTimeout(plugin.getTagDuration());
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Tags player with name
+	 * @param string
+	 */
+	public void tagPlayer(String playerName){
+		PlayerDataContainer playerData;
+		if(plugin.hasDataContainer(playerName)){
+			playerData = plugin.getPlayerData(playerName);
+		}else{
+			playerData = plugin.createPlayerData(playerName);
+		}
+		playerData.setPvPTimeout(plugin.getTagDuration());
+	}
 }

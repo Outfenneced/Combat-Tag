@@ -22,7 +22,9 @@ public class SettingsLoader {
 	private static String commandMessageTagged = "commandMessageTagged";
 	private static String commandMessageNotTagged = "commandMessageNotTagged";
 	private static String blockTeleport = "blockTeleport";
+	private static String blockEnderPearl = "blockEnderPearl";
 	private static String dontSpawnInWG = "dontSpawnInWG";
+	private static String onlyDamagerTagged = "onlyDamagerTagged";
 
 	public Settings loadSettings(SettingsHelper helper, String version){
 		settings = new Settings();
@@ -54,7 +56,9 @@ public class SettingsLoader {
 		if(helper.getProperty(commandMessageTagged) == null) {helper.setProperty(commandMessageTagged, temp.getCommandMessageTagged());}
 		if(helper.getProperty(commandMessageNotTagged) == null) {helper.setProperty(commandMessageNotTagged, temp.getCommandMessageNotTagged());}
 		if(helper.getProperty(blockTeleport) == null) {helper.setProperty(blockTeleport, Boolean.toString(temp.blockTeleport()));}
+		if(helper.getProperty(blockEnderPearl) == null) {helper.setProperty(blockEnderPearl, Boolean.toString(temp.blockEnderPearl()));}
 		if(helper.getProperty(dontSpawnInWG) == null) {helper.setProperty(dontSpawnInWG, Boolean.toString(temp.dontSpawnInWG()));}
+		if(helper.getProperty(onlyDamagerTagged) == null) {helper.setProperty(onlyDamagerTagged, Boolean.toString(temp.onlyDamagerTagged()));}
 	}
 
 	private boolean isLatestVersion(SettingsHelper helper, String vers){
@@ -80,7 +84,9 @@ public class SettingsLoader {
 		(helper.getProperty(commandMessageTagged) != null) &&
 		(helper.getProperty(commandMessageNotTagged) != null) &&
 		(helper.getProperty(blockTeleport) != null) &&
-		(helper.getProperty(dontSpawnInWG) != null)
+		(helper.getProperty(blockEnderPearl) != null) &&
+		(helper.getProperty(dontSpawnInWG) != null) &&
+		(helper.getProperty(onlyDamagerTagged) != null)
 		){
 			return true;
 		}else{
@@ -114,6 +120,8 @@ public class SettingsLoader {
 		settings.setCommandMessageTagged(helper.getProperty(commandMessageTagged));
 		settings.setCommandMessageNotTagged(helper.getProperty(commandMessageNotTagged));
 		settings.setBlockTeleport(Boolean.valueOf(helper.getProperty(blockTeleport)));
+		settings.setBlockEnderPearl(Boolean.valueOf(helper.getProperty(blockEnderPearl)));
 		settings.setDontSpawnInWG(Boolean.valueOf(helper.getProperty(dontSpawnInWG)));
+		settings.setOnlyDamager(Boolean.valueOf(helper.getProperty(onlyDamagerTagged)));
 	}
 }

@@ -6,10 +6,6 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-//import net.slipcor.pvparena.PVPArena;
-//import net.slipcor.pvparena.api.PVPArenaAPI;
-
-import com.herocraftonline.heroes.Heroes;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
@@ -23,19 +19,6 @@ public class CombatTagIncompatibles {
 	
 	public CombatTagIncompatibles(CombatTag combatTag){
 		this.plugin = combatTag;
-	}
-	
-	public boolean PvPArenaHook(Player plr){
-		//Plugin plugin = getServer().getPluginManager().getPlugin("pvparena");
-		boolean notInArena = true;
-		/*
-		if(plugin != null && (plugin instanceof PVPArena)){
-			PVPArenaAPI pvpArenaApi = new PVPArenaAPI(); 
-			if(pvpArenaApi != null)
-				notInArena = PVPArenaAPI.getArenaName(plr) == "" && PVPArenaAPI.getArenaName(plr) == "";
-		}
-		*/
-		return notInArena;
 	}
 
 	public boolean WarArenaHook(Player plr){
@@ -51,31 +34,11 @@ public class CombatTagIncompatibles {
 	 
 	    // WorldGuard may not be loaded
 	    if (wg == null || !(wg instanceof WorldGuardPlugin)) {
-	        return null; // Maybe you want throw an exception instead
+	        return null;
 	    }
 	 
 	    return (WorldGuardPlugin) wg;
 	}
-	
-	public Plugin getHeroes() {
-	    Plugin heroes = plugin.getServer().getPluginManager().getPlugin("Heroes");
-	 
-	    if (heroes == null || !(heroes instanceof Heroes)) {
-	        return null;
-	    }
-	    return plugin;
-	}
-	
-	public Plugin getMcMMO() {
-	    Plugin mcmmo = plugin.getServer().getPluginManager().getPlugin("McMMO");
-	 
-	    if (mcmmo == null || !(mcmmo instanceof Heroes)) {
-	        return null;
-	    }
-	    return plugin;
-	}
-	
-	
 	
 	public boolean InWGCheck(Player plr){
 		WorldGuardPlugin wg = getWorldGuard();
@@ -95,6 +58,6 @@ public class CombatTagIncompatibles {
 	}
 	
 	public boolean notInArena(Player damaged, Player damager){
-		return PvPArenaHook(damager) && PvPArenaHook(damaged) && WarArenaHook(damager) && WarArenaHook(damaged);
+		return WarArenaHook(damager) && WarArenaHook(damaged);
 	}
 }

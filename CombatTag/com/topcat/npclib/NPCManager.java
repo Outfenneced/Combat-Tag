@@ -212,7 +212,8 @@ public class NPCManager {
 		HumanNPC npc = (HumanNPC) getNPC(id);
 		npc.setName(name);
 		BWorld b = getBWorld(npc.getBukkitEntity().getLocation().getWorld());
-		WorldServer s = b.getWorldServer();
+		WorldServer s = (WorldServer) b.getWorldServer();
+		
 		try {
 			Method m = s.getClass().getDeclaredMethod("b", new Class[] {Entity.class});
 			m.setAccessible(true);

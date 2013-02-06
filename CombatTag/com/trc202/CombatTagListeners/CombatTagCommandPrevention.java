@@ -6,8 +6,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
-
 import com.trc202.CombatTag.CombatTag;
+
 
 public class CombatTagCommandPrevention implements Listener{
 	
@@ -27,8 +27,8 @@ public class CombatTagCommandPrevention implements Listener{
 				command = command.substring(0, command.indexOf(" "));
 			for(String disabledCommand : plugin.settings.getDisabledCommands()){
 				if(command.equalsIgnoreCase(disabledCommand)){
-					if(plugin.isDebugEnabled()){plugin.log.info("[CombatTag] Combat tag has blocked the command: " + disabledCommand + " .");}
-					player.sendMessage("This command is disabled while in combat");
+					if(plugin.isDebugEnabled()){plugin.log.info("[CombatTag] Combat Tag has blocked the command: " + disabledCommand + " .");}
+					player.sendMessage("[CombatTag] This command is disabled while in combat");
 					event.setCancelled(true);
 					return;
 				}

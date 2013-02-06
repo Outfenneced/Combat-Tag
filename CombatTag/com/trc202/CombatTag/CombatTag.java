@@ -22,13 +22,9 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.characters.CharacterManager;
-import com.herocraftonline.heroes.characters.Hero;
 import com.topcat.npclib.NPCManager;
 import com.topcat.npclib.entity.NPC;
 import com.trc202.CombatTagListeners.CombatTagCommandPrevention;
@@ -94,8 +90,6 @@ public class CombatTag extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		if(ctIncompatible.getHeroes() != null){log.info(ChatColor.RED + "[CombatTag] BEWARE! COMBAT TAG IS INCOMPATIBLE WITH HEROES!");}
-		if(ctIncompatible.getMcMMO() != null){log.info(ChatColor.RED + "[CombatTag] BEWARE! COMBAT TAG IS INCOMPATIBLE WITH SERRATED STRIKES!");}
 		playerData = new HashMap<String,PlayerDataContainer>();
 		settings = new SettingsLoader().loadSettings(settingsHelper, this.getDescription().getVersion());
 		npcm = new NPCManager(this);
@@ -330,15 +324,6 @@ public class CombatTag extends JavaPlugin {
 			}
 		}, despawnTicks);
 	}
-	
-	public void heroesSyncHealth(Player player, int health){
-		Plugin heroes = ctIncompatible.getHeroes();
-		if(heroes == null){return;}
-		CharacterManager hcm = new CharacterManager((Heroes) heroes);
-		Hero hero = hcm.getHero(player);
-		hero.setHealth(health);
-		hero.syncHealth();
-	}
 
 	/**
 	 * Loads the player data using bukkit and moves the data from the npc to the offline players file
@@ -404,7 +389,6 @@ public class CombatTag extends JavaPlugin {
 			EntityHuman humanTarget = ((CraftHumanEntity) target).getHandle();
 			int healthSet = healthCheck(source.getHealth());
 			humanTarget.setHealth(healthSet);
-			heroesSyncHealth(target, healthSet);
 		} else{
 			log.info("[CombatTag] An error has occurred! Target is not a HumanEntity!");
 		}

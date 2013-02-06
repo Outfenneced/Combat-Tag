@@ -101,7 +101,7 @@ public class NoPvpEntityListener implements Listener{
 				}
 				damagerData.setPvPTimeout(plugin.getTagDuration());
 			}
-			if(!damaged.hasPermission("combattag.ignore")){	
+			if(!damaged.hasPermission("combattag.ignore") && !plugin.settings.onlyDamagerTagged()){	
 				//Get damaged player data container
 				if(plugin.hasDataContainer(damaged.getName())){
 					damagedData = plugin.getPlayerData(damaged.getName());

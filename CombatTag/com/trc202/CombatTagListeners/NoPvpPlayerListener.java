@@ -129,9 +129,16 @@ public class NoPvpPlayerListener implements Listener{
     public void onPlayerInteract(PlayerInteractEvent event){
     	if(plugin.hasDataContainer(event.getPlayer().getName())){
     		PlayerDataContainer playerData = plugin.getPlayerData(event.getPlayer().getName());
-    		if ((event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) && event.getItem().getType() == Material.ENDER_PEARL && !playerData.hasPVPtagExpired() && plugin.settings.blockEnderPearl()){
-    			event.getPlayer().sendMessage(ChatColor.RED + "[CombatTag] You can't ender pearl while tagged.");
-    			event.setCancelled(true);
+   
+    		if(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK){
+    			if(event.getMaterial() == Material.ENDER_PEARL){ 
+    				if(!playerData.hasPVPtagExpired()){
+    					if(plugin.settings.blockEnderPearl()){
+    						event.getPlayer().sendMessage(ChatColor.RED + "[CombatTag] You can't ender pearl while tagged.");
+    						event.setCancelled(true);
+    					}
+    				}
+    			}
     		}
     	}
     }

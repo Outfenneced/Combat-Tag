@@ -50,3 +50,4 @@ public class CombatTagCommandPrevention implements Listener{
 		}
 	}
 }
+

@@ -38,6 +38,11 @@ public class CombatTagCommandPrevention implements Listener{
 						event.setCancelled(true);
 						return;
 					}
+				} else if(command.indexOf(" ") == -1 && command.equalsIgnoreCase(disabledCommand)){
+					if(plugin.isDebugEnabled()){plugin.log.info("[CombatTag] Combat Tag has blocked the command: " + disabledCommand + " .");}
+					player.sendMessage("[CombatTag] This command is disabled while in combat");
+					event.setCancelled(true);
+					return;
 				}
 			}
 		}else if(plugin.hasDataContainer(player.getName()) && plugin.getPlayerData(player.getName()).hasPVPtagExpired()){

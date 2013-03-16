@@ -6,13 +6,13 @@ import com.topcat.npclib.nms.BServer;
 import com.topcat.npclib.nms.BWorld;
 import com.topcat.npclib.nms.NPCEntity;
 import com.topcat.npclib.nms.NPCNetworkManager;
-import net.minecraft.server.v1_4_R1.Entity;
-import net.minecraft.server.v1_4_R1.PlayerInteractManager;
-import net.minecraft.server.v1_4_R1.WorldServer;
+import net.minecraft.server.v1_5_R1.Entity;
+import net.minecraft.server.v1_5_R1.PlayerInteractManager;
+import net.minecraft.server.v1_5_R1.WorldServer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_4_R1.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_5_R1.entity.CraftEntity;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -53,7 +53,7 @@ public class NPCManager {
 				HashSet<String> toRemove = new HashSet<String>();
 				for (String i : npcs.keySet()) {
 					Entity j = npcs.get(i).getEntity();
-					j.y();
+					j.x();
 					if (j.dead) {
 						toRemove.add(i);
 					}

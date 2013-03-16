@@ -3,10 +3,10 @@ package com.topcat.npclib.entity;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import net.minecraft.server.v1_4_R1.Entity;
-import net.minecraft.server.v1_4_R1.EntityPlayer;
+import net.minecraft.server.v1_5_R1.Entity;
+import net.minecraft.server.v1_5_R1.EntityPlayer;
 
-import org.bukkit.craftbukkit.v1_4_R1.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_5_R1.entity.CraftEntity;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
@@ -123,7 +123,7 @@ public class NPC {
 						look = (float) (Math.toDegrees(Math.asin(last.b.getY() - n.b.getY())) / 2);
 					}
 					getEntity().setPositionRotation(n.b.getX() + 0.5, n.b.getY(), n.b.getZ() + 0.5, angle, look);
-					((EntityPlayer)getEntity()).bT = angle;
+					((EntityPlayer)getEntity()).bU = angle;
 				} else {
 					onFail.run();
 				}
@@ -132,7 +132,7 @@ public class NPC {
 		} else {
 			getEntity().setPositionRotation(runningPath.getEnd().getX(), runningPath.getEnd().getY(), runningPath.getEnd().getZ(), runningPath.getEnd().getYaw(), runningPath.getEnd().getPitch());
 			
-			((EntityPlayer)getEntity()).bT = runningPath.getEnd().getYaw();
+			((EntityPlayer)getEntity()).bU = runningPath.getEnd().getYaw();
 			Bukkit.getServer().getScheduler().cancelTask(taskid);
 			taskid = 0;
 		}

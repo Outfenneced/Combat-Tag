@@ -243,7 +243,7 @@ public class CombatTag extends JavaPlugin {
 					log.info("[CombatTag] /ct can only be used by a player!");
 				}
 				return true;
-			} else if(args[0].equals("reload")){
+			} else if(args[0].equalsIgnoreCase("reload")){
 				if(sender.hasPermission("combattag.reload")){
 					settings = new SettingsLoader().loadSettings(settingsHelper, this.getDescription().getVersion());
 					if(sender instanceof Player){
@@ -257,7 +257,7 @@ public class CombatTag extends JavaPlugin {
 					}
 				}
 				return true;
-			} else if(args[0].equals("wipe")){
+			} else if(args[0].equalsIgnoreCase("wipe")){
 				if(sender.hasPermission("combattag.wipe")){
 					int numNPC = 0;
 					PlayerDataContainer despawn;
@@ -271,9 +271,54 @@ public class CombatTag extends JavaPlugin {
 					sender.sendMessage("[CombatTag] Wiped " + numNPC + " pvploggers!");
 				}
 				return true;
+			} else if(args[0].equalsIgnoreCase("command")){
+				if (sender.hasPermission("combattag.command")){
+					if(args.length > 2){
+						if(args[1].equalsIgnoreCase("add")){
+							if (args[2].length() == 0 || !args[2].startsWith("/")){
+								sender.sendMessage(ChatColor.RED + "[CombatTag] Correct Usage: /ct command add /<command>");
+							} else {
+								String disabledCommands = settingsHelper.getProperty("disabledCommands");
+								if(!disabledCommands.contains(args[2])){
+									disabledCommands = disabledCommands.substring(0, disabledCommands.length()-1)+","+ args[2] +"]";
+									disabledCommands = disabledCommands.replace("[,", "[");
+									disabledCommands = disabledCommands.replaceAll(",,",",");
+									settingsHelper.setProperty("disabledCommands", disabledCommands);
+									settingsHelper.saveConfig();
+									sender.sendMessage(ChatColor.RED + "[CombatTag] Added "+args[2]+" to combat blocked commands.");
+									settings = new SettingsLoader().loadSettings(settingsHelper, this.getDescription().getVersion());
+								} else {
+									sender.sendMessage(ChatColor.RED + "[CombatTag] That command is already in the blocked commands list.");
+								}
+							}
+						} else if(args[1].equalsIgnoreCase("remove")){
+							if (args[2].length() == 0 || !args[2].startsWith("/")){
+								sender.sendMessage(ChatColor.RED + "[CombatTag] Correct Usage: /ct command remove /<command>");
+							} else {
+								String disabledCommands = settingsHelper.getProperty("disabledCommands");
+								if(disabledCommands.contains(args[2] + ",") || disabledCommands.contains(args[2] + "]")){
+									disabledCommands = disabledCommands.replace(args[2]+",","");
+									disabledCommands = disabledCommands.replace(args[2]+"]","]");
+									disabledCommands = disabledCommands.replace(",]","]");
+									disabledCommands = disabledCommands.replaceAll(",,",",");
+									settingsHelper.setProperty("disabledCommands", disabledCommands);
+									settingsHelper.saveConfig();
+									sender.sendMessage(ChatColor.RED + "[CombatTag] Removed "+args[2]+" from combat blocked commands.");
+									settings = new SettingsLoader().loadSettings(settingsHelper, this.getDescription().getVersion());
+								} else {
+									sender.sendMessage(ChatColor.RED + "[CombatTag] That command is not in the blocked commands list.");
+								}
+							}
+						}
+					} else {
+						sender.sendMessage(ChatColor.RED + "[CombatTag] Correct Usage: /ct command <add/remove> /<command>");
+					}
+				}		
+				return true;
+			} else {
+				sender.sendMessage(ChatColor.RED + "[CombatTag] That is not a valid command!");
+				return true;
 			}
-			sender.sendMessage(ChatColor.RED + "[CombatTag] That is not a valid command!");
-			return true;
 		}
 		return false;	
 	}
@@ -346,7 +391,7 @@ public class CombatTag extends JavaPlugin {
 		}
 		target.saveData();
 	}
-	
+
 	public void copyTo(Player target, Player source){
 		target.getInventory().setContents(source.getInventory().getContents());
 		target.getInventory().setArmorContents(source.getInventory().getArmorContents());
@@ -366,7 +411,7 @@ public class CombatTag extends JavaPlugin {
 			log.info("[CombatTag] An error has occurred! Target is not a HumanEntity!");
 		}
 	}
-	
+
 	public int healthCheck(int health) {
 		if(health < 0){
 			health = 0;

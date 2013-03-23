@@ -48,6 +48,9 @@ public class NoPvpPlayerListener implements Listener{
 				EntityPlayer ePlayer = cPlayer.getHandle();
 				ePlayer.invulnerableTicks = 0;
 				plugin.despawnNPC(loginDataContainer);
+				if(loginPlayer.getHealth() > 0){
+					loginDataContainer.setPvPTimeout(plugin.getTagDuration());
+				}
 			}
 			if(loginDataContainer.shouldBePunished()){
 				loginPlayer.setExp(loginDataContainer.getExp());
@@ -58,9 +61,6 @@ public class NoPvpPlayerListener implements Listener{
 				assert(loginPlayer.getHealth() == loginDataContainer.getHealth());
 				loginPlayer.setLastDamageCause(new EntityDamageEvent(loginPlayer, DamageCause.ENTITY_EXPLOSION, 0));
 				loginPlayer.setNoDamageTicks(0);
-			}
-			if(loginPlayer.getHealth() > 0){
-				loginDataContainer.setPvPTimeout(plugin.getTagDuration());
 			}
 			loginDataContainer.setShouldBePunished(false);
 			loginDataContainer.setSpawnedNPC(false);

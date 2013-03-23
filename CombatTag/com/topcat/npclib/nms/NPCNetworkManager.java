@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 
 import net.minecraft.server.v1_5_R2.Connection;
-import net.minecraft.server.v1_5_R2.ConsoleLogManager;
+import net.minecraft.server.v1_5_R2.MinecraftServer;
 import net.minecraft.server.v1_5_R2.NetworkManager;
 import net.minecraft.server.v1_5_R2.Packet;
 
@@ -18,7 +18,7 @@ public class NPCNetworkManager extends NetworkManager {
 	
 	public NPCNetworkManager() throws IOException {
 		//ConsoleLogManager, when declared in this way, creates 2 new files every load of plugin
-		super(new ConsoleLogManager("NPC Manager", (String) null, (String) null), new NullSocket(), "NPC Manager", new Connection() {
+		super(MinecraftServer.getServer().getLogger(), new NullSocket(), "NPC Manager", new Connection() {
 			@Override
 			public boolean a() {
 				return true;

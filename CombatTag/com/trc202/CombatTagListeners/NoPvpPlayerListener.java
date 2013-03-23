@@ -10,8 +10,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
@@ -52,17 +50,6 @@ public class NoPvpPlayerListener implements Listener{
 					loginDataContainer.setPvPTimeout(plugin.getTagDuration());
 				}
 			}
-			if(loginDataContainer.shouldBePunished()){
-				loginPlayer.setExp(loginDataContainer.getExp());
-				loginPlayer.getInventory().setArmorContents(loginDataContainer.getPlayerArmor());
-				loginPlayer.getInventory().setContents(loginDataContainer.getPlayerInventory());
-				int healthSet = plugin.healthCheck(loginDataContainer.getHealth());
-				loginPlayer.setHealth(healthSet);
-				assert(loginPlayer.getHealth() == loginDataContainer.getHealth());
-				loginPlayer.setLastDamageCause(new EntityDamageEvent(loginPlayer, DamageCause.ENTITY_EXPLOSION, 0));
-				loginPlayer.setNoDamageTicks(0);
-			}
-			loginDataContainer.setShouldBePunished(false);
 			loginDataContainer.setSpawnedNPC(false);
 		}
 	}
@@ -81,7 +68,7 @@ public class NoPvpPlayerListener implements Listener{
 				if(plugin.isDebugEnabled()){plugin.log.info("[CombatTag] " + quitPlr.getName() + " has logged of during pvp!");}
 				if(plugin.settings.isInstaKill() || quitPlr.getHealth() <= 0){
 					plugin.log.info("[CombatTag] " + quitPlr.getName() + " has been instakilled!");
-					quitPlr.setHealth(0);
+					quitPlr.damage(1000);
 					plugin.removeDataContainer(quitPlr.getName());
 				}else{
 					boolean willSpawn = true;

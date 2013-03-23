@@ -14,7 +14,6 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import com.topcat.npclib.entity.NPC;
 import com.trc202.CombatTag.CombatTag;
 import com.trc202.Containers.PlayerDataContainer;
-import com.trc202.Containers.Settings;
 
 public class NoPvpEntityListener implements Listener{
 
@@ -43,11 +42,7 @@ public class NoPvpEntityListener implements Listener{
     						return;
     					}
     				}
-    				if(plugin.settings.getCurrentMode() == Settings.SettingsType.NPC){
-	    				onPlayerDamageByPlayerNPCMode(damager,tagged);
-    				}else if(plugin.settings.getCurrentMode() == Settings.SettingsType.TIMED){
-    					//onPlayerDamageByPlayerTimedMode(damager,tagged);
-    				}
+	    			onPlayerDamageByPlayerNPCMode(damager,tagged);
     			}
     		}
 		}
@@ -66,7 +61,6 @@ public class NoPvpEntityListener implements Listener{
 	
 	public void onNPCDeath(Entity entity){
 		if(plugin.hasDataContainer(plugin.getPlayerName(entity))){
-			plugin.killPlayerEmptyInventory(plugin.getPlayerData(plugin.getPlayerName(entity)));
 			String id = plugin.getPlayerName(entity);
 			NPC npc = plugin.npcm.getNPC(id);
 			plugin.updatePlayerData(npc, id);

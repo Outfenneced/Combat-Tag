@@ -22,6 +22,7 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -114,6 +115,7 @@ public class CombatTag extends JavaPlugin {
 		if(spawnedNPC.getBukkitEntity() instanceof HumanEntity){
 			HumanEntity p = (HumanEntity) spawnedNPC.getBukkitEntity();
 			p.setNoDamageTicks(1);
+			p.setMetadata("NPC", new FixedMetadataValue(this,"NPC"));
 		}
 		return spawnedNPC;
 	}

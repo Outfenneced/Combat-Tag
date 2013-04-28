@@ -92,7 +92,9 @@ public class NPCManager {
 			for (NPC npc : npcs.values()) {
 				if (npc != null && event.getChunk() == npc.getBukkitEntity().getLocation().getBlock().getChunk()) {
 					BWorld world = getBWorld(event.getWorld());
-					world.getWorldServer().addEntity(npc.getEntity());
+					if(world.getWorldServer().getEntity(npc.getEntity().id) != npc.getEntity()){ //ATTEMPT TO ERRADICATE ENTITY TRACKING ERROR (WORKS IN NORMAL BUKKIT)
+						world.getWorldServer().addEntity(npc.getEntity());
+					}
 				}
 			}
 		}

@@ -384,6 +384,7 @@ public class CombatTag extends JavaPlugin {
 				humanTarget.setHealth(0);
 				PlayerDataContainer playerData = getPlayerData(playerName);
 				playerData.setPvPTimeout(0);
+				playerData.setSpawnedNPC(false);
 			} else{
 				copyTo(target, source);
 			}

@@ -16,6 +16,7 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import com.topcat.npclib.NPCManager;
 import com.topcat.npclib.entity.NPC;
@@ -81,6 +82,7 @@ public class NoPvpPlayerListener implements Listener{
 							Player npcPlayer = (Player) npc.getBukkitEntity();
 							plugin.copyContentsNpc(npc, quitPlr);
 							plugin.npcm.rename(quitPlr.getName(), plugin.getNpcName(quitPlr.getName()));
+							npcPlayer.setMetadata("NPC", new FixedMetadataValue(plugin,"NPC"));
 							int healthSet = plugin.healthCheck(quitPlr.getHealth());
 							npcPlayer.setHealth(healthSet);
 							quitDataContainer.setSpawnedNPC(true);

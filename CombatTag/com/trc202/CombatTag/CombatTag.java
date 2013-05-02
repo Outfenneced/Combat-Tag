@@ -4,10 +4,10 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
-import net.minecraft.server.v1_5_R2.EntityHuman;
-import net.minecraft.server.v1_5_R2.EntityPlayer;
-import net.minecraft.server.v1_5_R2.PlayerInteractManager;
-import net.minecraft.server.v1_5_R2.MinecraftServer;
+import net.minecraft.server.v1_5_R3.EntityHuman;
+import net.minecraft.server.v1_5_R3.EntityPlayer;
+import net.minecraft.server.v1_5_R3.PlayerInteractManager;
+import net.minecraft.server.v1_5_R3.MinecraftServer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -15,8 +15,8 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_5_R2.CraftServer;
-import org.bukkit.craftbukkit.v1_5_R2.entity.CraftHumanEntity;
+import org.bukkit.craftbukkit.v1_5_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_5_R3.entity.CraftHumanEntity;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;

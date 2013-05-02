@@ -1,11 +1,11 @@
 package com.topcat.npclib;
 
-import net.minecraft.server.v1_5_R2.Packet;
+import net.minecraft.server.v1_5_R3.Packet;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_5_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_5_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 

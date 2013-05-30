@@ -128,13 +128,6 @@ public class CombatTag extends JavaPlugin {
 		}
 		else if(npcName.contains("player")){
 			npcName = npcName.replace("player", plr);
-			/**
-			if(npcName.length() >= 9){
-				npcName = npcName.substring(0, 8);	
-			}
-			//npcName = npcName + "_PvPL";
-			 * 
-			 */
 		}
 		else if(npcName.contains("number")) {
 			npcName = npcName.replace("number", "" + getNpcNumber());
@@ -351,7 +344,7 @@ public class CombatTag extends JavaPlugin {
 	 * @param playerName
 	 */
 	public void updatePlayerData(NPC npc, String playerName){
-		Player target = this.getServer().getPlayer(playerName); //Could return the player or null
+		Player target = this.getServer().getPlayerExact(playerName); //Could return the player or null
 		if(target == null){ //If player is offline
 			if(isDebugEnabled()){log.info("[CombatTag] Update player data for " + playerName + " !");}
 			//Create an entity to load the player data

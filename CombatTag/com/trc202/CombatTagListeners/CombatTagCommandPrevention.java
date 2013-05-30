@@ -25,7 +25,7 @@ public class CombatTagCommandPrevention implements Listener{
 		if(plugin.hasDataContainer(player.getName()) && !plugin.getPlayerData(player.getName()).hasPVPtagExpired()){
 			String command = event.getMessage();
 			for(String disabledCommand : plugin.settings.getDisabledCommands()){
-				if (disabledCommand.equalsIgnoreCase("all")){
+				if (disabledCommand.equalsIgnoreCase("all") && command != "/ct" && command != "/combattag"){
 					player.sendMessage(ChatColor.RED + "[CombatTag] All commands are disabled while in combat");
 					event.setCancelled(true);
 					return;

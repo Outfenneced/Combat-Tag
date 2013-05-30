@@ -48,7 +48,7 @@ public class NoPvpEntityListener implements Listener{
     		}
 		}
 	}
-	@EventHandler(priority = EventPriority.LOWEST)
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onEntityDeath(EntityDeathEvent event){
 		if(plugin.npcm.isNPC(event.getEntity())){
 			onNPCDeath(event.getEntity());

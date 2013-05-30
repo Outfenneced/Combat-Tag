@@ -1,6 +1,7 @@
 package com.trc202.CombatTagListeners;
 
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -81,7 +82,7 @@ public class NoPvpEntityListener implements Listener{
 		PlayerDataContainer damagedData;
 		
 		if(plugin.ctIncompatible.notInArena(damaged,damager)){
-			if(!damager.hasPermission("combattag.ignore")){	
+			if(!damager.hasPermission("combattag.ignore") && (damager.getGameMode() != GameMode.CREATIVE)){	
 				//Get damager player data container
 				if(plugin.hasDataContainer(damager.getName())){
 					damagerData = plugin.getPlayerData(damager.getName());

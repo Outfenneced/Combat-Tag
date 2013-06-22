@@ -132,13 +132,14 @@ public class NoPvpPlayerListener implements Listener{
     	}
     }
     
-	@EventHandler(priority = EventPriority.LOWEST)
+	@EventHandler(priority = EventPriority.LOW)
 	public void onTeleport(PlayerTeleportEvent event){
+		if(event.isCancelled()){return;}
 		if(plugin.hasDataContainer(event.getPlayer().getName())){
 			PlayerDataContainer playerData = plugin.getPlayerData(event.getPlayer().getName());
 			if(plugin.settings.blockTeleport() == true && !playerData.hasPVPtagExpired()){
 				TeleportCause cause = event.getCause();
-				if(cause == TeleportCause.PLUGIN || cause == TeleportCause.COMMAND){
+				if((cause == TeleportCause.PLUGIN || cause == TeleportCause.COMMAND) && (event.getFrom().distance(event.getTo())>8)){ //Allow through small teleports as they are inconsequential, but some plugins use these
 					event.getPlayer().sendMessage(ChatColor.RED + "[CombatTag] You can't teleport while tagged.");
 					event.setCancelled(true);
 				}

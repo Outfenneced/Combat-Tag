@@ -101,7 +101,7 @@ public class HumanNPC extends NPC {
 		}
 		getEntity().yaw = (float) (newYaw - 90);
 		getEntity().pitch = (float) newPitch;
-		((EntityPlayer)getEntity()).bU = (float)(newYaw - 90);
+		((EntityPlayer)getEntity()).az = (float)(newYaw - 90);
 	}
 
 }

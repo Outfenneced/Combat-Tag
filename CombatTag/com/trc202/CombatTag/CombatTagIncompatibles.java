@@ -24,7 +24,7 @@ public class CombatTagIncompatibles {
 	public boolean WarArenaHook(Player plr){
 		boolean notInArena = true;
 		if(plugin.getServer().getPluginManager().getPlugin("War") != null){
-			notInArena = Warzone.getZoneByPlayerName(plr.getName()) == null && Warzone.getZoneByPlayerName(plr.getName()) == null;
+			notInArena = Warzone.getZoneByPlayerName(plr.getName()) == null;
 		}
 		return notInArena;
 	}

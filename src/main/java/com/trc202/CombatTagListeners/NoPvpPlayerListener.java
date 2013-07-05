@@ -83,7 +83,6 @@ public class NoPvpPlayerListener implements Listener {
                         if (npc.getBukkitEntity() instanceof Player) {
                             Player npcPlayer = (Player) npc.getBukkitEntity();
                             plugin.copyContentsNpc(npc, quitPlr);
-                            plugin.npcm.rename(quitPlr.getName(), plugin.getNpcName(quitPlr.getName()));
                             npcPlayer.setMetadata("NPC", new FixedMetadataValue(plugin, "NPC"));
                             double healthSet = plugin.healthCheck(quitPlr.getHealth());
                             npcPlayer.setHealth(healthSet);

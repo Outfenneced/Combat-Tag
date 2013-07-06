@@ -14,9 +14,9 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.tommytony.war.Warzone;
 
 public class CombatTagIncompatibles {
-	
+
 	CombatTag plugin;
-	
+
 	public CombatTagIncompatibles(CombatTag combatTag){
 		this.plugin = combatTag;
 	}
@@ -28,24 +28,24 @@ public class CombatTagIncompatibles {
 		}
 		return notInArena;
 	}
-	
+
 	public WorldGuardPlugin getWorldGuard() {
 	    Plugin wg = plugin.getServer().getPluginManager().getPlugin("WorldGuard");
-	 
+
 	    // WorldGuard may not be loaded
 	    if (wg == null || !(wg instanceof WorldGuardPlugin)) {
 	        return null;
 	    }
-	 
+
 	    return (WorldGuardPlugin) wg;
 	}
-	
+
 	public boolean InWGCheck(Player plr){
 		WorldGuardPlugin wg = getWorldGuard();
 		if (wg != null) {
 			Location plrLoc = plr.getLocation();
 			Vector pt = toVector(plrLoc);
-			
+
 			RegionManager regionManager = wg.getRegionManager(plr.getWorld());
 			ApplicableRegionSet set = regionManager.getApplicableRegions(pt);
 			if(set != null){
@@ -56,7 +56,7 @@ public class CombatTagIncompatibles {
 		}
 		return true;
 	}
-	
+
 	public boolean notInArena(Player damaged, Player damager){
 		return WarArenaHook(damager) && WarArenaHook(damaged);
 	}

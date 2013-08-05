@@ -29,12 +29,12 @@ import com.trc202.Containers.PlayerDataContainer;
 import com.trc202.Containers.PlayerDataManager;
 import com.trc202.Containers.Settings;
 import com.trc202.helpers.SettingsHelper;
-import net.minecraft.server.v1_6_R1.EntityHuman;
-import net.minecraft.server.v1_6_R1.EntityPlayer;
-import net.minecraft.server.v1_6_R1.MinecraftServer;
-import net.minecraft.server.v1_6_R1.PlayerInteractManager;
-import org.bukkit.craftbukkit.v1_6_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_6_R1.entity.CraftHumanEntity;
+import net.minecraft.server.v1_6_R2.EntityHuman;
+import net.minecraft.server.v1_6_R2.EntityPlayer;
+import net.minecraft.server.v1_6_R2.MinecraftServer;
+import net.minecraft.server.v1_6_R2.PlayerInteractManager;
+import org.bukkit.craftbukkit.v1_6_R2.CraftServer;
+import org.bukkit.craftbukkit.v1_6_R2.entity.CraftHumanEntity;
 
 public class CombatTag extends JavaPlugin {
     private SettingsHelper settingsHelper;

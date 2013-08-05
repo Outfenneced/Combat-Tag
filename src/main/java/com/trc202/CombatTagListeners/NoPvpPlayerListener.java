@@ -19,8 +19,8 @@ import com.topcat.npclib.NPCManager;
 import com.topcat.npclib.entity.NPC;
 import com.trc202.CombatTag.CombatTag;
 import com.trc202.Containers.PlayerDataContainer;
-import net.minecraft.server.v1_6_R1.EntityPlayer;
-import org.bukkit.craftbukkit.v1_6_R1.entity.CraftPlayer;
+import net.minecraft.server.v1_6_R2.EntityPlayer;
+import org.bukkit.craftbukkit.v1_6_R2.entity.CraftPlayer;
 
 public class NoPvpPlayerListener implements Listener {
     private final CombatTag plugin;

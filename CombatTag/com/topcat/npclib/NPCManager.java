@@ -87,6 +87,7 @@ public class NPCManager {
 
 	private class SL implements Listener {
 
+		@SuppressWarnings("unused")
 		@EventHandler
 		public void onPluginDisable(PluginDisableEvent event) {
 			if (event.getPlugin() == plugin) {
@@ -98,6 +99,7 @@ public class NPCManager {
 
 	private class WL implements Listener {
 
+		@SuppressWarnings("unused")
 		@EventHandler
 		public void onChunkLoad(ChunkLoadEvent event) {
 			for (NPC npc : npcs.values()) {

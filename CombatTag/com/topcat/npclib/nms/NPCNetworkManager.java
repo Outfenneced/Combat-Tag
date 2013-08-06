@@ -2,11 +2,12 @@ package com.topcat.npclib.nms;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import net.minecraft.server.v1_6_R2.Connection;
+import net.minecraft.server.v1_6_R2.NetworkManager;
+import net.minecraft.server.v1_6_R2.Packet;
 
-import net.minecraft.server.v1_5_R3.Connection;
-import net.minecraft.server.v1_5_R3.MinecraftServer;
-import net.minecraft.server.v1_5_R3.NetworkManager;
-import net.minecraft.server.v1_5_R3.Packet;
+import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.v1_6_R2.CraftServer;
 
 /**
  *
@@ -14,11 +15,9 @@ import net.minecraft.server.v1_5_R3.Packet;
  */
 public class NPCNetworkManager extends NetworkManager {
 
-	NPCEntity npc;
-	
 	public NPCNetworkManager() throws IOException {
-		//ConsoleLogManager, when declared in this way, creates 2 new files every load of plugin
-		super(MinecraftServer.getServer().getLogger(), new NullSocket(), "NPC Manager", new Connection() {
+		super(((CraftServer) Bukkit.getServer()).getServer().getLogger(), new NullSocket(), "NPC Manager", new Connection() {
+
 			@Override
 			public boolean a() {
 				return true;
@@ -48,5 +47,4 @@ public class NPCNetworkManager extends NetworkManager {
 	@Override
 	public void a() {
 	}
-
 }

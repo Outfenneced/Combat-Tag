@@ -1,28 +1,35 @@
 package com.topcat.npclib;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.entity.HumanEntity;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.server.PluginDisableEvent;
+import org.bukkit.event.world.ChunkLoadEvent;
+import org.bukkit.plugin.java.JavaPlugin;
+
 import com.topcat.npclib.entity.HumanNPC;
 import com.topcat.npclib.entity.NPC;
 import com.topcat.npclib.nms.BServer;
 import com.topcat.npclib.nms.BWorld;
 import com.topcat.npclib.nms.NPCEntity;
 import com.topcat.npclib.nms.NPCNetworkManager;
-import net.minecraft.server.v1_5_R3.Entity;
-import net.minecraft.server.v1_5_R3.PlayerInteractManager;
-import net.minecraft.server.v1_5_R3.WorldServer;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_5_R3.entity.CraftEntity;
-import org.bukkit.entity.HumanEntity;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.world.ChunkLoadEvent;
-import org.bukkit.plugin.java.JavaPlugin;
-
 import java.io.IOException;
-import java.lang.reflect.Method;
-import java.util.*;
-import java.util.logging.Level;
+import net.minecraft.server.v1_6_R2.Entity;
+import net.minecraft.server.v1_6_R2.PlayerInteractManager;
+import net.minecraft.server.v1_6_R2.WorldServer;
+import org.bukkit.craftbukkit.v1_6_R2.entity.CraftEntity;
 
 /**
  *
@@ -45,9 +52,10 @@ public class NPCManager {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		NPCManager.plugin = plugin;
 		taskid = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
+
 			@Override
 			public void run() {
 				HashSet<String> toRemove = new HashSet<String>();
@@ -78,23 +86,26 @@ public class NPCManager {
 	}
 
 	private class SL implements Listener {
+
 		@SuppressWarnings("unused")
-		public void disableNPCLib() {
-			despawnAll();
-			Bukkit.getServer().getScheduler().cancelTask(taskid);
+		@EventHandler
+		public void onPluginDisable(PluginDisableEvent event) {
+			if (event.getPlugin() == plugin) {
+				despawnAll();
+				Bukkit.getServer().getScheduler().cancelTask(taskid);
+			}
 		}
 	}
 
 	private class WL implements Listener {
+
 		@SuppressWarnings("unused")
 		@EventHandler
 		public void onChunkLoad(ChunkLoadEvent event) {
 			for (NPC npc : npcs.values()) {
 				if (npc != null && event.getChunk() == npc.getBukkitEntity().getLocation().getBlock().getChunk()) {
 					BWorld world = getBWorld(event.getWorld());
-					if(world.getWorldServer().getEntity(npc.getEntity().id) != npc.getEntity()){ //ATTEMPT TO ERRADICATE ENTITY TRACKING ERROR (WORKS IN NORMAL BUKKIT)
-						world.getWorldServer().addEntity(npc.getEntity());
-					}
+					world.getWorldServer().addEntity(npc.getEntity());
 				}
 			}
 		}
@@ -124,7 +135,6 @@ public class NPCManager {
 			BWorld world = getBWorld(l.getWorld());
 			NPCEntity npcEntity = new NPCEntity(this, world, name, new PlayerInteractManager(world.getWorldServer()));
 			npcEntity.setPositionRotation(l.getX(), l.getY(), l.getZ(), l.getYaw(), l.getPitch());
-			npcEntity.invulnerableTicks = 1;
 			world.getWorldServer().addEntity(npcEntity); //the right way
 			NPC npc = new HumanNPC(npcEntity);
 			npcs.put(id, npc);
@@ -215,12 +225,11 @@ public class NPCManager {
 		npc.setName(name);
 		BWorld b = getBWorld(npc.getBukkitEntity().getLocation().getWorld());
 		WorldServer s = b.getWorldServer();
-
 		try {
-			Method m = s.getClass().getDeclaredMethod("b", new Class[] {Entity.class});
+			Method m = s.getClass().getDeclaredMethod("d", new Class[]{Entity.class});
 			m.setAccessible(true);
 			m.invoke(s, npc.getEntity());
-			m = s.getClass().getDeclaredMethod("a", new Class[] {Entity.class});
+			m = s.getClass().getDeclaredMethod("c", new Class[]{Entity.class});
 			m.setAccessible(true);
 			m.invoke(s, npc.getEntity());
 		} catch (Exception ex) {
@@ -236,5 +245,4 @@ public class NPCManager {
 	public NPCNetworkManager getNPCNetworkManager() {
 		return npcNetworkManager;
 	}
-
 }

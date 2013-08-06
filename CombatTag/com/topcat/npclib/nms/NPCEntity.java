@@ -1,17 +1,11 @@
 package com.topcat.npclib.nms;
 
-import net.minecraft.server.v1_5_R3.Entity;
-import net.minecraft.server.v1_5_R3.EntityHuman;
-import net.minecraft.server.v1_5_R3.EntityPlayer;
-import net.minecraft.server.v1_5_R3.EnumGamemode;
-import net.minecraft.server.v1_5_R3.PlayerInteractManager;
-import net.minecraft.server.v1_5_R3.WorldServer;
-
-import org.bukkit.craftbukkit.v1_5_R3.CraftServer;
-import org.bukkit.craftbukkit.v1_5_R3.entity.CraftEntity;
 import org.bukkit.event.entity.EntityTargetEvent;
 
 import com.topcat.npclib.NPCManager;
+import net.minecraft.server.v1_6_R2.*;
+import org.bukkit.craftbukkit.v1_6_R2.CraftServer;
+import org.bukkit.craftbukkit.v1_6_R2.entity.CraftEntity;
 
 /**
  *
@@ -26,18 +20,23 @@ public class NPCEntity extends EntityPlayer {
 	public NPCEntity(NPCManager npcManager, BWorld world, String s, PlayerInteractManager itemInWorldManager) {
 		super(npcManager.getServer().getMCServer(), world.getWorldServer(), s, itemInWorldManager);
 
-		itemInWorldManager.b(EnumGamemode.SURVIVAL); //Test
+		itemInWorldManager.b(EnumGamemode.SURVIVAL);
 
-		playerConnection = new NPCNetHandler(npcManager, this);
+		playerConnection = new NPCPlayerConnection(npcManager, this);
 		lastTargetId = -1;
 		lastBounceId = -1;
 		lastBounceTick = 0;
-		
+
 		fauxSleeping = true;
 	}
 
-	public void setBukkitEntity(CraftEntity entity) {
-		bukkitEntity = entity;
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	public void setBukkitEntity(org.bukkit.entity.Entity entity) {
+		bukkitEntity = (CraftEntity) entity;
 	}
 
 	@Override
@@ -49,15 +48,25 @@ public class NPCEntity extends EntityPlayer {
 		return super.a(entity);
 	}
 
-	public void i(EntityHuman entity) {
+	@Override
+	public void b_(EntityHuman entity) {
+		if ((lastBounceId != entity.id || System.currentTimeMillis() - lastBounceTick > 1000) && entity.getBukkitEntity().getLocation().distanceSquared(getBukkitEntity().getLocation()) <= 1) {
+			EntityTargetEvent event = new NpcEntityTargetEvent(getBukkitEntity(), entity.getBukkitEntity(), NpcEntityTargetEvent.NpcTargetReason.NPC_BOUNCED);
+			CraftServer server = ((WorldServer) world).getServer();
+			server.getPluginManager().callEvent(event);
+
+			lastBounceTick = System.currentTimeMillis();
+			lastBounceId = entity.id;
+		}
+
 		if (lastTargetId == -1 || lastTargetId != entity.id) {
 			EntityTargetEvent event = new NpcEntityTargetEvent(getBukkitEntity(), entity.getBukkitEntity(), NpcEntityTargetEvent.NpcTargetReason.CLOSEST_PLAYER);
 			CraftServer server = ((WorldServer) world).getServer();
 			server.getPluginManager().callEvent(event);
+			lastTargetId = entity.id;
 		}
-		lastTargetId = entity.id;
 
-		super.i(entity);
+		super.b_(entity);
 	}
 
 	@Override
@@ -79,5 +88,4 @@ public class NPCEntity extends EntityPlayer {
 	public void move(double arg0, double arg1, double arg2) {
 		setPosition(arg0, arg1, arg2);
 	}
-
 }

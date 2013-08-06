@@ -5,18 +5,13 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.minecraft.server.v1_6_R2.*;
 
-import net.minecraft.server.v1_5_R3.AxisAlignedBB;
-import net.minecraft.server.v1_5_R3.Entity;
-import net.minecraft.server.v1_5_R3.EntityPlayer;
-import net.minecraft.server.v1_5_R3.PlayerChunkMap;
-import net.minecraft.server.v1_5_R3.WorldProvider;
-import net.minecraft.server.v1_5_R3.WorldServer;
 
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_5_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_5_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_6_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_6_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -55,7 +50,7 @@ public class BWorld {
 		}
 	}
 
-	public PlayerChunkMap getPlayerManager() {
+	public PlayerChunkMap getChunkMap() {
 		return wServer.getPlayerChunkMap();
 	}
 
@@ -82,6 +77,7 @@ public class BWorld {
 	@SuppressWarnings("unchecked")
 	public void removeEntity(String name, final Player player, JavaPlugin plugin) {
 		server.getServer().getScheduler().callSyncMethod(plugin, new Callable<Object>() {
+
 			@Override
 			public Object call() throws Exception {
 				Location loc = player.getLocation();
@@ -105,5 +101,4 @@ public class BWorld {
 			}
 		});
 	}
-
 }

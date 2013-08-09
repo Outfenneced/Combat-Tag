@@ -15,7 +15,6 @@ import org.bukkit.World;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -85,16 +84,12 @@ public class NPCManager {
 		return bworld;
 	}
 
-	private class SL implements Listener {
-
-		@SuppressWarnings("unused")
-		@EventHandler
-		public void onPluginDisable(PluginDisableEvent event) {
-			if (event.getPlugin() == plugin) {
-				despawnAll();
-				Bukkit.getServer().getScheduler().cancelTask(taskid);
-			}
-		}
+	private class SL implements Listener { 
+		@SuppressWarnings("unused") 
+		public void disableNPCLib() { 
+			despawnAll();
+			Bukkit.getServer().getScheduler().cancelTask(taskid); 
+		} 
 	}
 
 	private class WL implements Listener {

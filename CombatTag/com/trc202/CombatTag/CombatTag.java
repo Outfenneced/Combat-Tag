@@ -72,11 +72,15 @@ public class CombatTag extends JavaPlugin {
     }
 
     /**
-     * Change NPCManager to:
+     * Change SL in NPCManager to:
      *
-     * private class SL implements Listener { @SuppressWarnings("unused") public
-     * void disableNPCLib() { despawnAll();
-     * Bukkit.getServer().getScheduler().cancelTask(taskid); } }
+     * private class SL implements Listener { 
+     * 	   @SuppressWarnings("unused") 
+     * 	   public void disableNPCLib() { 
+     *     		despawnAll();
+     *     		Bukkit.getServer().getScheduler().cancelTask(taskid); 
+     *     } 
+     * }
      */
     @Override
     public void onDisable() {

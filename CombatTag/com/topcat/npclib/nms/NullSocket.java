@@ -10,17 +10,19 @@ import java.net.Socket;
  *
  * @author martin
  */
-public class NullSocket extends Socket {
+class NullSocket extends Socket
+{
+	private final byte[] buffer = new byte[50];
 
 	@Override
-	public InputStream getInputStream() {
-		byte[] buf = new byte[5];
-		return new ByteArrayInputStream(buf);
+	public InputStream getInputStream()
+	{
+		return new ByteArrayInputStream(this.buffer);
 	}
 
 	@Override
-	public OutputStream getOutputStream() {
-		return new ByteArrayOutputStream();
+	public OutputStream getOutputStream()
+	{
+		return new ByteArrayOutputStream(10);
 	}
-
 }

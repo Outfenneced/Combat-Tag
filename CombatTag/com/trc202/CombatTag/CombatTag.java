@@ -82,6 +82,27 @@ public class CombatTag extends JavaPlugin {
      *     } 
      * }
      */
+    
+    /**
+     * Change NullSocket to:
+     * 
+     * class NullSocket extends Socket
+	 *	{
+	 *		private final byte[] buffer = new byte[50];
+	 *
+	 *		@Override
+	 *		public InputStream getInputStream()
+	 *		{
+	 *			return new ByteArrayInputStream(this.buffer);
+	 *		}
+	 *	
+	 *		@Override
+	 *		public OutputStream getOutputStream()
+	 *		{
+	 *			return new ByteArrayOutputStream(10);
+	 *		}
+	 *	}
+     */
     @Override
     public void onDisable() {
         for (PlayerDataContainer pdc : playerData.values()) {

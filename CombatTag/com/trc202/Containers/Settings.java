@@ -24,6 +24,8 @@ public class Settings {
 	private boolean blockEnderPearl;
 	private boolean dontSpawnInWG;
 	private boolean onlyDamagerTagged;
+	private boolean mobTag;
+	private boolean playerTag;
 	
 	public Settings(){
 		currentMode = SettingsType.NPC;
@@ -46,6 +48,8 @@ public class Settings {
 		blockEnderPearl = false;
 		dontSpawnInWG = false;
 		onlyDamagerTagged = false;
+		mobTag = false;
+		playerTag = true;
 		
 	}
 
@@ -205,5 +209,21 @@ public class Settings {
 	
 	public boolean onlyDamagerTagged() {
 		return onlyDamagerTagged;
+	}
+	
+	public void setMobTag(boolean mobTag) {
+		this.mobTag = mobTag;
+	}
+	
+	public boolean mobTag() {
+		return mobTag;
+	}
+	
+	public void setPlayerTag(boolean playerTag) {
+		this.playerTag = playerTag;
+	}
+	
+	public boolean playerTag() {
+		return playerTag;
 	}
 }

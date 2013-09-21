@@ -25,10 +25,9 @@ import com.topcat.npclib.nms.BWorld;
 import com.topcat.npclib.nms.NPCEntity;
 import com.topcat.npclib.nms.NPCNetworkManager;
 import java.io.IOException;
+import net.minecraft.server.v1_6_R3.Entity;
 import net.minecraft.server.v1_6_R3.PlayerInteractManager;
 import net.minecraft.server.v1_6_R3.WorldServer;
-import net.minecraft.server.v1_6_R3.Entity;
-
 import org.bukkit.craftbukkit.v1_6_R3.entity.CraftEntity;
 
 /**

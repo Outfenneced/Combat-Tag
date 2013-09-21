@@ -3,6 +3,7 @@ package com.trc202.CombatTagListeners;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -33,7 +34,7 @@ public class NoPvpEntityListener implements Listener{
     		{
     			dmgr = ((Projectile)dmgr).getShooter();
     		}
-    		if ((dmgr instanceof Player) && (e.getEntity() instanceof Player)){//Check to see if the damager and damaged are players
+    		if ((dmgr instanceof Player) && (e.getEntity() instanceof Player) && plugin.settings.playerTag()){//Check to see if the damager and damaged are players
     			Player damager = (Player) dmgr;
     			Player tagged = (Player) e.getEntity();
     			if(damager != tagged && damager != null){
@@ -45,9 +46,22 @@ public class NoPvpEntityListener implements Listener{
     				}
 	    			onPlayerDamageByPlayerNPCMode(damager,tagged);
     			}
+    		} else if ((dmgr instanceof LivingEntity) && (e.getEntity() instanceof Player) && plugin.settings.mobTag()){
+    			LivingEntity damager = (LivingEntity) dmgr;
+    			Player tagged = (Player) e.getEntity();
+    			if(damager != tagged && damager != null){
+    				for(String disallowedWorlds : plugin.settings.getDisallowedWorlds()){
+    					if(damager.getWorld().getName().equalsIgnoreCase(disallowedWorlds)){
+    						//Skip this tag the world they are in is not to be tracked by combat tag
+    						return;
+    					}
+    				}
+	    			onPlayerDamageByMobNPCMode(damager,tagged);
+    			}
     		}
 		}
 	}
+	
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onEntityDeath(EntityDeathEvent event){
 		if(plugin.npcm.isNPC(event.getEntity())){
@@ -81,7 +95,7 @@ public class NoPvpEntityListener implements Listener{
 		PlayerDataContainer damagerData;
 		PlayerDataContainer damagedData;
 		
-		if(plugin.ctIncompatible.notInArena(damaged,damager)){
+		if(plugin.ctIncompatible.notInArena(damager) && plugin.ctIncompatible.notInArena(damaged)){
 			if(!damager.hasPermission("combattag.ignore") && (damager.getGameMode() != GameMode.CREATIVE)){	
 				//Get damager player data container
 				if(plugin.hasDataContainer(damager.getName())){
@@ -110,6 +124,31 @@ public class NoPvpEntityListener implements Listener{
 				}
 				if(plugin.isDebugEnabled() && !plugin.npcm.isNPC(damaged) && damagedData.hasPVPtagExpired()){
 					plugin.log.info("[CombatTag] " + damager.getName() + " tagged " + damaged.getName() + ", setting pvp timeout");
+				}
+				damagedData.setPvPTimeout(plugin.getTagDuration());
+			}
+		}
+	}
+	
+	private void onPlayerDamageByMobNPCMode(LivingEntity damager, Player damaged) {
+		if(plugin.npcm.isNPC(damaged)){return;} //If the damaged player is an npc do nothing
+		PlayerDataContainer damagedData;
+		
+		if(plugin.ctIncompatible.notInArena(damaged)){
+			if(!damaged.hasPermission("combattag.ignoremob")){	
+				//Get damaged player data container
+				if(plugin.hasDataContainer(damaged.getName())){
+					damagedData = plugin.getPlayerData(damaged.getName());
+				}else{
+					damagedData = plugin.createPlayerData(damaged.getName());
+				}
+				if(plugin.settings.isSendMessageWhenTagged() && !plugin.npcm.isNPC(damaged) && damagedData.hasPVPtagExpired()){
+					String tagMessage = plugin.settings.getTagMessageDamaged();
+					tagMessage = tagMessage.replace("[player]", damager.getType().getName());
+					damaged.sendMessage(ChatColor.RED + "[CombatTag] " + tagMessage);
+				}
+				if(plugin.isDebugEnabled() && !plugin.npcm.isNPC(damaged) && damagedData.hasPVPtagExpired()){
+					plugin.log.info("[CombatTag] " + damager.getType().getName() + " tagged " + damaged.getName() + ", setting pvp timeout");
 				}
 				damagedData.setPvPTimeout(plugin.getTagDuration());
 			}

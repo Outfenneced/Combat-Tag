@@ -57,7 +57,7 @@ public class CombatTagIncompatibles {
 		return true;
 	}
 
-	public boolean notInArena(Player damaged, Player damager){
-		return WarArenaHook(damager) && WarArenaHook(damaged);
+	public boolean notInArena(Player player){
+		return WarArenaHook(player);
 	}
 }

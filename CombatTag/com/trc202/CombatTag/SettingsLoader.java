@@ -25,6 +25,8 @@ public class SettingsLoader {
 	private static String blockEnderPearl = "blockEnderPearl";
 	private static String dontSpawnInWG = "dontSpawnInWG";
 	private static String onlyDamagerTagged = "onlyDamagerTagged";
+	private static String mobTag = "mobTag";
+	private static String playerTag = "playerTag";
 
 	public Settings loadSettings(SettingsHelper helper, String version){
 		settings = new Settings();
@@ -59,6 +61,8 @@ public class SettingsLoader {
 		if(helper.getProperty(blockEnderPearl) == null) {helper.setProperty(blockEnderPearl, Boolean.toString(temp.blockEnderPearl()));}
 		if(helper.getProperty(dontSpawnInWG) == null) {helper.setProperty(dontSpawnInWG, Boolean.toString(temp.dontSpawnInWG()));}
 		if(helper.getProperty(onlyDamagerTagged) == null) {helper.setProperty(onlyDamagerTagged, Boolean.toString(temp.onlyDamagerTagged()));}
+		if(helper.getProperty(mobTag) == null) {helper.setProperty(mobTag, Boolean.toString(temp.mobTag()));}
+		if(helper.getProperty(playerTag) == null) {helper.setProperty(playerTag, Boolean.toString(temp.playerTag()));}
 	}
 
 	private boolean isLatestVersion(SettingsHelper helper, String vers){
@@ -86,7 +90,9 @@ public class SettingsLoader {
 		(helper.getProperty(blockTeleport) != null) &&
 		(helper.getProperty(blockEnderPearl) != null) &&
 		(helper.getProperty(dontSpawnInWG) != null) &&
-		(helper.getProperty(onlyDamagerTagged) != null)
+		(helper.getProperty(onlyDamagerTagged) != null) && 
+		(helper.getProperty(mobTag) != null) && 
+		(helper.getProperty(playerTag) != null)
 		){
 			return true;
 		}else{
@@ -123,5 +129,7 @@ public class SettingsLoader {
 		settings.setBlockEnderPearl(Boolean.valueOf(helper.getProperty(blockEnderPearl)));
 		settings.setDontSpawnInWG(Boolean.valueOf(helper.getProperty(dontSpawnInWG)));
 		settings.setOnlyDamager(Boolean.valueOf(helper.getProperty(onlyDamagerTagged)));
+		settings.setMobTag(Boolean.valueOf(helper.getProperty(mobTag)));
+		settings.setPlayerTag(Boolean.valueOf(helper.getProperty(playerTag)));
 	}
 }

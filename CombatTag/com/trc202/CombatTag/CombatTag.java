@@ -29,12 +29,12 @@ import com.trc202.Containers.PlayerDataContainer;
 import com.trc202.Containers.PlayerDataManager;
 import com.trc202.Containers.Settings;
 import com.trc202.helpers.SettingsHelper;
-import net.minecraft.server.v1_6_R2.EntityHuman;
-import net.minecraft.server.v1_6_R2.EntityPlayer;
-import net.minecraft.server.v1_6_R2.MinecraftServer;
-import net.minecraft.server.v1_6_R2.PlayerInteractManager;
-import org.bukkit.craftbukkit.v1_6_R2.CraftServer;
-import org.bukkit.craftbukkit.v1_6_R2.entity.CraftHumanEntity;
+import net.minecraft.server.v1_6_R3.EntityHuman;
+import net.minecraft.server.v1_6_R3.EntityPlayer;
+import net.minecraft.server.v1_6_R3.MinecraftServer;
+import net.minecraft.server.v1_6_R3.PlayerInteractManager;
+import org.bukkit.craftbukkit.v1_6_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_6_R3.entity.CraftHumanEntity;
 
 public class CombatTag extends JavaPlugin {
     private SettingsHelper settingsHelper;
@@ -158,9 +158,11 @@ public class CombatTag extends JavaPlugin {
         String npcName = settings.getNpcName();
         if (!(npcName.contains("player") || npcName.contains("number"))) {
             npcName = npcName + getNpcNumber();
-        } else if (npcName.contains("player")) {
+        }
+        if (npcName.contains("player")) {
             npcName = npcName.replace("player", plr);
-        } else if (npcName.contains("number")) {
+        }
+        if (npcName.contains("number")) {
             npcName = npcName.replace("number", "" + getNpcNumber());
         }
         return npcName;

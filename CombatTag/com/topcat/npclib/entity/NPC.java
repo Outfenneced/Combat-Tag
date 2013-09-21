@@ -11,8 +11,8 @@ import com.topcat.npclib.pathing.NPCPath;
 import com.topcat.npclib.pathing.NPCPathFinder;
 import com.topcat.npclib.pathing.Node;
 import com.topcat.npclib.pathing.PathReturn;
-import net.minecraft.server.v1_6_R2.Entity;
-import net.minecraft.server.v1_6_R2.EntityPlayer;
+import net.minecraft.server.v1_6_R3.Entity;
+import net.minecraft.server.v1_6_R3.EntityPlayer;
 
 public class NPC {
 

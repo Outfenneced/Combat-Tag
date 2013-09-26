@@ -120,4 +120,39 @@ public class CombatTagApi {
 		}
 		playerData.setPvPTimeout(plugin.getTagDuration());
 	}
+	
+	
+	/**
+	 * Untags player
+	 * @param player
+	 * @return true if the action is successful, false if not
+	 */
+	public boolean untagPlayer(Player player){
+		PlayerDataContainer playerData;
+		if(plugin.hasDataContainer(player.getName())){
+			playerData = plugin.getPlayerData(player.getName());
+			playerData.setPvPTimeout(0);
+			plugin.removeDataContainer(player.getName());
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	/**
+	 * Untags player with name
+	 * @param string
+	 * @return true if the action is successful, false if not
+	 */
+	public boolean untagPlayer(String playerName){
+		PlayerDataContainer playerData;
+		if(plugin.hasDataContainer(playerName)){
+			playerData = plugin.getPlayerData(playerName);
+			playerData.setPvPTimeout(0);
+			plugin.removeDataContainer(playerName);
+			return true;
+		} else {
+			return false;
+		}
+	}
 }

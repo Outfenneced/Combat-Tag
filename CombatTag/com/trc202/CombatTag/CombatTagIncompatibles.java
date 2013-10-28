@@ -2,6 +2,9 @@ package com.trc202.CombatTag;
 
 import static com.sk89q.worldguard.bukkit.BukkitUtil.toVector;
 
+import net.slipcor.pvparena.PVPArena;
+import net.slipcor.pvparena.api.PVPArenaAPI;
+
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -21,6 +24,15 @@ public class CombatTagIncompatibles {
 		this.plugin = combatTag;
 	}
 
+	public boolean PvPArenaHook(Player plr){
+		Plugin pvparena = this.plugin.getServer().getPluginManager().getPlugin("pvparena");
+		boolean notInArena = true;
+		if(pvparena != null && (pvparena instanceof PVPArena)){
+			notInArena = PVPArenaAPI.getArenaName(plr) == "";
+		}
+		return notInArena;
+	} 
+	
 	public boolean WarArenaHook(Player plr){
 		boolean notInArena = true;
 		if(plugin.getServer().getPluginManager().getPlugin("War") != null){
@@ -58,6 +70,6 @@ public class CombatTagIncompatibles {
 	}
 
 	public boolean notInArena(Player player){
-		return WarArenaHook(player);
+		return WarArenaHook(player) && PvPArenaHook(player);
 	}
 }

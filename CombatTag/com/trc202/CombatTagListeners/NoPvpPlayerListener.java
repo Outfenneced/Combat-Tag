@@ -142,7 +142,7 @@ public class NoPvpPlayerListener implements Listener {
         }
         if (plugin.hasDataContainer(event.getPlayer().getName())) {
             PlayerDataContainer playerData = plugin.getPlayerData(event.getPlayer().getName());
-            if (plugin.settings.blockTeleport() == true && !playerData.hasPVPtagExpired()) {
+            if (plugin.settings.blockTeleport() == true && !playerData.hasPVPtagExpired() && plugin.ctIncompatible.notInArena(event.getPlayer())) {
                 TeleportCause cause = event.getCause();
                 if ((cause == TeleportCause.PLUGIN || cause == TeleportCause.COMMAND)) { //Allow through small teleports as they are inconsequential, but some plugins use these
                     if(event.getPlayer().getWorld() != event.getTo().getWorld()){

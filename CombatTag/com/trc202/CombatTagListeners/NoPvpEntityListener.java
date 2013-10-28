@@ -95,7 +95,7 @@ public class NoPvpEntityListener implements Listener{
 		PlayerDataContainer damagerData;
 		PlayerDataContainer damagedData;
 		
-		if(plugin.ctIncompatible.notInArena(damager) && plugin.ctIncompatible.notInArena(damaged)){
+		if(plugin.ctIncompatible.WarArenaHook(damager) && plugin.ctIncompatible.WarArenaHook(damaged)){
 			if(!damager.hasPermission("combattag.ignore") && (damager.getGameMode() != GameMode.CREATIVE)){	
 				//Get damager player data container
 				if(plugin.hasDataContainer(damager.getName())){
@@ -134,7 +134,7 @@ public class NoPvpEntityListener implements Listener{
 		if(plugin.npcm.isNPC(damaged)){return;} //If the damaged player is an npc do nothing
 		PlayerDataContainer damagedData;
 		
-		if(plugin.ctIncompatible.notInArena(damaged)){
+		if(plugin.ctIncompatible.WarArenaHook(damaged)){
 			if(!damaged.hasPermission("combattag.ignoremob")){	
 				//Get damaged player data container
 				if(plugin.hasDataContainer(damaged.getName())){

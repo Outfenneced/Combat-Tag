@@ -1,7 +1,6 @@
 package com.trc202.CombatTag;
 
 import static com.sk89q.worldguard.bukkit.BukkitUtil.toVector;
-
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.api.PVPArenaAPI;
 

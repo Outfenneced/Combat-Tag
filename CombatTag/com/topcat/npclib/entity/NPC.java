@@ -3,6 +3,9 @@ package com.topcat.npclib.entity;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import net.minecraft.server.v1_6_R3.Entity;
+import net.minecraft.server.v1_6_R3.EntityPlayer;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
@@ -11,8 +14,6 @@ import com.topcat.npclib.pathing.NPCPath;
 import com.topcat.npclib.pathing.NPCPathFinder;
 import com.topcat.npclib.pathing.Node;
 import com.topcat.npclib.pathing.PathReturn;
-import net.minecraft.server.v1_6_R3.Entity;
-import net.minecraft.server.v1_6_R3.EntityPlayer;
 
 public class NPC {
 

@@ -1,5 +1,6 @@
 package com.topcat.npclib;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,9 +10,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
+import net.minecraft.server.v1_6_R3.Entity;
+import net.minecraft.server.v1_6_R3.PlayerInteractManager;
+import net.minecraft.server.v1_6_R3.WorldServer;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.craftbukkit.v1_6_R3.entity.CraftEntity;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -24,11 +30,6 @@ import com.topcat.npclib.nms.BServer;
 import com.topcat.npclib.nms.BWorld;
 import com.topcat.npclib.nms.NPCEntity;
 import com.topcat.npclib.nms.NPCNetworkManager;
-import java.io.IOException;
-import net.minecraft.server.v1_6_R3.Entity;
-import net.minecraft.server.v1_6_R3.PlayerInteractManager;
-import net.minecraft.server.v1_6_R3.WorldServer;
-import org.bukkit.craftbukkit.v1_6_R3.entity.CraftEntity;
 
 /**
  *

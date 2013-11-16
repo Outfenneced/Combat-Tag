@@ -2,6 +2,7 @@ package com.topcat.npclib.nms;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+
 import net.minecraft.server.v1_6_R3.Connection;
 import net.minecraft.server.v1_6_R3.NetworkManager;
 import net.minecraft.server.v1_6_R3.Packet;

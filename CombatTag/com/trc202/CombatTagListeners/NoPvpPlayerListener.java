@@ -19,8 +19,6 @@ import com.topcat.npclib.NPCManager;
 import com.topcat.npclib.entity.NPC;
 import com.trc202.CombatTag.CombatTag;
 import com.trc202.Containers.PlayerDataContainer;
-import net.minecraft.server.v1_6_R3.EntityPlayer;
-import org.bukkit.craftbukkit.v1_6_R3.entity.CraftPlayer;
 
 public class NoPvpPlayerListener implements Listener {
     private final CombatTag plugin;
@@ -44,9 +42,7 @@ public class NoPvpPlayerListener implements Listener {
             if (loginDataContainer.hasSpawnedNPC()) {
                 //Player has pvplogged and has not been killed yet
                 //despawn the npc and transfer any effects over to the player
-                CraftPlayer cPlayer = (CraftPlayer) loginPlayer;
-                EntityPlayer ePlayer = cPlayer.getHandle();
-                ePlayer.invulnerableTicks = 0;
+                loginPlayer.setNoDamageTicks(0);
                 plugin.despawnNPC(loginDataContainer);
                 if (loginPlayer.getHealth() > 0) {
                     loginDataContainer.setPvPTimeout(plugin.getTagDuration());

@@ -2,8 +2,8 @@ package com.topcat.npclib.pathing;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.server.v1_6_R3.AxisAlignedBB;
 
+import net.minecraft.server.v1_6_R3.AxisAlignedBB;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;

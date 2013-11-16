@@ -1,7 +1,6 @@
 package com.topcat.npclib.nms;
 
 import net.minecraft.server.v1_6_R3.EntityPlayer;
-import net.minecraft.server.v1_6_R3.PlayerConnection;
 import net.minecraft.server.v1_6_R3.Packet;
 import net.minecraft.server.v1_6_R3.Packet101CloseWindow;
 import net.minecraft.server.v1_6_R3.Packet102WindowClick;
@@ -17,6 +16,7 @@ import net.minecraft.server.v1_6_R3.Packet255KickDisconnect;
 import net.minecraft.server.v1_6_R3.Packet3Chat;
 import net.minecraft.server.v1_6_R3.Packet7UseEntity;
 import net.minecraft.server.v1_6_R3.Packet9Respawn;
+import net.minecraft.server.v1_6_R3.PlayerConnection;
 
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_6_R3.CraftServer;

@@ -262,15 +262,14 @@ public class CombatTag extends JavaPlugin {
         if (command.getName().equalsIgnoreCase("ct") || (command.getName().equalsIgnoreCase("combattag"))) {
             if (args.length == 0) {
                 if (sender instanceof Player) {
-                    Player player = (Player) sender;
-                    if (hasDataContainer(player.getName()) && !getPlayerData(player.getName()).hasPVPtagExpired()) {
-                        PlayerDataContainer playerDataContainer = getPlayerData(player.getName());
+                    if (hasDataContainer(sender.getName()) && !getPlayerData(sender.getName()).hasPVPtagExpired()) {
+                        PlayerDataContainer playerDataContainer = getPlayerData(sender.getName());
                         String message = settings.getCommandMessageTagged();
                         message = message.replace("[time]", "" + (playerDataContainer.getRemainingTagTime() / 1000));
-                        player.sendMessage(message);
+                        sender.sendMessage(message);
                     } else {
-                        removeDataContainer(player.getName());
-                        player.sendMessage(settings.getCommandMessageNotTagged());
+                        removeDataContainer(sender.getName());
+                        sender.sendMessage(settings.getCommandMessageNotTagged());
                     }
                 } else {
                     log.info("[CombatTag] /ct can only be used by a player!");
@@ -363,14 +362,16 @@ public class CombatTag extends JavaPlugin {
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
             @Override
             public void run() {
-                if (plrData.hasSpawnedNPC() == true) {
-                    if (kill == true) {
-                        plrNpc.setHealth(0);
-                        updatePlayerData(npc, plrData.getPlayerName());
-                    } else {
-                        despawnNPC(plrData);
-                    }
-                }
+            	if(!Bukkit.getServer().getPlayerExact(plrData.getPlayerName()).isOnline()){
+            		if (plrData.hasSpawnedNPC() == true) {
+            			if (kill == true) {
+            				plrNpc.setHealth(0);
+            				updatePlayerData(npc, plrData.getPlayerName());
+            			} else {
+            				despawnNPC(plrData);
+            			}
+            		}
+            	}
             }
         }, despawnTicks);
     }

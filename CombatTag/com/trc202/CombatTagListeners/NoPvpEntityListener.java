@@ -69,8 +69,7 @@ public class NoPvpEntityListener implements Listener{
 		}
 		//if Player died with a tag duration, cancel the timeout and remove the data container
 		else if(event.getEntity() instanceof Player){
-			Player deadPlayer = (Player) event.getEntity();
-			onPlayerDeath(deadPlayer);
+			onPlayerDeath((Player) event.getEntity());
 		}
 	}
 	
@@ -132,6 +131,7 @@ public class NoPvpEntityListener implements Listener{
 	
 	private void onPlayerDamageByMobNPCMode(LivingEntity damager, Player damaged) {
 		if(plugin.npcm.isNPC(damaged)){return;} //If the damaged player is an npc do nothing
+		if(damager == null){return;}
 		PlayerDataContainer damagedData;
 		
 		if(plugin.ctIncompatible.WarArenaHook(damaged)){

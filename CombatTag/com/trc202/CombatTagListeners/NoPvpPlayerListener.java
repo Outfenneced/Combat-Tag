@@ -144,11 +144,11 @@ public class NoPvpPlayerListener implements Listener {
             PlayerDataContainer playerData = plugin.getPlayerData(event.getPlayer().getName());
             if (plugin.settings.blockTeleport() == true && !playerData.hasPVPtagExpired() && plugin.ctIncompatible.notInArena(event.getPlayer())) {
                 TeleportCause cause = event.getCause();
-                if ((cause == TeleportCause.PLUGIN || cause == TeleportCause.COMMAND)) { //Allow through small teleports as they are inconsequential, but some plugins use these
+                if ((cause == TeleportCause.PLUGIN || cause == TeleportCause.COMMAND)) { 
                     if(event.getPlayer().getWorld() != event.getTo().getWorld()){
                     	event.getPlayer().sendMessage(ChatColor.RED + "[CombatTag] You can't teleport across worlds while tagged.");
                     	event.setCancelled(true);
-                    } else if(event.getFrom().distance(event.getTo()) > 8){
+                    } else if(event.getFrom().distance(event.getTo()) > 8){ //Allow through small teleports as they are inconsequential, but some plugins use these
                     	event.getPlayer().sendMessage(ChatColor.RED + "[CombatTag] You can't teleport while tagged.");
                     	event.setCancelled(true);
                     }

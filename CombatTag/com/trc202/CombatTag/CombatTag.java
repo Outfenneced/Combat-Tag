@@ -32,34 +32,22 @@ import com.trc202.CombatTagListeners.CombatTagCommandPrevention;
 import com.trc202.CombatTagListeners.NoPvpBlockListener;
 import com.trc202.CombatTagListeners.NoPvpEntityListener;
 import com.trc202.CombatTagListeners.NoPvpPlayerListener;
-import com.trc202.Containers.PlayerDataContainer;
-import com.trc202.Containers.PlayerDataManager;
 import com.trc202.Containers.Settings;
 import com.trc202.helpers.SettingsHelper;
 
 public class CombatTag extends JavaPlugin {
     private SettingsHelper settingsHelper;
-
     private File settingsFile;
-
     public Settings settings;
-
     public final Logger log = Logger.getLogger("Minecraft");
-
     public NPCManager npcm;
-
-    private HashMap<String, PlayerDataContainer> playerData;
-
+    private HashMap<String, Long> tagged;
     private static String mainDirectory = "plugins/CombatTag";
-
+    
     public final CombatTagIncompatibles ctIncompatible = new CombatTagIncompatibles(this);
-
     private final NoPvpPlayerListener plrListener = new NoPvpPlayerListener(this);
-
     public final NoPvpEntityListener entityListener = new NoPvpEntityListener(this);
-
     private final NoPvpBlockListener blockListener = new NoPvpBlockListener(this);
-
     private final CombatTagCommandPrevention commandPreventer = new CombatTagCommandPrevention(this);
 
     private int npcNumber;
@@ -106,13 +94,13 @@ public class CombatTag extends JavaPlugin {
      */
     @Override
     public void onDisable() {
-        for (PlayerDataContainer pdc : playerData.values()) {
-            NPC npc = npcm.getNPC(pdc.getPlayerName());
+        for (String pdc : tagged.keySet()) {
+            NPC npc = npcm.getNPC(pdc);
             if (npc != null) {
                 if (isDebugEnabled()) {
-                    log.info("[CombatTag] Disable npc for: " + pdc.getPlayerName() + " !");
+                    log.info("[CombatTag] Disable npc for: " + pdc + " !");
                 }
-                updatePlayerData(npc, pdc.getPlayerName());
+                updatePlayerData(npc, pdc);
                 despawnNPC(pdc);
             }
         }
@@ -122,7 +110,7 @@ public class CombatTag extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        playerData = new HashMap<String, PlayerDataContainer>();
+        tagged = new HashMap<String, Long>();
         settings = new SettingsLoader().loadSettings(settingsHelper, this.getDescription().getVersion());
         npcm = new NPCManager(this);
         PluginManager pm = getServer().getPluginManager();
@@ -131,6 +119,41 @@ public class CombatTag extends JavaPlugin {
         pm.registerEvents(commandPreventer, this);
         pm.registerEvents(blockListener, this);
         log.info("[" + getDescription().getName() + "]" + " has loaded with a tag time of " + settings.getTagDuration() + " seconds");
+    }
+    
+    public long getRemainingTagTime(String name){
+    	if(tagged.get(name) == null){return -1L;}
+    	return (tagged.get(name) - System.currentTimeMillis());
+	}
+    
+    public boolean addTagged(Player player){
+    	if(player.isOnline()){
+    		tagged.remove(player.getName());
+    		tagged.put(player.getName(), PvPTimeout(getTagDuration()));
+    		return true;
+    	}
+    	return false;
+    }
+    
+    public boolean inTagged(String name){
+    	return tagged.containsKey(name);
+    }
+    
+    public long removeTagged(Player player){
+    	return tagged.remove(player.getName());
+    }
+    
+    public long PvPTimeout(int seconds){
+		return System.currentTimeMillis() + (seconds * 1000);
+	}
+    
+    public boolean isInCombat(String name){
+    	if(getRemainingTagTime(name) < 0){
+    		tagged.remove(name);
+    		return false;
+    	} else {
+    		return true;
+    	}
     }
 
     /**
@@ -147,6 +170,7 @@ public class CombatTag extends JavaPlugin {
             log.info("[CombatTag] Spawning NPC for " + plr.getName());
         }
         spawnedNPC = npcm.spawnHumanNPC(getNpcName(plr.getName()), location, plr.getName());
+        log.info("Spawned npc with id of: " + npcm.getNPCIdFromEntity(spawnedNPC.getBukkitEntity()));
         if (spawnedNPC.getBukkitEntity() instanceof HumanEntity) {
             HumanEntity p = (HumanEntity) spawnedNPC.getBukkitEntity();
             p.setNoDamageTicks(1);
@@ -174,16 +198,14 @@ public class CombatTag extends JavaPlugin {
      *
      * @param plrData
      */
-    public void despawnNPC(PlayerDataContainer plrData) {
+    public void despawnNPC(String playerName) {
         if (isDebugEnabled()) {
-            log.info("[CombatTag] Despawning NPC for " + plrData.getPlayerName());
+            log.info("[CombatTag] Despawning NPC for " + playerName);
         }
-        NPC npc = npcm.getNPC(plrData.getNPCId());
+        NPC npc = npcm.getNPC(playerName);
         if (npc != null) {
-            updatePlayerData(npc, plrData.getPlayerName());
-            npcm.despawnById(plrData.getNPCId());
-            plrData.setNPCId("");
-            plrData.setSpawnedNPC(false);
+            updatePlayerData(npc, playerName);
+            npcm.despawnById(playerName);
         }
     }
 
@@ -207,28 +229,6 @@ public class CombatTag extends JavaPlugin {
         }
     }
 
-    public boolean hasDataContainer(String playerName) {
-        if (playerData.containsKey(playerName)) {
-            return playerData.containsKey(playerName);
-        } else {
-            return PlayerDataManager.hasPlayerDataFile(mainDirectory, playerName);
-        }
-    }
-
-    public PlayerDataContainer getPlayerData(String playerName) {
-        if (!playerData.containsKey(playerName)) {
-            playerData.put(playerName, PlayerDataManager.loadPlayerData(mainDirectory, playerName));
-            PlayerDataManager.deletePlayerData(mainDirectory, playerName);
-        }
-        return playerData.get(playerName);
-    }
-
-    public PlayerDataContainer createPlayerData(String playerName) {
-        PlayerDataContainer plr = new PlayerDataContainer(playerName);
-        playerData.put(playerName, plr);
-        return plr;
-    }
-
     /**
      *
      * @return the system tag duration as set by the user
@@ -248,11 +248,11 @@ public class CombatTag extends JavaPlugin {
             log.info("[CombatTag] " + target.getName() + " has been killed by Combat Tag and their inventory has been emptied through UpdatePlayerData.");
         }
     }
-
+/*
     public void removeDataContainer(String playerName) {
         playerData.remove(playerName);
     }
-
+*/
     public int getNpcNumber() {
         npcNumber = npcNumber + 1;
         return npcNumber;
@@ -260,23 +260,22 @@ public class CombatTag extends JavaPlugin {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
-        if (command.getName().equalsIgnoreCase("ct") || (command.getName().equalsIgnoreCase("combattag"))) {
-            if (args.length == 0) {
-                if (sender instanceof Player) {
-                    if (hasDataContainer(sender.getName()) && !getPlayerData(sender.getName()).hasPVPtagExpired()) {
-                        PlayerDataContainer playerDataContainer = getPlayerData(sender.getName());
-                        String message = settings.getCommandMessageTagged();
-                        message = message.replace("[time]", "" + (playerDataContainer.getRemainingTagTime() / 1000));
-                        sender.sendMessage(message);
-                    } else {
-                        removeDataContainer(sender.getName());
-                        sender.sendMessage(settings.getCommandMessageNotTagged());
-                    }
-                } else {
-                    log.info("[CombatTag] /ct can only be used by a player!");
-                }
-                return true;
-            } else if (args[0].equalsIgnoreCase("reload")) {
+    	if (command.getName().equalsIgnoreCase("ct") || (command.getName().equalsIgnoreCase("combattag"))) {
+    		if (args.length == 0) {
+    			if (sender instanceof Player) {
+    				if(isInCombat(sender.getName())) {
+    					String message = settings.getCommandMessageTagged();
+    					message = message.replace("[time]", "" + (getRemainingTagTime(sender.getName()) / 1000));
+    					sender.sendMessage(message);
+    				} else {
+    					tagged.remove(sender.getName());
+    					sender.sendMessage(settings.getCommandMessageNotTagged());
+    				}
+    			} else {
+    				log.info("[CombatTag] /ct can only be used by a player!");
+    			}
+    			return true;
+    		} else if (args[0].equalsIgnoreCase("reload")) {
                 if (sender.hasPermission("combattag.reload")) {
                     settings = new SettingsLoader().loadSettings(settingsHelper, this.getDescription().getVersion());
                     if (sender instanceof Player) {
@@ -293,10 +292,8 @@ public class CombatTag extends JavaPlugin {
             } else if (args[0].equalsIgnoreCase("wipe")) {
                 if (sender.hasPermission("combattag.wipe")) {
                     int numNPC = 0;
-                    PlayerDataContainer despawn;
+                    //PlayerDataContainer despawn;
                     for (NPC npc : npcm.getNPCs()) {
-                        despawn = getPlayerData(npcm.getNPCIdFromEntity(npc.getBukkitEntity()));
-                        despawn.setSpawnedNPC(false);
                         updatePlayerData(npc, npcm.getNPCIdFromEntity(npc.getBukkitEntity()));
                         npcm.despawnById(npcm.getNPCIdFromEntity(npc.getBukkitEntity()));
                         numNPC++;
@@ -356,20 +353,20 @@ public class CombatTag extends JavaPlugin {
         return false;
     }
 
-    public void scheduleDelayedKill(final NPC npc, final PlayerDataContainer plrData) {
+    public void scheduleDelayedKill(final NPC npc, final String name) {
         long despawnTicks = settings.getNpcDespawnTime() * 20L;
         final boolean kill = settings.isNpcDieAfterTime();
         final Player plrNpc = (Player) npc.getBukkitEntity();
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
             @Override
             public void run() {
-            	if(!Bukkit.getServer().getPlayerExact(plrData.getPlayerName()).isOnline()){
-            		if (plrData.hasSpawnedNPC() == true) {
+            	if(!Bukkit.getServer().getPlayerExact(name).isOnline()){
+            		if (npcm.getNPC(name) != null) {
             			if (kill == true) {
             				plrNpc.setHealth(0);
-            				updatePlayerData(npc, plrData.getPlayerName());
+            				updatePlayerData(npc, name);
             			} else {
-            				despawnNPC(plrData);
+            				despawnNPC(name);
             			}
             		}
             	}
@@ -415,9 +412,6 @@ public class CombatTag extends JavaPlugin {
                 }
                 target.getInventory().setArmorContents(emptyArmorStack);
                 humanTarget.setHealth(0);
-                PlayerDataContainer playerData = getPlayerData(playerName);
-                playerData.setPvPTimeout(0);
-                playerData.setSpawnedNPC(false);
             } else {
                 copyTo(target, source);
             }

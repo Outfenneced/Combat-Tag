@@ -22,7 +22,7 @@ public class CombatTagCommandPrevention implements Listener{
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event)
     {
 		Player player = event.getPlayer();
-		if(plugin.hasDataContainer(player.getName()) && !plugin.getPlayerData(player.getName()).hasPVPtagExpired()){
+		if(plugin.isInCombat(player.getName())){
 			String command = event.getMessage();
 			plugin.log.info(command);
 			for(String disabledCommand : plugin.settings.getDisabledCommands()){
@@ -52,8 +52,6 @@ public class CombatTagCommandPrevention implements Listener{
 					return;
 				}
 			}
-		}else if(plugin.hasDataContainer(player.getName()) && plugin.getPlayerData(player.getName()).hasPVPtagExpired()){
-			plugin.removeDataContainer(player.getName());
 		}
 	}
 }

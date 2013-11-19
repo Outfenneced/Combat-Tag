@@ -4,7 +4,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import com.trc202.CombatTag.CombatTag;
-import com.trc202.Containers.PlayerDataContainer;
 
 public class CombatTagApi {
 	
@@ -20,24 +19,8 @@ public class CombatTagApi {
 	 * @param playerName
 	 * @return true if player is in combat
 	 */
-	public boolean isInCombat(String player){
-		boolean isInCombat = false;
-		if(player.contains("pvpLogger")){return false;}
-		if(plugin.hasDataContainer(player)){
-			PlayerDataContainer container = plugin.getPlayerData(player);
-			isInCombat = !container.hasPVPtagExpired();
-		}
-		return isInCombat;
-	}
-	
-    /**
-	 * Checks to see if the player is in combat. The combat time can be configured by the server owner
-	 * If the player has died while in combat the player is no longer considered in combat and as such will return false
-	 * @param player
-	 * @return true if player is in combat
-	 */
-	public boolean isInCombat(Player player){
-		return isInCombat(player.getName());
+	public boolean isInCombat(String name){
+		return plugin.isInCombat(name);
 	}
 	
 	/**
@@ -47,34 +30,10 @@ public class CombatTagApi {
 	 * @param name
 	 */
 	public long getRemainingTagTime(String name){
-		if(plugin.hasDataContainer(name)){
-			PlayerDataContainer playerDataContainer = plugin.getPlayerData(name);
-			if(playerDataContainer.hasPVPtagExpired()){
-				return -1;
-			}else{
-				return playerDataContainer.getRemainingTagTime();
-			}
+		if(plugin.isInCombat(name)){
+			return plugin.getRemainingTagTime(name);
 		}else{
-			return -2;
-		}
-	}
-	
-	/**
-	 * Returns the time before the tag is over
-	 *  -1 if the tag has expired
-	 *  -2 if the player is not in combat
-	 * @param player
-	 */
-	public long getRemainingTagTime(Player player){
-		if(plugin.hasDataContainer(player.getName())){
-			PlayerDataContainer playerDataContainer = plugin.getPlayerData(player.getName());
-			if(playerDataContainer.hasPVPtagExpired()){
-				return -1;
-			}else{
-				return playerDataContainer.getRemainingTagTime();
-			}
-		}else{
-			return -2;
+			return -1L;
 		}
 	}
 	
@@ -94,65 +53,16 @@ public class CombatTagApi {
 	 * @return true if the action is successful, false if not
 	 */
 	public boolean tagPlayer(Player player){
-		if(player.isOnline()){
-			PlayerDataContainer playerData;
-			if(plugin.hasDataContainer(player.getName())){
-				playerData = plugin.getPlayerData(player.getName());
-			}else{
-				playerData = plugin.createPlayerData(player.getName());
-			}
-			playerData.setPvPTimeout(plugin.getTagDuration());
-			return true;
-		}
-		return false;
-	}
-	
-	/**
-	 * Tags player with name
-	 * @param string
-	 */
-	public void tagPlayer(String playerName){
-		PlayerDataContainer playerData;
-		if(plugin.hasDataContainer(playerName)){
-			playerData = plugin.getPlayerData(playerName);
-		}else{
-			playerData = plugin.createPlayerData(playerName);
-		}
-		playerData.setPvPTimeout(plugin.getTagDuration());
+		return plugin.addTagged(player);
 	}
 	
 	
 	/**
 	 * Untags player
 	 * @param player
-	 * @return true if the action is successful, false if not
+	 * @return nothing
 	 */
-	public boolean untagPlayer(Player player){
-		PlayerDataContainer playerData;
-		if(plugin.hasDataContainer(player.getName())){
-			playerData = plugin.getPlayerData(player.getName());
-			playerData.setPvPTimeout(0);
-			plugin.removeDataContainer(player.getName());
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
-	/**
-	 * Untags player with name
-	 * @param string
-	 * @return true if the action is successful, false if not
-	 */
-	public boolean untagPlayer(String playerName){
-		PlayerDataContainer playerData;
-		if(plugin.hasDataContainer(playerName)){
-			playerData = plugin.getPlayerData(playerName);
-			playerData.setPvPTimeout(0);
-			plugin.removeDataContainer(playerName);
-			return true;
-		} else {
-			return false;
-		}
+	public void untagPlayer(Player player){
+		plugin.removeTagged(player);
 	}
 }

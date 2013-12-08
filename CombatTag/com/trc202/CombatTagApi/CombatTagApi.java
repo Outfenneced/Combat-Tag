@@ -39,11 +39,11 @@ public class CombatTagApi {
 	
 	/**
 	 * Returns if the entity is an NPC
-	 * @param player
+	 * @param entity
 	 * @return true if the player is an NPC
 	 */
-	public boolean isNPC(Entity player){
-		if(plugin.npcm.isNPC(player)){return true;}
+	public boolean isNPC(Entity entity){
+		if(plugin.npcm.isNPC(entity)){return true;}
 		return false;
 	}
 	

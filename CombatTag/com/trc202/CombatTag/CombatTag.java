@@ -2,12 +2,14 @@ package com.trc202.CombatTag;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.UUID;
 import java.util.logging.Logger;
 
-import net.minecraft.server.v1_6_R3.EntityHuman;
-import net.minecraft.server.v1_6_R3.EntityPlayer;
-import net.minecraft.server.v1_6_R3.MinecraftServer;
-import net.minecraft.server.v1_6_R3.PlayerInteractManager;
+import net.minecraft.server.v1_7_R1.EntityHuman;
+import net.minecraft.server.v1_7_R1.EntityPlayer;
+import net.minecraft.server.v1_7_R1.MinecraftServer;
+import net.minecraft.server.v1_7_R1.PlayerInteractManager;
+import net.minecraft.util.com.mojang.authlib.GameProfile;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -15,8 +17,8 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_6_R3.CraftServer;
-import org.bukkit.craftbukkit.v1_6_R3.entity.CraftHumanEntity;
+import org.bukkit.craftbukkit.v1_7_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_7_R1.entity.CraftHumanEntity;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -122,7 +124,7 @@ public class CombatTag extends JavaPlugin {
     }
     
     public long getRemainingTagTime(String name){
-    	if(tagged.get(name) == null){return -1L;}
+    	if(tagged.get(name) == null){return -1;}
     	return (tagged.get(name) - System.currentTimeMillis());
 	}
     
@@ -140,7 +142,10 @@ public class CombatTag extends JavaPlugin {
     }
     
     public long removeTagged(Player player){
-    	return tagged.remove(player.getName());
+    	if(inTagged(player.getName())){
+    		return tagged.remove(player.getName());
+    	}
+    	return -1;
     }
     
     public long PvPTimeout(int seconds){
@@ -389,7 +394,7 @@ public class CombatTag extends JavaPlugin {
             }
             //Create an entity to load the player data
             MinecraftServer server = ((CraftServer) this.getServer()).getServer();
-            EntityPlayer entity = new EntityPlayer(server, server.getWorldServer(0), playerName, new PlayerInteractManager(server.getWorldServer(0)));
+            EntityPlayer entity = new EntityPlayer(server, server.getWorldServer(0), setGameProfile(playerName, UUID.randomUUID().toString()), new PlayerInteractManager(server.getWorldServer(0)));
             target = (entity == null) ? null : (Player) entity.getBukkitEntity();
             //Equivalent to
 			/*
@@ -422,6 +427,10 @@ public class CombatTag extends JavaPlugin {
         target.saveData();
     }
 
+	public GameProfile setGameProfile(String name, String id){
+		return new GameProfile(id, name);
+	}
+	
     public void copyTo(Player target, Player source) {
         target.getInventory().setContents(source.getInventory().getContents());
         target.getInventory().setArmorContents(source.getInventory().getArmorContents());

@@ -113,17 +113,16 @@ public class NoPvpEntityListener implements Listener{
 	private void onPlayerDamageByMobNPCMode(LivingEntity damager, Player damaged) {
 		if(plugin.npcm.isNPC(damaged)){return;} //If the damaged player is an npc do nothing
 		if(damager == null){return;}
-		
 		if(plugin.ctIncompatible.WarArenaHook(damaged)){
 			if(!damaged.hasPermission("combattag.ignoremob")){	
-				if(plugin.isInCombat(damaged.getName())){
+				if(!plugin.isInCombat(damaged.getName())){
 					if(plugin.settings.isSendMessageWhenTagged()){
 						String tagMessage = plugin.settings.getTagMessageDamaged();
-						tagMessage = tagMessage.replace("[player]", damager.getType().getName());
+						tagMessage = tagMessage.replace("[player]", damager.getType().name());
 						damaged.sendMessage(ChatColor.RED + "[CombatTag] " + tagMessage);
 					}
 					if(plugin.isDebugEnabled()){
-						plugin.log.info("[CombatTag] " + damager.getType().getName() + " tagged " + damaged.getName() + ", setting pvp timeout");
+						plugin.log.info("[CombatTag] " + damager.getType().name() + " tagged " + damaged.getName() + ", setting pvp timeout");
 					}
 				}
 				plugin.addTagged(damaged);

@@ -1,8 +1,8 @@
 package com.topcat.npclib.entity;
 
-import net.minecraft.server.v1_6_R3.EntityPlayer;
-import net.minecraft.server.v1_6_R3.Packet18ArmAnimation;
-import net.minecraft.server.v1_6_R3.WorldServer;
+import net.minecraft.server.v1_7_R1.EntityPlayer;
+import net.minecraft.server.v1_7_R1.PacketPlayOutAnimation;
+import net.minecraft.server.v1_7_R1.WorldServer;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -20,11 +20,11 @@ public class HumanNPC extends NPC {
 	}
 
 	public void animateArmSwing() {
-		((WorldServer) getEntity().world).tracker.a(getEntity(), new Packet18ArmAnimation(getEntity(), 1));
+		((WorldServer) getEntity().world).tracker.a(getEntity(), new PacketPlayOutAnimation(getEntity(), 0));
 	}
 
 	public void actAsHurt() {
-		((WorldServer) getEntity().world).tracker.a(getEntity(), new Packet18ArmAnimation(getEntity(), 2));
+		((WorldServer) getEntity().world).tracker.a(getEntity(), new PacketPlayOutAnimation(getEntity(), 2));  //TESTING
 	}
 
 	public void setItemInHand(Material m) {

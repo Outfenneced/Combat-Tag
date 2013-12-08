@@ -10,14 +10,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
-import net.minecraft.server.v1_6_R3.Entity;
-import net.minecraft.server.v1_6_R3.PlayerInteractManager;
-import net.minecraft.server.v1_6_R3.WorldServer;
+import net.minecraft.server.v1_7_R1.Entity;
+import net.minecraft.server.v1_7_R1.PlayerInteractManager;
+import net.minecraft.server.v1_7_R1.WorldServer;
+import net.minecraft.util.com.mojang.authlib.GameProfile;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_6_R3.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_7_R1.entity.CraftEntity;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -48,7 +49,7 @@ public class NPCManager {
 		server = BServer.getInstance();
 
 		try {
-			npcNetworkManager = new NPCNetworkManager();
+			npcNetworkManager = new NPCNetworkManager(false);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -61,7 +62,7 @@ public class NPCManager {
 				HashSet<String> toRemove = new HashSet<String>();
 				for (String i : npcs.keySet()) {
 					Entity j = npcs.get(i).getEntity();
-					j.y();
+					j.C();
 					if (j.dead) {
 						toRemove.add(i);
 					}
@@ -101,7 +102,7 @@ public class NPCManager {
 			for (NPC npc : npcs.values()) {
 				if (npc != null && event.getChunk() == npc.getBukkitEntity().getLocation().getBlock().getChunk()) {
 					BWorld world = getBWorld(event.getWorld());
-					if(world.getWorldServer().getEntity(npc.getEntity().id) != npc.getEntity()){ //ATTEMPT TO ERRADICATE ENTITY TRACKING ERROR (WORKS IN NORMAL BUKKIT)
+					if(world.getWorldServer().getEntity(npc.getEntity().getId()) != npc.getEntity()){ //ATTEMPT TO ERRADICATE ENTITY TRACKING ERROR (WORKS IN NORMAL BUKKIT)
 						world.getWorldServer().addEntity(npc.getEntity());
 					}
 				}
@@ -118,6 +119,10 @@ public class NPCManager {
 		}
 		return spawnHumanNPC(name, l, id);
 	}
+	
+	public GameProfile setGameProfile(String name, String id){
+		return new GameProfile(id, name);
+	}
 
 	public NPC spawnHumanNPC(String name, Location l, String id) {
 		if (npcs.containsKey(id)) {
@@ -131,7 +136,7 @@ public class NPCManager {
 				name = tmp;
 			}
 			BWorld world = getBWorld(l.getWorld());
-			NPCEntity npcEntity = new NPCEntity(this, world, name, new PlayerInteractManager(world.getWorldServer()));
+			NPCEntity npcEntity = new NPCEntity(this, world, setGameProfile(name, id), new PlayerInteractManager(world.getWorldServer()));
 			npcEntity.setPositionRotation(l.getX(), l.getY(), l.getZ(), l.getYaw(), l.getPitch());
 			world.getWorldServer().addEntity(npcEntity); //the right way
 			NPC npc = new HumanNPC(npcEntity);

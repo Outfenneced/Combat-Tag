@@ -175,7 +175,6 @@ public class CombatTag extends JavaPlugin {
             log.info("[CombatTag] Spawning NPC for " + plr.getName());
         }
         spawnedNPC = npcm.spawnHumanNPC(getNpcName(plr.getName()), location, plr.getName());
-        log.info("Spawned npc with id of: " + npcm.getNPCIdFromEntity(spawnedNPC.getBukkitEntity()));
         if (spawnedNPC.getBukkitEntity() instanceof HumanEntity) {
             HumanEntity p = (HumanEntity) spawnedNPC.getBukkitEntity();
             p.setNoDamageTicks(1);

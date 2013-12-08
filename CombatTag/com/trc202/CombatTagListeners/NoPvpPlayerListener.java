@@ -35,7 +35,6 @@ public class NoPvpPlayerListener implements Listener {
         if(plugin.npcm.getNPC(loginPlayer.getName()) == null){return;}
         if (plugin.inTagged(loginPlayer.getName())) {
             //Player has an NPC and is likely to need some sort of punishment
-        	plugin.log.info("Attempting a despawn on NPC with id of: " + loginPlayer.getName());
             loginPlayer.setNoDamageTicks(0);
             plugin.despawnNPC(loginPlayer.getName());
             if (loginPlayer.getHealth() > 0) {

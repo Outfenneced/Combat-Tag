@@ -141,9 +141,9 @@ public class CombatTag extends JavaPlugin {
     	return tagged.containsKey(name);
     }
     
-    public long removeTagged(Player player){
-    	if(inTagged(player.getName())){
-    		return tagged.remove(player.getName());
+    public long removeTagged(String name){
+    	if(inTagged(name)){
+    		return tagged.remove(name);
     	}
     	return -1;
     }

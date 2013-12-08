@@ -41,7 +41,7 @@ public class NoPvpPlayerListener implements Listener {
             if (loginPlayer.getHealth() > 0) {
             	plugin.addTagged(loginPlayer);
             } else {
-            	plugin.removeTagged(loginPlayer);
+            	plugin.removeTagged(loginPlayer.getName());
             }
         }
     }
@@ -61,7 +61,7 @@ public class NoPvpPlayerListener implements Listener {
                 if (plugin.settings.isInstaKill() || quitPlr.getHealth() <= 0) {
                     plugin.log.info("[CombatTag] " + quitPlr.getName() + " has been instakilled!");
                     quitPlr.damage(1000L);
-                    plugin.removeTagged(quitPlr);
+                    plugin.removeTagged(quitPlr.getName());
                 } else {
                     boolean willSpawn = true;
                     if (plugin.settings.dontSpawnInWG()) {
@@ -95,7 +95,7 @@ public class NoPvpPlayerListener implements Listener {
                     if (plugin.isDebugEnabled()) {
                         plugin.log.info("[CombatTag] Player tag dropped for being kicked.");
                     }
-                    plugin.removeTagged(player);
+                    plugin.removeTagged(player.getName());
                 }
             }
         }

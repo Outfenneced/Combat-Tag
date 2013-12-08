@@ -63,6 +63,6 @@ public class CombatTagApi {
 	 * @return nothing
 	 */
 	public void untagPlayer(Player player){
-		plugin.removeTagged(player);
+		plugin.removeTagged(player.getName());
 	}
 }

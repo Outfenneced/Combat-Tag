@@ -76,10 +76,11 @@ public class NoPvpEntityListener implements Listener{
 		String id = plugin.getPlayerName(entity);
 		NPC npc = plugin.npcm.getNPC(id);
 		plugin.updatePlayerData(npc, id);
+		plugin.removeTagged(id);
 	}
 	
 	public void onPlayerDeath(Player deadPlayer){
-		plugin.removeTagged(deadPlayer);
+		plugin.removeTagged(deadPlayer.getName());
 	}
 	
 	private void onPlayerDamageByPlayerNPCMode(Player damager, Player damaged){

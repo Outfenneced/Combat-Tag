@@ -1,7 +1,9 @@
 package com.trc202.CombatTag;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -27,7 +29,9 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.StringUtil;
 
+import com.google.common.collect.ImmutableList;
 import com.topcat.npclib.NPCManager;
 import com.topcat.npclib.entity.NPC;
 import com.trc202.CombatTagListeners.CombatTagCommandPrevention;
@@ -45,6 +49,9 @@ public class CombatTag extends JavaPlugin {
     public NPCManager npcm;
     private HashMap<String, Long> tagged;
     private static String mainDirectory = "plugins/CombatTag";
+    private static final List<String> SUBCOMMANDS = ImmutableList.of("reload", "wipe", "command");
+    private static final List<String> COMMAND_SUBCOMMANDS = ImmutableList.of("add", "remove");
+
     
     public final CombatTagIncompatibles ctIncompatible = new CombatTagIncompatibles(this);
     private final NoPvpPlayerListener plrListener = new NoPvpPlayerListener(this);
@@ -356,6 +363,20 @@ public class CombatTag extends JavaPlugin {
         }
         return false;
     }
+    
+    @Override
+    public final List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+    	if (args.length == 1) {
+    		return StringUtil.copyPartialMatches(args[0], SUBCOMMANDS, new ArrayList<String>(SUBCOMMANDS.size()));
+    	} else if (args.length == 2) {
+    		System.out.println(args[1]);
+    		if (args[0].equalsIgnoreCase("command")) {
+    			return StringUtil.copyPartialMatches(args[1], COMMAND_SUBCOMMANDS, new ArrayList<String>(COMMAND_SUBCOMMANDS.size()));
+    		}
+    	}
+    	return ImmutableList.of();
+    }
+
 
     public void scheduleDelayedKill(final NPC npc, final String name) {
         long despawnTicks = settings.getNpcDespawnTime() * 20L;

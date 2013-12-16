@@ -364,7 +364,16 @@ public class CombatTag extends JavaPlugin {
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
             @Override
             public void run() {
-            	if(!Bukkit.getServer().getPlayerExact(name).isOnline()){
+            	if(Bukkit.getServer().getPlayerExact(name) == null){
+            		if (npcm.getNPC(name) != null) {
+            			if (kill == true) {
+            				plrNpc.setHealth(0);
+            				updatePlayerData(npc, name);
+            			} else {
+            				despawnNPC(name);
+            			}
+            		}
+            	} else if(!Bukkit.getServer().getPlayerExact(name).isOnline()){
             		if (npcm.getNPC(name) != null) {
             			if (kill == true) {
             				plrNpc.setHealth(0);

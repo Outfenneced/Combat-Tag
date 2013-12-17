@@ -2,12 +2,10 @@ package com.trc202.Containers;
 
 public class Settings {
 	
-	public enum SettingsType {NPC,TIMED,OTHER};
 	
 	private int tagDuration;
 	private boolean debugEnabled;
 	private boolean instaKill;
-	private SettingsType currentMode;
 	private String[] disabledCommands;
 	private String[] disallowedWorlds;
 	private String npcName;
@@ -28,7 +26,6 @@ public class Settings {
 	private boolean playerTag;
 	
 	public Settings(){
-		currentMode = SettingsType.NPC;
 		instaKill = false;
 		tagDuration = 10;
 		debugEnabled = false;
@@ -83,10 +80,6 @@ public class Settings {
 	
 	public boolean dropTagOnKick() {
 		return droptagonkick;
-	} 
-	
-	public SettingsType getCurrentMode(){
-		return currentMode;
 	}
 
 	public String[] getDisabledCommands() {

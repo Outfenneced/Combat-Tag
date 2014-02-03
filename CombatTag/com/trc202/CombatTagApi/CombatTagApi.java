@@ -23,6 +23,11 @@ public class CombatTagApi {
 		return plugin.isInCombat(name);
 	}
 	
+	public boolean isInCombat(Player player)
+	{
+		return isInCombat(player.getName());
+	}
+	
 	/**
 	 * Returns the time before the tag is over
 	 *  -1 if the tag has expired

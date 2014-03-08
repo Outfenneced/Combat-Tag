@@ -26,6 +26,7 @@ public class Settings {
 	private boolean onlyDamagerTagged;
 	private boolean mobTag;
 	private boolean playerTag;
+	private boolean blockCreativeTagging;
 	
 	public Settings(){
 		currentMode = SettingsType.NPC;
@@ -50,6 +51,7 @@ public class Settings {
 		onlyDamagerTagged = false;
 		mobTag = false;
 		playerTag = true;
+		blockCreativeTagging = true;
 		
 	}
 
@@ -225,5 +227,13 @@ public class Settings {
 	
 	public boolean playerTag() {
 		return playerTag;
+	}
+
+	public void setBlockCreativeTagging(boolean blockCreativeTagging) {
+		this.blockCreativeTagging = blockCreativeTagging;
+	}
+
+	public boolean blockCreativeTagging() {
+		return blockCreativeTagging;
 	}
 }

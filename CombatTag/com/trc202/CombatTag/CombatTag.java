@@ -259,11 +259,7 @@ public class CombatTag extends JavaPlugin {
             log.info("[CombatTag] " + target.getName() + " has been killed by Combat Tag and their inventory has been emptied through UpdatePlayerData.");
         }
     }
-/*
-    public void removeDataContainer(String playerName) {
-        playerData.remove(playerName);
-    }
-*/
+
     public int getNpcNumber() {
         npcNumber = npcNumber + 1;
         return npcNumber;
@@ -488,5 +484,9 @@ public class CombatTag extends JavaPlugin {
             health = 20;
         }
         return health;
+    }
+    
+    public SettingsHelper getSettingsHelper(){
+    	return this.settingsHelper;
     }
 }

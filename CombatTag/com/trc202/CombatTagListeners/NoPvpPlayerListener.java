@@ -20,7 +20,9 @@ import com.trc202.CombatTag.CombatTag;
 
 public class NoPvpPlayerListener implements Listener {
     private final CombatTag plugin;
-    
+
+    public static int explosionDamage = -1;
+
     public NoPvpEntityListener entityListener;
 
     public NoPvpPlayerListener(CombatTag instance) {
@@ -55,7 +57,6 @@ public class NoPvpPlayerListener implements Listener {
                 if (plugin.isDebugEnabled()) {
                     plugin.log.info("[CombatTag] " + quitPlr.getName() + " has logged of during pvp!");
                 }
-                alertPlayers(quitPlr);
                 if (plugin.settings.isInstaKill() || quitPlr.getHealth() <= 0) {
                     plugin.log.info("[CombatTag] " + quitPlr.getName() + " has been instakilled!");
                     quitPlr.damage(1000L);
@@ -73,7 +74,7 @@ public class NoPvpPlayerListener implements Listener {
                             npcPlayer.setMetadata("NPC", new FixedMetadataValue(plugin, "NPC"));
                             double healthSet = plugin.healthCheck(quitPlr.getHealth());
                             npcPlayer.setHealth(healthSet);
-                            quitPlr.getWorld().createExplosion(quitPlr.getLocation(), -1); //Create the smoke effect //
+                            quitPlr.getWorld().createExplosion(quitPlr.getLocation(), explosionDamage); //Create the smoke effect //
                             if (plugin.settings.getNpcDespawnTime() > 0) {
                                 plugin.scheduleDelayedKill(npc, quitPlr.getName());
                             }
@@ -84,7 +85,7 @@ public class NoPvpPlayerListener implements Listener {
         }
     }
 
-	@EventHandler(ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerKick(PlayerKickEvent event) {
         Player player = event.getPlayer();
         if (plugin.inTagged(player.getName())) {
@@ -132,13 +133,4 @@ public class NoPvpPlayerListener implements Listener {
     		}
     	}
     }
-    
-    private void alertPlayers(Player quitPlr) {
-		for(Player player: plugin.getServer().getOnlinePlayers()){
-			if(player.hasPermission("combattag.alert")){
-				player.sendMessage(ChatColor.RED + "[CombatTag] " + quitPlr + " has PvPLogged!");
-			}
-		}
-		
-	}
 }

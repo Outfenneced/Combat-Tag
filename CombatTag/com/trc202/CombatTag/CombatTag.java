@@ -59,14 +59,13 @@ public class CombatTag extends JavaPlugin {
     private final NoPvpBlockListener blockListener = new NoPvpBlockListener(this);
     private final CombatTagCommandPrevention commandPreventer = new CombatTagCommandPrevention(this);
 
-    private int npcNumber;
+    private int npcNumber = 0;
 
     public CombatTag() {
         settings = new Settings();
         new File(mainDirectory).mkdirs();
         settingsFile = new File(mainDirectory + File.separator + "settings.prop");
         settingsHelper = new SettingsHelper(settingsFile, "CombatTag");
-        npcNumber = 0;
     }
 
     /**
@@ -259,7 +258,11 @@ public class CombatTag extends JavaPlugin {
             log.info("[CombatTag] " + target.getName() + " has been killed by Combat Tag and their inventory has been emptied through UpdatePlayerData.");
         }
     }
-
+/*
+    public void removeDataContainer(String playerName) {
+        playerData.remove(playerName);
+    }
+*/
     public int getNpcNumber() {
         npcNumber = npcNumber + 1;
         return npcNumber;
@@ -484,9 +487,5 @@ public class CombatTag extends JavaPlugin {
             health = 20;
         }
         return health;
-    }
-    
-    public SettingsHelper getSettingsHelper(){
-    	return this.settingsHelper;
     }
 }

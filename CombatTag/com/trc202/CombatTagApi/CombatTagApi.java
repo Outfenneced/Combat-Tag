@@ -65,4 +65,13 @@ public class CombatTagApi {
 	public void untagPlayer(Player player){
 		plugin.removeTagged(player.getName());
 	}
+	
+	/**
+	 * Returns the value of a configuration option with the specified name
+	 * @param Name of config option
+	 * @return String value of option
+	 */
+	public String getConfigOption(String configKey){
+		return plugin.getSettingsHelper().getProperty(configKey);
+	}
 }

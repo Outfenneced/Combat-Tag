@@ -27,6 +27,7 @@ public class SettingsLoader {
 	private static String onlyDamagerTagged = "onlyDamagerTagged";
 	private static String mobTag = "mobTag";
 	private static String playerTag = "playerTag";
+	private static String blockCreativeTagging = "blockCreativeTagging";
 
 	public Settings loadSettings(SettingsHelper helper, String version){
 		settings = new Settings();
@@ -63,6 +64,7 @@ public class SettingsLoader {
 		if(helper.getProperty(onlyDamagerTagged) == null) {helper.setProperty(onlyDamagerTagged, Boolean.toString(temp.onlyDamagerTagged()));}
 		if(helper.getProperty(mobTag) == null) {helper.setProperty(mobTag, Boolean.toString(temp.mobTag()));}
 		if(helper.getProperty(playerTag) == null) {helper.setProperty(playerTag, Boolean.toString(temp.playerTag()));}
+		if(helper.getProperty(blockCreativeTagging) == null) {helper.setProperty(blockCreativeTagging, Boolean.toString(temp.blockCreativeTagging()));}
 	}
 
 	private boolean isLatestVersion(SettingsHelper helper, String vers){
@@ -92,12 +94,13 @@ public class SettingsLoader {
 		(helper.getProperty(dontSpawnInWG) != null) &&
 		(helper.getProperty(onlyDamagerTagged) != null) && 
 		(helper.getProperty(mobTag) != null) && 
-		(helper.getProperty(playerTag) != null)
+		(helper.getProperty(playerTag) != null) &&
+		(helper.getProperty(blockCreativeTagging) != null)
 		){
 			return true;
 		}else{
 			return false;
-			}
+		}
 	}
 	
 	private void loadProperties(SettingsHelper helper) {
@@ -131,5 +134,6 @@ public class SettingsLoader {
 		settings.setOnlyDamager(Boolean.valueOf(helper.getProperty(onlyDamagerTagged)));
 		settings.setMobTag(Boolean.valueOf(helper.getProperty(mobTag)));
 		settings.setPlayerTag(Boolean.valueOf(helper.getProperty(playerTag)));
+		settings.setBlockCreativeTagging(Boolean.valueOf(helper.getProperty(blockCreativeTagging)));
 	}
 }

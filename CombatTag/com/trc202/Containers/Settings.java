@@ -2,10 +2,12 @@ package com.trc202.Containers;
 
 public class Settings {
 	
+	public enum SettingsType {NPC,TIMED,OTHER};
 	
 	private int tagDuration;
 	private boolean debugEnabled;
 	private boolean instaKill;
+	private SettingsType currentMode;
 	private String[] disabledCommands;
 	private String[] disallowedWorlds;
 	private String npcName;
@@ -24,8 +26,10 @@ public class Settings {
 	private boolean onlyDamagerTagged;
 	private boolean mobTag;
 	private boolean playerTag;
+	private boolean blockCreativeTagging;
 	
 	public Settings(){
+		currentMode = SettingsType.NPC;
 		instaKill = false;
 		tagDuration = 10;
 		debugEnabled = false;
@@ -47,6 +51,7 @@ public class Settings {
 		onlyDamagerTagged = false;
 		mobTag = false;
 		playerTag = true;
+		blockCreativeTagging = true;
 		
 	}
 
@@ -80,6 +85,10 @@ public class Settings {
 	
 	public boolean dropTagOnKick() {
 		return droptagonkick;
+	} 
+	
+	public SettingsType getCurrentMode(){
+		return currentMode;
 	}
 
 	public String[] getDisabledCommands() {
@@ -218,5 +227,13 @@ public class Settings {
 	
 	public boolean playerTag() {
 		return playerTag;
+	}
+
+	public void setBlockCreativeTagging(boolean blockCreativeTagging) {
+		this.blockCreativeTagging = blockCreativeTagging;
+	}
+
+	public boolean blockCreativeTagging() {
+		return blockCreativeTagging;
 	}
 }

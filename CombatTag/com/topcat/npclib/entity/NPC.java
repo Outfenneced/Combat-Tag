@@ -1,6 +1,6 @@
 package com.topcat.npclib.entity;
 
-import net.minecraft.server.v1_7_R1.Entity;
+import net.minecraft.server.v1_7_R2.Entity;
 
 import org.bukkit.Location;
 

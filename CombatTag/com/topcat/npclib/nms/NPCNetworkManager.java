@@ -3,7 +3,7 @@ package com.topcat.npclib.nms;
 import java.io.IOException;
 import java.lang.reflect.Field;
 
-import net.minecraft.server.v1_7_R1.NetworkManager;
+import net.minecraft.server.v1_7_R2.NetworkManager;
 import net.minecraft.util.io.netty.channel.Channel;
 
 
@@ -16,7 +16,7 @@ public class NPCNetworkManager extends NetworkManager {
 	public NPCNetworkManager(boolean flag) throws IOException {
 		super(flag);
 		try {
-			Field f = getField(NetworkManager.class, "h");
+			Field f = getField(NetworkManager.class, "j");
 			f.setAccessible(true);
 			f.set(this, false);
 		} catch (Exception e) {
@@ -48,5 +48,5 @@ public class NPCNetworkManager extends NetworkManager {
         }
     }
     
-    private static Field THREAD_STOPPER = getField(NetworkManager.class, "k");
+    private static Field THREAD_STOPPER = getField(NetworkManager.class, "m");
 }

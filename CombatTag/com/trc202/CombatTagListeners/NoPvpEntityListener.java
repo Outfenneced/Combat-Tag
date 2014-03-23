@@ -31,7 +31,7 @@ public class NoPvpEntityListener implements Listener{
     		Entity dmgr = e.getDamager();
     		if(dmgr instanceof Projectile)
     		{
-    			dmgr = ((Projectile)dmgr).getShooter();
+    			dmgr = (Entity) ((Projectile)dmgr).getShooter();
     		}
     		if ((dmgr instanceof Player) && (e.getEntity() instanceof Player) && plugin.settings.playerTag()){//Check to see if the damager and damaged are players
     			Player damager = (Player) dmgr;

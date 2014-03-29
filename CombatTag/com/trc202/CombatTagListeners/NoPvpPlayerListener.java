@@ -136,7 +136,7 @@ public class NoPvpPlayerListener implements Listener {
     private void alertPlayers(Player quitPlr) {
 		for(Player player: plugin.getServer().getOnlinePlayers()){
 			if(player.hasPermission("combattag.alert")){
-				player.sendMessage(ChatColor.RED + "[CombatTag] " + quitPlr + " has PvPLogged!");
+				player.sendMessage(ChatColor.RED + "[CombatTag] " + quitPlr.getName() + " has PvPLogged!");
 			}
 		}
 		

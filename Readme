@@ -46,3 +46,5 @@ DropTagOnKick: When set to true, will cause players to stop being tagged when th
 blockEnderPearl: When set to true, will block ender pearl teleports when tagged
 
 onlyDamagerTagger: When set to true, will only tag the attacker and not the person who is hit
+
+blockCreativeTagging: When set to true, will block people in creative mode tagging other players.

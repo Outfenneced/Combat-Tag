@@ -57,7 +57,7 @@ public class NoPvpPlayerListener implements Listener {
                 }
                 alertPlayers(quitPlr);
                 if (plugin.settings.isInstaKill() || quitPlr.getHealth() <= 0) {
-                    plugin.log.info("[CombatTag] " + quitPlr.getName() + " has been instakilled!");
+                	if (plugin.isDebugEnabled()) {plugin.log.info("[CombatTag] " + quitPlr.getName() + " has been instakilled!");}
                     quitPlr.damage(1000L);
                     plugin.removeTagged(quitPlr.getName());
                 } else {
@@ -136,7 +136,7 @@ public class NoPvpPlayerListener implements Listener {
     private void alertPlayers(Player quitPlr) {
 		for(Player player: plugin.getServer().getOnlinePlayers()){
 			if(player.hasPermission("combattag.alert")){
-				player.sendMessage(ChatColor.RED + "[CombatTag] " + quitPlr + " has PvPLogged!");
+				player.sendMessage(ChatColor.RED + "[CombatTag] " + quitPlr.getName() + " has PvPLogged!");
 			}
 		}
 		

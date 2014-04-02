@@ -21,6 +21,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_7_R2.CraftServer;
 import org.bukkit.craftbukkit.v1_7_R2.entity.CraftHumanEntity;
+import org.bukkit.craftbukkit.v1_7_R2.util.MojangNameLookup;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -419,8 +420,9 @@ public class CombatTag extends JavaPlugin {
 				log.info("[CombatTag] Update player data for " + playerUUID + " !");
 			}
 			//Create an entity to load the player data
+			String name = MojangNameLookup.lookupName(playerUUID);
 			MinecraftServer server = ((CraftServer) this.getServer()).getServer();
-			EntityPlayer entity = new EntityPlayer(server, server.getWorldServer(0), setGameProfile(Bukkit.getOfflinePlayer(playerUUID).getName(), playerUUID.toString()), new PlayerInteractManager(server.getWorldServer(0))); //Eh
+			EntityPlayer entity = new EntityPlayer(server, server.getWorldServer(0), setGameProfile(name, playerUUID.toString()), new PlayerInteractManager(server.getWorldServer(0))); //Eh
 			target = (entity == null) ? null : (Player) entity.getBukkitEntity();
 			//Equivalent to
 			/*

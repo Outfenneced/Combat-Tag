@@ -1,5 +1,7 @@
 package com.trc202.CombatTagListeners;
 
+import java.util.UUID;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -30,15 +32,16 @@ public class NoPvpPlayerListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player loginPlayer = event.getPlayer();
-        if(plugin.npcm.getNPC(loginPlayer.getName()) == null){return;}
-        if (plugin.inTagged(loginPlayer.getName())) {
+        if(plugin.npcm.getNPC(loginPlayer.getUniqueId()) == null){return;}
+        UUID playerUUID = loginPlayer.getUniqueId();
+        if (plugin.inTagged(playerUUID)) {
             //Player has an NPC and is likely to need some sort of punishment
             loginPlayer.setNoDamageTicks(0);
-            plugin.despawnNPC(loginPlayer.getName());
+            plugin.despawnNPC(playerUUID);
             if (loginPlayer.getHealth() > 0) {
             	plugin.addTagged(loginPlayer);
             } else {
-            	plugin.removeTagged(loginPlayer.getName());
+            	plugin.removeTagged(playerUUID);
             }
         }
     }
@@ -46,11 +49,12 @@ public class NoPvpPlayerListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerQuit(PlayerQuitEvent e) {
         Player quitPlr = e.getPlayer();
+        UUID playerUUID = quitPlr.getUniqueId();
         if (quitPlr.isDead()) {
             plugin.entityListener.onPlayerDeath(quitPlr);
-        } else if (plugin.inTagged(quitPlr.getName())) {
+        } else if (plugin.inTagged(playerUUID)) {
             //Player is likely in pvp
-            if (plugin.isInCombat(quitPlr.getName())) {
+            if (plugin.isInCombat(playerUUID)) {
                 //Player has logged out before the pvp battle is considered over by the plugin
                 if (plugin.isDebugEnabled()) {
                     plugin.log.info("[CombatTag] " + quitPlr.getName() + " has logged of during pvp!");
@@ -59,7 +63,7 @@ public class NoPvpPlayerListener implements Listener {
                 if (plugin.settings.isInstaKill() || quitPlr.getHealth() <= 0) {
                 	if (plugin.isDebugEnabled()) {plugin.log.info("[CombatTag] " + quitPlr.getName() + " has been instakilled!");}
                     quitPlr.damage(1000L);
-                    plugin.removeTagged(quitPlr.getName());
+                    plugin.removeTagged(playerUUID);
                 } else {
                     boolean willSpawn = true;
                     if (plugin.settings.dontSpawnInWG()) {
@@ -75,7 +79,7 @@ public class NoPvpPlayerListener implements Listener {
                             npcPlayer.setHealth(healthSet);
                             quitPlr.getWorld().createExplosion(quitPlr.getLocation(), -1); //Create the smoke effect //
                             if (plugin.settings.getNpcDespawnTime() > 0) {
-                                plugin.scheduleDelayedKill(npc, quitPlr.getName());
+                                plugin.scheduleDelayedKill(npc, playerUUID);
                             }
                         }
                     }
@@ -87,13 +91,14 @@ public class NoPvpPlayerListener implements Listener {
 	@EventHandler(ignoreCancelled = true)
     public void onPlayerKick(PlayerKickEvent event) {
         Player player = event.getPlayer();
-        if (plugin.inTagged(player.getName())) {
-            if (plugin.isInCombat(player.getName())) {
+        UUID playerUUID = player.getUniqueId();
+        if (plugin.inTagged(playerUUID)) {
+            if (plugin.isInCombat(player.getUniqueId())) {
                 if (plugin.settings.dropTagOnKick()) {
                     if (plugin.isDebugEnabled()) {
                         plugin.log.info("[CombatTag] Player tag dropped for being kicked.");
                     }
-                    plugin.removeTagged(player.getName());
+                    plugin.removeTagged(playerUUID);
                 }
             }
         }
@@ -103,7 +108,7 @@ public class NoPvpPlayerListener implements Listener {
     public void onPlayerInteract(PlayerInteractEvent event) {
     	if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
     		if (event.getMaterial() == Material.ENDER_PEARL) {
-    			if (plugin.isInCombat(event.getPlayer().getName())) {
+    			if (plugin.isInCombat(event.getPlayer().getUniqueId())) {
     				if (plugin.settings.blockEnderPearl()) {
     					event.getPlayer().sendMessage(ChatColor.RED + "[CombatTag] You can't ender pearl while tagged.");
     					event.setCancelled(true);
@@ -119,7 +124,7 @@ public class NoPvpPlayerListener implements Listener {
     	if (event.isCancelled()) {
     		return;
     	}
-    	if (plugin.settings.blockTeleport() == true && plugin.isInCombat(event.getPlayer().getName()) && plugin.ctIncompatible.notInArena(event.getPlayer())) {
+    	if (plugin.settings.blockTeleport() == true && plugin.isInCombat(event.getPlayer().getUniqueId()) && plugin.ctIncompatible.notInArena(event.getPlayer())) {
     		TeleportCause cause = event.getCause();
     		if ((cause == TeleportCause.PLUGIN || cause == TeleportCause.COMMAND)) { 
     			if(event.getPlayer().getWorld() != event.getTo().getWorld()){

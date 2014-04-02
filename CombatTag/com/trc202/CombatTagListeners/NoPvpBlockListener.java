@@ -21,7 +21,7 @@ public class NoPvpBlockListener implements Listener{
 	public void onBlockBreakEvent(BlockBreakEvent event){
 		if(event.isCancelled()){return;}
 		Player player = event.getPlayer();
-		if(plugin.isInCombat(player.getName())){
+		if(plugin.isInCombat(player.getUniqueId())){
 			if(!isBlockEditWhileTagged()){
 				player.sendMessage(ChatColor.RED + "[Combat Tag] You can't break blocks while tagged.");
 				event.setCancelled(true);
@@ -33,7 +33,7 @@ public class NoPvpBlockListener implements Listener{
 	public void onBlockPlaceEvent(BlockPlaceEvent event){
 		if(event.isCancelled()){return;}
 		Player player = event.getPlayer();
-		if(plugin.isInCombat(player.getName())){
+		if(plugin.isInCombat(player.getUniqueId())){
 			if(!isBlockEditWhileTagged()){
 				player.sendMessage(ChatColor.RED + "[Combat Tag] You can't place blocks while tagged.");
 				event.setCancelled(true);

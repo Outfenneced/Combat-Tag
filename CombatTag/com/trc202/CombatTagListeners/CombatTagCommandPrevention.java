@@ -22,7 +22,7 @@ public class CombatTagCommandPrevention implements Listener{
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event)
     {
 		Player player = event.getPlayer();
-		if(plugin.isInCombat(player.getName())){
+		if(plugin.isInCombat(player.getUniqueId())){
 			String command = event.getMessage();
 			for(String disabledCommand : plugin.settings.getDisabledCommands()){
 				if (disabledCommand.equalsIgnoreCase("all") && !command.equalsIgnoreCase("/ct") && !command.equalsIgnoreCase("/combattag")){

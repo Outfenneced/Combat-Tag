@@ -1,5 +1,7 @@
 package com.trc202.CombatTagListeners;
 
+import java.util.UUID;
+
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Entity;
@@ -73,14 +75,14 @@ public class NoPvpEntityListener implements Listener{
 	}
 	
 	public void onNPCDeath(Entity entity){
-		String id = plugin.getPlayerName(entity);
+		UUID id = plugin.getPlayerName(entity);
 		NPC npc = plugin.npcm.getNPC(id);
 		plugin.updatePlayerData(npc, id);
 		plugin.removeTagged(id);
 	}
 	
 	public void onPlayerDeath(Player deadPlayer){
-		plugin.removeTagged(deadPlayer.getName());
+		plugin.removeTagged(deadPlayer.getUniqueId());
 	}
 	
 	private void onPlayerDamageByPlayerNPCMode(Player damager, Player damaged){
@@ -91,7 +93,7 @@ public class NoPvpEntityListener implements Listener{
 			if(!damager.hasPermission("combattag.ignore")){	
 				if(plugin.settings.blockCreativeTagging() && damager.getGameMode() == GameMode.CREATIVE){damager.sendMessage(ChatColor.RED + "[CombatTag] You can't tag players while in creative mode!");return;}
 				
-				if(plugin.settings.isSendMessageWhenTagged() && !plugin.isInCombat(damager.getName())){
+				if(plugin.settings.isSendMessageWhenTagged() && !plugin.isInCombat(damager.getUniqueId())){
 					String tagMessage = plugin.settings.getTagMessageDamager();
 					tagMessage = tagMessage.replace("[player]", "" + damaged.getName());
 					damager.sendMessage(ChatColor.RED + "[CombatTag] " + tagMessage);
@@ -102,7 +104,7 @@ public class NoPvpEntityListener implements Listener{
 				plugin.addTagged(damager);
 			}
 			if(!damaged.hasPermission("combattag.ignore") && !plugin.settings.onlyDamagerTagged()){	
-				if(!plugin.isInCombat(damaged.getName())){
+				if(!plugin.isInCombat(damaged.getUniqueId())){
 					if(plugin.settings.isSendMessageWhenTagged()){
 						String tagMessage = plugin.settings.getTagMessageDamaged();
 						tagMessage = tagMessage.replace("[player]", damager.getName());
@@ -119,7 +121,7 @@ public class NoPvpEntityListener implements Listener{
 		if(damager == null){return;}
 		if(plugin.ctIncompatible.WarArenaHook(damaged)){
 			if(!damaged.hasPermission("combattag.ignoremob")){	
-				if(!plugin.isInCombat(damaged.getName())){
+				if(!plugin.isInCombat(damaged.getUniqueId())){
 					if(plugin.settings.isSendMessageWhenTagged()){
 						String tagMessage = plugin.settings.getTagMessageDamaged();
 						tagMessage = tagMessage.replace("[player]", damager.getType().name());

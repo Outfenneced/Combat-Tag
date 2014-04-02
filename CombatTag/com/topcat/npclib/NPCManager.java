@@ -1,18 +1,17 @@
 package com.topcat.npclib;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Level;
 
 import net.minecraft.server.v1_7_R2.Entity;
 import net.minecraft.server.v1_7_R2.PlayerInteractManager;
-import net.minecraft.server.v1_7_R2.WorldServer;
 import net.minecraft.util.com.mojang.authlib.GameProfile;
 
 import org.bukkit.Bukkit;
@@ -38,7 +37,7 @@ import com.topcat.npclib.nms.NPCNetworkManager;
  */
 public class NPCManager {
 
-	private HashMap<String, NPC> npcs = new HashMap<String, NPC>();
+	private HashMap<UUID, NPC> npcs = new HashMap<UUID, NPC>();
 	private BServer server;
 	private int taskid;
 	private Map<World, BWorld> bworlds = new HashMap<World, BWorld>();
@@ -59,15 +58,15 @@ public class NPCManager {
 
 			@Override
 			public void run() {
-				HashSet<String> toRemove = new HashSet<String>();
-				for (String i : npcs.keySet()) {
+				HashSet<UUID> toRemove = new HashSet<UUID>();
+				for (UUID i : npcs.keySet()) {
 					Entity j = npcs.get(i).getEntity();
 					j.B();
 					if (j.dead) {
 						toRemove.add(i);
 					}
 				}
-				for (String n : toRemove) {
+				for (UUID n : toRemove) {
 					npcs.remove(n);
 				}
 			}
@@ -107,22 +106,12 @@ public class NPCManager {
 			}
 		}
 	}
-
-	public NPC spawnHumanNPC(String name, Location l) {
-		int i = 0;
-		String id = name;
-		while (npcs.containsKey(id)) {
-			id = name + i;
-			i++;
-		}
-		return spawnHumanNPC(name, l, id);
-	}
 	
-	public GameProfile setGameProfile(String name, String id){
-		return new GameProfile(id, name);
+	public GameProfile setGameProfile(String name, UUID id){
+		return new GameProfile(id.toString(), name);
 	}
 
-	public NPC spawnHumanNPC(String name, Location l, String id) {
+	public NPC spawnHumanNPC(String name, Location l, UUID id) {
 		if (npcs.containsKey(id)) {
 			server.getLogger().log(Level.WARNING, "NPC with that id already exists, existing NPC returned");
 			return npcs.get(id);
@@ -143,10 +132,10 @@ public class NPCManager {
 		}
 	}
 
-	public void despawnById(String id) {
-		NPC npc = npcs.get(id);
+	public void despawnById(UUID playerUUID) {
+		NPC npc = npcs.get(playerUUID);
 		if (npc != null) {
-			npcs.remove(id);
+			npcs.remove(playerUUID);
 			npc.removeFromWorld();
 		}
 	}
@@ -155,8 +144,8 @@ public class NPCManager {
 		if (npcName.length() > 16) {
 			npcName = npcName.substring(0, 16); //Ensure you can still despawn
 		}
-		HashSet<String> toRemove = new HashSet<String>();
-		for (String n : npcs.keySet()) {
+		HashSet<UUID> toRemove = new HashSet<UUID>();
+		for (UUID n : npcs.keySet()) {
 			NPC npc = npcs.get(n);
 			if (npc instanceof HumanNPC) {
 				if (npc != null && ((HumanNPC) npc).getName().equals(npcName)) {
@@ -165,7 +154,7 @@ public class NPCManager {
 				}
 			}
 		}
-		for (String n : toRemove) {
+		for (UUID n : toRemove) {
 			npcs.remove(n);
 		}
 	}
@@ -179,8 +168,8 @@ public class NPCManager {
 		npcs.clear();
 	}
 
-	public NPC getNPC(String id) {
-		return npcs.get(id);
+	public NPC getNPC(UUID playerUUID) {
+		return npcs.get(playerUUID);
 	}
 
 	public boolean isNPC(org.bukkit.entity.Entity e) {
@@ -204,9 +193,9 @@ public class NPCManager {
 		return new ArrayList<NPC>(npcs.values());
 	}
 
-	public String getNPCIdFromEntity(org.bukkit.entity.Entity e) {
+	public UUID getNPCIdFromEntity(org.bukkit.entity.Entity e) {
 		if (e instanceof HumanEntity) {
-			for (String i : npcs.keySet()) {
+			for (UUID i : npcs.keySet()) {
 				if (npcs.get(i).getBukkitEntity().getEntityId() == ((HumanEntity) e).getEntityId()) {
 					return i;
 				}
@@ -214,31 +203,7 @@ public class NPCManager {
 		}
 		return null;
 	}
-
-	public void rename(String id, String name) {
-		if (name.length() > 16) { // Check and nag if name is too long, spawn NPC anyway with shortened name.
-			String tmp = name.substring(0, 16);
-			server.getLogger().log(Level.WARNING, "NPCs can't have names longer than 16 characters,");
-			server.getLogger().log(Level.WARNING, name + " has been shortened to " + tmp);
-			name = tmp;
-		}
-		HumanNPC npc = (HumanNPC) getNPC(id);
-		npc.setName(name);
-		BWorld b = getBWorld(npc.getBukkitEntity().getLocation().getWorld());
-		WorldServer s = b.getWorldServer();
-		try {
-			Method m = s.getClass().getDeclaredMethod("d", new Class[]{Entity.class});
-			m.setAccessible(true);
-			m.invoke(s, npc.getEntity());
-			m = s.getClass().getDeclaredMethod("c", new Class[]{Entity.class});
-			m.setAccessible(true);
-			m.invoke(s, npc.getEntity());
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		s.everyoneSleeping();
-	}
-
+	
 	public BServer getServer() {
 		return server;
 	}

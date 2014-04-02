@@ -16,22 +16,22 @@ public class CombatTagApi {
 	/**
 	 * Checks to see if the player is in combat. The combat time can be configured by the server owner
 	 * If the player has died while in combat the player is no longer considered in combat and as such will return false
-	 * @param playerName
+	 * @param player
 	 * @return true if player is in combat
 	 */
-	public boolean isInCombat(String name){
-		return plugin.isInCombat(name);
+	public boolean isInCombat(Player player){
+		return plugin.isInCombat(player.getUniqueId());
 	}
 	
 	/**
 	 * Returns the time before the tag is over
 	 *  -1 if the tag has expired
 	 *  -2 if the player is not in combat
-	 * @param name
+	 * @param player
 	 */
-	public long getRemainingTagTime(String name){
-		if(plugin.isInCombat(name)){
-			return plugin.getRemainingTagTime(name);
+	public long getRemainingTagTime(Player player){
+		if(plugin.isInCombat(player.getUniqueId())){
+			return plugin.getRemainingTagTime(player.getUniqueId());
 		}else{
 			return -1L;
 		}
@@ -63,7 +63,7 @@ public class CombatTagApi {
 	 * @return nothing
 	 */
 	public void untagPlayer(Player player){
-		plugin.removeTagged(player.getName());
+		plugin.removeTagged(player.getUniqueId());
 	}
 	
 	/**

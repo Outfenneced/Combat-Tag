@@ -12,7 +12,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 
 import com.topcat.npclib.entity.NPC;
@@ -21,85 +20,66 @@ import com.trc202.CombatTag.CombatTag;
 public class NoPvpEntityListener implements Listener{
 
 	CombatTag plugin;
-	
+
 	public NoPvpEntityListener(CombatTag combatTag){
 		this.plugin = combatTag;
 	}
 	@EventHandler(priority = EventPriority.MONITOR)
-	public void onEntityDamage(EntityDamageEvent EntityDamaged){
-		if (EntityDamaged.isCancelled() || (EntityDamaged.getDamage() == 0)){return;}
-		if (EntityDamaged instanceof EntityDamageByEntityEvent){
-    		EntityDamageByEntityEvent e = (EntityDamageByEntityEvent)EntityDamaged;
-    		Entity dmgr = e.getDamager();
-    		if(dmgr instanceof Projectile)
-    		{
-    			dmgr = (Entity) ((Projectile)dmgr).getShooter();
-    		}
-    		if ((dmgr instanceof Player) && (e.getEntity() instanceof Player) && plugin.settings.playerTag()){//Check to see if the damager and damaged are players
-    			Player damager = (Player) dmgr;
-    			Player tagged = (Player) e.getEntity();
-    			if(damager != tagged && damager != null){
-    				for(String disallowedWorlds : plugin.settings.getDisallowedWorlds()){
-    					if(damager.getWorld().getName().equalsIgnoreCase(disallowedWorlds)){
-    						//Skip this tag the world they are in is not to be tracked by combat tag
-    						return;
-    					}
-    				}
-	    			onPlayerDamageByPlayerNPCMode(damager,tagged);
-    			}
-    		} else if ((dmgr instanceof LivingEntity) && (e.getEntity() instanceof Player) && plugin.settings.mobTag()){
-    			LivingEntity damager = (LivingEntity) dmgr;
-    			Player tagged = (Player) e.getEntity();
-    			if(damager != tagged && damager != null){
-    				for(String disallowedWorlds : plugin.settings.getDisallowedWorlds()){
-    					if(damager.getWorld().getName().equalsIgnoreCase(disallowedWorlds)){
-    						//Skip this tag the world they are in is not to be tracked by combat tag
-    						return;
-    					}
-    				}
-	    			onPlayerDamageByMobNPCMode(damager,tagged);
-    			}
-    		}
+	public void onEntityDamage(EntityDamageByEntityEvent e){
+		if (e.isCancelled() || (e.getDamage() == 0)){return;}
+		Entity dmgr = e.getDamager();
+		if(dmgr instanceof Projectile){
+			dmgr = (Entity) ((Projectile)dmgr).getShooter();
+		}
+		if(e.getEntity() instanceof Player){
+			Player tagged = (Player) e.getEntity();
+			
+			if(plugin.npcm.isNPC(tagged) || disallowedWorld(tagged.getWorld().getName())){return;} //If the damaged player is an npc do nothing
+			
+			if ((dmgr instanceof Player) && plugin.settings.playerTag()){
+				Player damagerPlayer = (Player) dmgr;
+				if(damagerPlayer != tagged && damagerPlayer != null){
+					onPlayerDamageByPlayer(damagerPlayer,tagged);
+				}
+			} else if (plugin.settings.mobTag()){
+				if (dmgr != null){
+					onPlayerDamageByMob((LivingEntity) dmgr,tagged);
+				}
+			}
 		}
 	}
-	
+
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onEntityDeath(EntityDeathEvent event){
 		if(plugin.npcm.isNPC(event.getEntity())){
 			onNPCDeath(event.getEntity());
-		}
-		//if Player died with a tag duration, cancel the timeout and remove the data container
-		else if(event.getEntity() instanceof Player){
+		} else if(event.getEntity() instanceof Player){
 			onPlayerDeath((Player) event.getEntity());
 		}
 	}
-	
+
 	public void onNPCDeath(Entity entity){
-		UUID id = plugin.getPlayerName(entity);
+		UUID id = plugin.getPlayerUUID(entity);
 		NPC npc = plugin.npcm.getNPC(id);
 		plugin.updatePlayerData(npc, id);
 		plugin.removeTagged(id);
 	}
-	
+
 	public void onPlayerDeath(Player deadPlayer){
 		plugin.removeTagged(deadPlayer.getUniqueId());
 	}
-	
-	private void onPlayerDamageByPlayerNPCMode(Player damager, Player damaged){
+
+	private void onPlayerDamageByPlayer(Player damager, Player damaged){
 		if(plugin.npcm.isNPC(damaged)){return;} //If the damaged player is an npc do nothing
-		
+
 		if(plugin.ctIncompatible.WarArenaHook(damager) && plugin.ctIncompatible.WarArenaHook(damaged)){
-			
 			if(!damager.hasPermission("combattag.ignore")){	
 				if(plugin.settings.blockCreativeTagging() && damager.getGameMode() == GameMode.CREATIVE){damager.sendMessage(ChatColor.RED + "[CombatTag] You can't tag players while in creative mode!");return;}
-				
+
 				if(plugin.settings.isSendMessageWhenTagged() && !plugin.isInCombat(damager.getUniqueId())){
 					String tagMessage = plugin.settings.getTagMessageDamager();
 					tagMessage = tagMessage.replace("[player]", "" + damaged.getName());
 					damager.sendMessage(ChatColor.RED + "[CombatTag] " + tagMessage);
-				}
-				if(plugin.isDebugEnabled()){
-					plugin.log.info("[CombatTag] " + damager.getName() + " tagged " + damaged.getName() + ", setting pvp timeout");
 				}
 				plugin.addTagged(damager);
 			}
@@ -115,10 +95,8 @@ public class NoPvpEntityListener implements Listener{
 			}
 		}
 	}
-	
-	private void onPlayerDamageByMobNPCMode(LivingEntity damager, Player damaged) {
-		if(plugin.npcm.isNPC(damaged)){return;} //If the damaged player is an npc do nothing
-		if(damager == null){return;}
+
+	private void onPlayerDamageByMob(LivingEntity damager, Player damaged) {
 		if(plugin.ctIncompatible.WarArenaHook(damaged)){
 			if(!damaged.hasPermission("combattag.ignoremob")){	
 				if(!plugin.isInCombat(damaged.getUniqueId())){
@@ -127,12 +105,19 @@ public class NoPvpEntityListener implements Listener{
 						tagMessage = tagMessage.replace("[player]", damager.getType().name());
 						damaged.sendMessage(ChatColor.RED + "[CombatTag] " + tagMessage);
 					}
-					if(plugin.isDebugEnabled()){
-						plugin.log.info("[CombatTag] " + damager.getType().name() + " tagged " + damaged.getName() + ", setting pvp timeout");
-					}
 				}
 				plugin.addTagged(damaged);
 			}
 		}
+	}
+
+	private boolean disallowedWorld(String worldName){
+		for(String disallowedWorld : plugin.settings.getDisallowedWorlds()){
+			if(worldName.equalsIgnoreCase(disallowedWorld)){
+				//Skip this tag the world they are in is not to be tracked by combat tag
+				return true;
+			}
+		}
+		return false;
 	}
 }

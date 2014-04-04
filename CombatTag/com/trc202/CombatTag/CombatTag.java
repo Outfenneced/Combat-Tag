@@ -145,11 +145,11 @@ public class CombatTag extends JavaPlugin {
 		}
 		return false;
 	}
-
+	
 	public boolean inTagged(UUID name){
 		return tagged.containsKey(name);
 	}
-
+	
 	public long removeTagged(UUID name){
 		if(inTagged(name)){
 			return tagged.remove(name);
@@ -222,7 +222,7 @@ public class CombatTag extends JavaPlugin {
 		}
 	}
 
-	public UUID getPlayerName(Entity entity) {
+	public UUID getPlayerUUID(Entity entity) {
 		if (npcm.isNPC(entity)) {
 			return npcm.getNPCIdFromEntity(entity);
 		}

@@ -29,6 +29,7 @@ public class SettingsHelper {
 	public static boolean hasSettingsFile(File f){
 		return f.exists();
 	}
+	
 	public static void deleteSettingsFile(File f){
 		if(f.exists())
 		{
@@ -69,7 +70,4 @@ public class SettingsHelper {
 	public String getProperty(String key){
 		return prop.getProperty(key);
 	}
-	
-
-	
 }

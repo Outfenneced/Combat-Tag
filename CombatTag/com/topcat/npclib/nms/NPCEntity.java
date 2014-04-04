@@ -9,7 +9,6 @@ import net.minecraft.server.v1_7_R2.WorldServer;
 import net.minecraft.util.com.mojang.authlib.GameProfile;
 
 import org.bukkit.craftbukkit.v1_7_R2.CraftServer;
-import org.bukkit.craftbukkit.v1_7_R2.entity.CraftEntity;
 import org.bukkit.event.entity.EntityTargetEvent;
 
 import com.topcat.npclib.NPCManager;
@@ -35,10 +34,6 @@ public class NPCEntity extends EntityPlayer {
 		lastBounceTick = 0;
 
 		fauxSleeping = true;
-	}
-
-	public void setBukkitEntity(org.bukkit.entity.Entity entity) {
-		bukkitEntity = (CraftEntity) entity;
 	}
 
 	@Override

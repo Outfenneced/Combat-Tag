@@ -2,7 +2,6 @@ package com.topcat.npclib;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -87,8 +86,7 @@ public class NPCManager {
 
 	private class SL implements Listener { 
 		@SuppressWarnings("unused") 
-		public void disableNPCLib() { 
-			despawnAll();
+		public void disableNPCLib() {
 			Bukkit.getServer().getScheduler().cancelTask(taskid); 
 		} 
 	}
@@ -159,34 +157,12 @@ public class NPCManager {
 		}
 	}
 
-	public void despawnAll() {
-		for (NPC npc : npcs.values()) {
-			if (npc != null) {
-				npc.removeFromWorld();
-			}
-		}
-		npcs.clear();
-	}
-
 	public NPC getNPC(UUID playerUUID) {
 		return npcs.get(playerUUID);
 	}
 
 	public boolean isNPC(org.bukkit.entity.Entity e) {
 		return ((CraftEntity) e).getHandle() instanceof NPCEntity;
-	}
-
-	public List<NPC> getHumanNPCByName(String name) {
-		List<NPC> ret = new ArrayList<NPC>();
-		Collection<NPC> i = npcs.values();
-		for (NPC e : i) {
-			if (e instanceof HumanNPC) {
-				if (((HumanNPC) e).getName().equalsIgnoreCase(name)) {
-					ret.add(e);
-				}
-			}
-		}
-		return ret;
 	}
 
 	public List<NPC> getNPCs() {

@@ -42,7 +42,7 @@ public class Settings {
 		npcDieAfterTime = false;
 		droptagonkick = true;
 		commandMessageTagged = "You are in combat for [time] seconds.";
-		commandMessageNotTagged = "You are not currently in combat!";
+		commandMessageNotTagged = "You are not currently in combat.";
 		tagMessageDamager = "You have hit [player]. Type /ct to check your remaining tag time.";
 		tagMessageDamaged = "You have been hit by [player]. Type /ct to check your remaining tag time.";
 		blockTeleport = false;

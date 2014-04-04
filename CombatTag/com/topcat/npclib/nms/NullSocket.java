@@ -10,8 +10,7 @@ import java.net.Socket;
  *
  * @author martin
  */
-class NullSocket extends Socket
-{
+class NullSocket extends Socket{
 	private final byte[] buffer = new byte[50];
 
 	@Override

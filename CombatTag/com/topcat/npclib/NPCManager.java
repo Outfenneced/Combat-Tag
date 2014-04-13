@@ -105,8 +105,13 @@ public class NPCManager {
 		}
 	}
 	
-	public GameProfile setGameProfile(String name, UUID id){
-		return new GameProfile(id, name);
+	public GameProfile setGameProfile(String name){
+		UUID uuid = UUID.randomUUID();
+		uuid = new UUID(uuid.getMostSignificantBits() | 0x0000000000005000L, uuid.getLeastSignificantBits());
+		while(Bukkit.getServer().getPlayer(uuid) != null){
+			uuid = new UUID(uuid.getMostSignificantBits() | 0x0000000000005000L, uuid.getLeastSignificantBits());
+		}
+		return new GameProfile(uuid, name);
 	}
 
 	public NPC spawnHumanNPC(String name, Location l, UUID id) {
@@ -121,7 +126,7 @@ public class NPCManager {
 				name = tmp;
 			}
 			BWorld world = getBWorld(l.getWorld());
-			NPCEntity npcEntity = new NPCEntity(this, world, setGameProfile(name, id), new PlayerInteractManager(world.getWorldServer()));
+			NPCEntity npcEntity = new NPCEntity(this, world, setGameProfile(name), new PlayerInteractManager(world.getWorldServer()));
 			npcEntity.setPositionRotation(l.getX(), l.getY(), l.getZ(), l.getYaw(), l.getPitch());
 			world.getWorldServer().addEntity(npcEntity); //the right way
 			NPC npc = new HumanNPC(npcEntity);

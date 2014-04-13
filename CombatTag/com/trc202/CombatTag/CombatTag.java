@@ -7,10 +7,10 @@ import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-import net.minecraft.server.v1_7_R2.EntityHuman;
-import net.minecraft.server.v1_7_R2.EntityPlayer;
-import net.minecraft.server.v1_7_R2.MinecraftServer;
-import net.minecraft.server.v1_7_R2.PlayerInteractManager;
+import net.minecraft.server.v1_7_R3.EntityHuman;
+import net.minecraft.server.v1_7_R3.EntityPlayer;
+import net.minecraft.server.v1_7_R3.MinecraftServer;
+import net.minecraft.server.v1_7_R3.PlayerInteractManager;
 import net.minecraft.util.com.mojang.authlib.GameProfile;
 
 import org.bukkit.Bukkit;
@@ -19,9 +19,9 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_7_R2.CraftServer;
-import org.bukkit.craftbukkit.v1_7_R2.entity.CraftHumanEntity;
-import org.bukkit.craftbukkit.v1_7_R2.util.MojangNameLookup;
+import org.bukkit.craftbukkit.v1_7_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_7_R3.entity.CraftHumanEntity;
+import org.bukkit.craftbukkit.v1_7_R3.util.MojangNameLookup;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -422,7 +422,7 @@ public class CombatTag extends JavaPlugin {
 			//Create an entity to load the player data
 			String name = MojangNameLookup.lookupName(playerUUID);
 			MinecraftServer server = ((CraftServer) this.getServer()).getServer();
-			EntityPlayer entity = new EntityPlayer(server, server.getWorldServer(0), setGameProfile(name, playerUUID.toString()), new PlayerInteractManager(server.getWorldServer(0))); //Eh
+			EntityPlayer entity = new EntityPlayer(server, server.getWorldServer(0), setGameProfile(name, playerUUID), new PlayerInteractManager(server.getWorldServer(0))); //Eh
 			target = (entity == null) ? null : (Player) entity.getBukkitEntity();
 			//Equivalent to
 			/*
@@ -455,7 +455,7 @@ public class CombatTag extends JavaPlugin {
 		target.saveData();
 	}
 
-	public GameProfile setGameProfile(String name, String id){
+	public GameProfile setGameProfile(String name, UUID id) {
 		return new GameProfile(id, name);
 	}
 

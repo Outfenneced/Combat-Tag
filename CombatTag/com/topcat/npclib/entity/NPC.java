@@ -1,6 +1,6 @@
 package com.topcat.npclib.entity;
 
-import net.minecraft.server.v1_7_R2.Entity;
+import net.minecraft.server.v1_7_R3.Entity;
 
 public class NPC {
 

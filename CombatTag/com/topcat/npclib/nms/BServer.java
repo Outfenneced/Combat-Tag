@@ -1,11 +1,9 @@
 package com.topcat.npclib.nms;
 
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.minecraft.server.v1_7_R3.MinecraftServer;
-import net.minecraft.server.v1_7_R3.WorldServer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
@@ -36,7 +34,7 @@ public class BServer {
 	public Logger getLogger() {
 		return cServer.getLogger();
 	}
-
+/*
 	public List<WorldServer> getWorldServers() {
 		return mcServer.worlds;
 	}
@@ -44,7 +42,7 @@ public class BServer {
 	public Server getServer() {
 		return server;
 	}
-
+*/
 	public static BServer getInstance() {
 		if (ins == null) {
 			ins = new BServer();
@@ -55,4 +53,5 @@ public class BServer {
 	public MinecraftServer getMCServer() {
 		return mcServer;
 	}
+	
 }

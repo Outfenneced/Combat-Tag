@@ -1,7 +1,5 @@
-package com.trc202.CombatTag;
+package com.trc202.settings;
 
-import com.trc202.Containers.Settings;
-import com.trc202.helpers.SettingsHelper;
 
 public class SettingsLoader {
 	Settings settings;

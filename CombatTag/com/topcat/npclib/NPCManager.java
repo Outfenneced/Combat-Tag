@@ -84,11 +84,11 @@ public class NPCManager {
 		return bworld;
 	}
 
-	private class SL implements Listener { 
-		@SuppressWarnings("unused") 
+	private class SL implements Listener {
+		@SuppressWarnings("unused")
 		public void disableNPCLib() {
-			Bukkit.getServer().getScheduler().cancelTask(taskid); 
-		} 
+			Bukkit.getServer().getScheduler().cancelTask(taskid);
+		}
 	}
 
 	private class WL implements Listener {
@@ -104,7 +104,7 @@ public class NPCManager {
 			}
 		}
 	}
-	
+
 	public GameProfile setGameProfile(String name){
 		UUID uuid = UUID.randomUUID();
 		uuid = new UUID(uuid.getMostSignificantBits() | 0x0000000000005000L, uuid.getLeastSignificantBits());
@@ -184,7 +184,7 @@ public class NPCManager {
 		}
 		return null;
 	}
-	
+
 	public BServer getServer() {
 		return server;
 	}

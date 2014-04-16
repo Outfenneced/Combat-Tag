@@ -1,4 +1,4 @@
-package com.trc202.Containers;
+package com.trc202.settings;
 
 public class Settings {
 	

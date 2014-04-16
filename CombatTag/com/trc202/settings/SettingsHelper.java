@@ -1,4 +1,4 @@
-package com.trc202.helpers;
+package com.trc202.settings;
 
 import java.io.File;
 import java.io.FileInputStream;

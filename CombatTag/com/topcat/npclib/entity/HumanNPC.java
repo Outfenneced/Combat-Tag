@@ -24,7 +24,7 @@ public class HumanNPC extends NPC {
 	}
 
 	public void actAsHurt() {
-		((WorldServer) getEntity().world).tracker.a(getEntity(), new PacketPlayOutAnimation(getEntity(), 2));  //TESTING
+		((WorldServer) getEntity().world).tracker.a(getEntity(), new PacketPlayOutAnimation(getEntity(), 2)); //TESTING
 	}
 
 	public void setItemInHand(Material m) {
@@ -36,7 +36,7 @@ public class HumanNPC extends NPC {
 	}
 
 	public void setName(String name) {
-//		((NPCEntity) getEntity()).name = name;
+		// ((NPCEntity) getEntity()).name = name;
 		// No longer works wtf
 		// CHANGED 1.6.1
 	}

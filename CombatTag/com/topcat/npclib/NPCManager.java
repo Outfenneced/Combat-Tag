@@ -38,7 +38,6 @@ public class NPCManager {
 
 	private HashMap<UUID, NPC> npcs = new HashMap<UUID, NPC>();
 	private BServer server;
-	private int taskid;
 	private Map<World, BWorld> bworlds = new HashMap<World, BWorld>();
 	private NPCNetworkManager npcNetworkManager;
 	public static JavaPlugin plugin;
@@ -53,7 +52,7 @@ public class NPCManager {
 		}
 
 		NPCManager.plugin = plugin;
-		taskid = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
+		Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
 
 			@Override
 			public void run() {
@@ -70,7 +69,6 @@ public class NPCManager {
 				}
 			}
 		}, 1L, 1L);
-		Bukkit.getServer().getPluginManager().registerEvents(new SL(), plugin);
 		Bukkit.getServer().getPluginManager().registerEvents(new WL(), plugin);
 	}
 
@@ -82,13 +80,6 @@ public class NPCManager {
 		bworld = new BWorld(world);
 		bworlds.put(world, bworld);
 		return bworld;
-	}
-
-	private class SL implements Listener {
-		@SuppressWarnings("unused")
-		public void disableNPCLib() {
-			Bukkit.getServer().getScheduler().cancelTask(taskid);
-		}
 	}
 
 	private class WL implements Listener {

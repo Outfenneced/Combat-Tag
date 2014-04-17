@@ -104,15 +104,12 @@ public class CombatTag extends JavaPlugin {
 	 */
 	@Override
 	public void onDisable() {
-		for (UUID uuid : tagged.keySet()) {
-			Player plr = Bukkit.getPlayer(uuid);
-			NPC npc = npcm.getNPC(plr.getUniqueId());
-			if (npc != null) {
-				if (isDebugEnabled()) {
-					log.info("[CombatTag] Disable npc for: " + plr.getName() + " !");
-				}
-				updatePlayerData(npc, plr.getUniqueId());
-				despawnNPC(plr.getUniqueId());
+		for (NPC npc : npcm.getNPCs()) {
+			UUID uuid = npcm.getNPCIdFromEntity(npc.getBukkitEntity());
+			updatePlayerData(npc, uuid);
+			npcm.despawnById(uuid);
+			if (isDebugEnabled()) {
+				log.info("[CombatTag] Disabling npc with ID of: " + uuid);
 			}
 		}
 		//Just in case...

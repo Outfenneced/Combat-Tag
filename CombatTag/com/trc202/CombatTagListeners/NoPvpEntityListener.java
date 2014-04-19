@@ -82,6 +82,11 @@ public class NoPvpEntityListener implements Listener{
 					damager.sendMessage(ChatColor.RED + "[CombatTag] " + tagMessage);
 				}
 				plugin.addTagged(damager);
+				
+				if(plugin.settings.blockFly() && damager.isFlying()){
+					damager.sendMessage(ChatColor.RED + "[CombatTag] You can't fly in combat!");
+					damager.setFlying(false);
+				}
 			}
 			if(!damaged.hasPermission("combattag.ignore") && !plugin.settings.onlyDamagerTagged()){	
 				if(!plugin.isInCombat(damaged.getUniqueId())){
@@ -92,6 +97,11 @@ public class NoPvpEntityListener implements Listener{
 					}
 				}
 				plugin.addTagged(damaged);
+				
+				if(plugin.settings.blockFly() && damaged.isFlying()){
+					damaged.sendMessage(ChatColor.RED + "[CombatTag] Disabling fly!");
+					damaged.setFlying(false);
+				}
 			}
 		}
 	}

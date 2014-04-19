@@ -2,12 +2,9 @@ package com.trc202.settings;
 
 public class Settings {
 	
-	public enum SettingsType {NPC,TIMED,OTHER};
-	
 	private int tagDuration;
 	private boolean debugEnabled;
 	private boolean instaKill;
-	private SettingsType currentMode;
 	private String[] disabledCommands;
 	private String[] disallowedWorlds;
 	private String npcName;
@@ -27,9 +24,9 @@ public class Settings {
 	private boolean mobTag;
 	private boolean playerTag;
 	private boolean blockCreativeTagging;
+	private boolean blockFly;
 	
 	public Settings(){
-		currentMode = SettingsType.NPC;
 		instaKill = false;
 		tagDuration = 10;
 		debugEnabled = false;
@@ -52,7 +49,7 @@ public class Settings {
 		mobTag = false;
 		playerTag = true;
 		blockCreativeTagging = true;
-		
+		blockFly = false;
 	}
 
 	public void setDebugEnabled(boolean debugEnabled) {
@@ -86,10 +83,6 @@ public class Settings {
 	public boolean dropTagOnKick() {
 		return droptagonkick;
 	} 
-	
-	public SettingsType getCurrentMode(){
-		return currentMode;
-	}
 
 	public String[] getDisabledCommands() {
 		return disabledCommands;
@@ -235,5 +228,13 @@ public class Settings {
 
 	public boolean blockCreativeTagging() {
 		return blockCreativeTagging;
+	}
+
+	public void setBlockFly(boolean blockFly) {
+		this.blockFly = blockFly;
+	}
+	
+	public boolean blockFly() {
+		return blockFly;
 	}
 }

@@ -298,7 +298,6 @@ public class CombatTag extends JavaPlugin {
 			} else if (args[0].equalsIgnoreCase("wipe")) {
 				if (sender.hasPermission("combattag.wipe")) {
 					int numNPC = 0;
-					//PlayerDataContainer despawn;
 					for (NPC npc : npcm.getNPCs()) {
 						updatePlayerData(npc, npcm.getNPCIdFromEntity(npc.getBukkitEntity()));
 						npcm.despawnById(npcm.getNPCIdFromEntity(npc.getBukkitEntity()));

@@ -3,6 +3,7 @@ package com.trc202.CombatTagListeners;
 import java.util.UUID;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -144,7 +145,8 @@ public class NoPvpPlayerListener implements Listener {
 	private void alertPlayers(Player quitPlr) {
 		for(Player player: plugin.getServer().getOnlinePlayers()){
 			if(player.hasPermission("combattag.alert")){
-				player.sendMessage(ChatColor.RED + "[CombatTag] " + quitPlr.getName() + " has PvPLogged!");
+				Location loc = quitPlr.getLocation();
+				player.sendMessage(ChatColor.RED + "[CombatTag] " + quitPlr.getName() + " has PvPLogged at: " + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ() + "!");
 			}
 		}
 

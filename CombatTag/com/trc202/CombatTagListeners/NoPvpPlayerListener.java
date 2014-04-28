@@ -50,6 +50,7 @@ public class NoPvpPlayerListener implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPlayerQuit(PlayerQuitEvent e) {
 		Player quitPlr = e.getPlayer();
+		if(quitPlr.hasPermission("combattag.ignore.pvplog")){ return; }
 		UUID playerUUID = quitPlr.getUniqueId();
 		if (quitPlr.isDead() || quitPlr.getHealth() <= 0) {
 			plugin.entityListener.onPlayerDeath(quitPlr);

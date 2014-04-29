@@ -1,5 +1,6 @@
 package com.trc202.CombatTagApi;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
@@ -24,6 +25,21 @@ public class CombatTagApi {
 	}
 	
 	/**
+	 * Checks to see if the player is in combat. The combat time can be configured by the server owner
+	 * If the player has died while in combat the player is no longer considered in combat and as such will return false
+	 * @param playerName
+	 * @return true if player is online and in combat
+	 */
+	@SuppressWarnings("deprecation")
+	public boolean isInCombat(String name){
+		Player player = Bukkit.getPlayerExact(name);
+		if(player != null){
+			return plugin.isInCombat(player.getUniqueId());
+		}
+		return false;
+	}
+	
+	/**
 	 * Returns the time before the tag is over
 	 *  -1 if the tag has expired
 	 *  -2 if the player is not in combat
@@ -35,6 +51,25 @@ public class CombatTagApi {
 		}else{
 			return -1L;
 		}
+	}
+	
+	/**
+	 * Returns the time before the tag is over
+	 *  -1 if the tag has expired
+	 *  -2 if the player is not in combat
+	 * @param playerName
+	 */
+	@SuppressWarnings("deprecation")
+	public long getRemainingTagTime(String name){
+		if(Bukkit.getPlayerExact(name) != null){
+			Player player = Bukkit.getPlayerExact(name);
+			if(plugin.isInCombat(player.getUniqueId())){
+				return plugin.getRemainingTagTime(player.getUniqueId());
+			}else{
+				return -1L;
+			}
+		}
+		return -2L;
 	}
 	
 	/**

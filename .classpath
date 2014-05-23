@@ -9,6 +9,6 @@
 	<classpathentry kind="lib" path="C:/Users/cheddar262/Desktop/Plugin Development/Dependencies/Combat Tag/worldguard-5.5.2.jar"/>
 	<classpathentry kind="lib" path="C:/Users/cheddar262/Desktop/Plugin Development/Dependencies/Combat Tag/pvparena-1.0.jar"/>
 	<classpathentry kind="lib" path="C:/Users/cheddar262/Desktop/CraftBukkit/bukkit-1.7.9-R0.1-20140418.155157-4.jar"/>
-	<classpathentry kind="lib" path="C:/Users/cheddar262/Desktop/CraftBukkit/craftbukkit-1.7.9-R0.1-20140418.182938-15.jar"/>
+	<classpathentry kind="lib" path="C:/Users/cheddar262/Desktop/CraftBukkit/craftbukkit-1.7.9-R0.1-20140503.225437-20.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

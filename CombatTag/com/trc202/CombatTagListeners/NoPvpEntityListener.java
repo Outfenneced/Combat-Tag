@@ -29,7 +29,9 @@ public class NoPvpEntityListener implements Listener{
 		if (e.isCancelled() || (e.getDamage() == 0)){return;}
 		Entity dmgr = e.getDamager();
 		if(dmgr instanceof Projectile){
-			dmgr = (Entity) ((Projectile)dmgr).getShooter();
+			if(((Projectile)dmgr).getShooter() instanceof Entity){
+				dmgr = (Entity) ((Projectile)dmgr).getShooter();
+			}
 		}
 		if(e.getEntity() instanceof Player){
 			Player tagged = (Player) e.getEntity();

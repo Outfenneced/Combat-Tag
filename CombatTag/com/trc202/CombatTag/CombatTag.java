@@ -122,10 +122,12 @@ public class CombatTag extends JavaPlugin {
 		settings = new SettingsLoader().loadSettings(settingsHelper, this.getDescription().getVersion());
 		npcm = new NPCManager(this);
 		PluginManager pm = getServer().getPluginManager();
+		ctIncompatible.startup(pm);
 		pm.registerEvents(plrListener, this);
 		pm.registerEvents(entityListener, this);
 		pm.registerEvents(commandPreventer, this);
 		pm.registerEvents(blockListener, this);
+		
 		log.info("[" + getDescription().getName() + "]" + " has loaded with a tag time of " + settings.getTagDuration() + " seconds");
 	}
 

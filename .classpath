@@ -2,6 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="CombatTag"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="C:/Users/cheddar262/Desktop/Plugin Development/Dependencies/Combat Tag/CrackShot.jar"/>
 	<classpathentry kind="lib" path="C:/Users/cheddar262/Desktop/Plugin Development/Dependencies/Combat Tag/Heroes.jar"/>
 	<classpathentry kind="lib" path="C:/Users/cheddar262/Desktop/Plugin Development/Dependencies/Combat Tag/mcMMO.jar"/>
 	<classpathentry kind="lib" path="C:/Users/cheddar262/Desktop/Plugin Development/Dependencies/Combat Tag/War-v1.7.1.jar"/>

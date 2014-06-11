@@ -1,5 +1,7 @@
 package com.trc202.settings;
 
+import org.bukkit.ChatColor;
+
 public class Settings {
 	
 	private int tagDuration;
@@ -143,7 +145,7 @@ public class Settings {
 	}
 
 	public void setCommandMessageTagged(String message) {
-		this.commandMessageTagged = message;
+		this.commandMessageTagged = translateColor(message);
 	}
 
 	public String getCommandMessageTagged() {
@@ -151,7 +153,7 @@ public class Settings {
 	}
 
 	public void setCommandMessageNotTagged(String message) {
-		this.commandMessageNotTagged = message;
+		this.commandMessageNotTagged = translateColor(message);
 	}
 
 	public String getCommandMessageNotTagged() {
@@ -175,7 +177,7 @@ public class Settings {
 	}
 
 	public void setTagMessageDamaged(String tagMessageDamaged) {
-		this.tagMessageDamaged = tagMessageDamaged;
+		this.tagMessageDamaged = translateColor(tagMessageDamaged);
 	}
 	
 	public String getTagMessageDamaged() {
@@ -183,7 +185,7 @@ public class Settings {
 	}
 	
 	public void setTagMessageDamager(String tagMessageDamager) {
-		this.tagMessageDamager = tagMessageDamager;
+		this.tagMessageDamager = translateColor(tagMessageDamager);
 	}
 	
 	public String getTagMessageDamager() {
@@ -236,5 +238,9 @@ public class Settings {
 	
 	public boolean blockFly() {
 		return blockFly;
+	}
+	
+	public String translateColor(String message){
+		return ChatColor.translateAlternateColorCodes('&', message);
 	}
 }

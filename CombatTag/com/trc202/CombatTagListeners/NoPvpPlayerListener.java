@@ -149,6 +149,5 @@ public class NoPvpPlayerListener implements Listener {
 				player.sendMessage(ChatColor.RED + "[CombatTag] " + quitPlr.getName() + " has PvPLogged at: " + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ() + "!");
 			}
 		}
-
 	}
 }

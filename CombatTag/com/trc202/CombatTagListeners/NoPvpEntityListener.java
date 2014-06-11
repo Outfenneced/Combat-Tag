@@ -24,6 +24,7 @@ public class NoPvpEntityListener implements Listener{
 	public NoPvpEntityListener(CombatTag combatTag){
 		this.plugin = combatTag;
 	}
+	
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onEntityDamage(EntityDamageByEntityEvent e){
 		if (e.isCancelled() || (e.getDamage() == 0)){return;}

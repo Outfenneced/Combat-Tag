@@ -3,7 +3,7 @@ package com.topcat.npclib.nms;
 import java.io.IOException;
 import java.lang.reflect.Field;
 
-import net.minecraft.server.v1_7_R3.NetworkManager;
+import net.minecraft.server.v1_7_R4.NetworkManager;
 import net.minecraft.util.io.netty.channel.Channel;
 
 

@@ -1,7 +1,7 @@
 package com.topcat.npclib.entity;
 
-import net.minecraft.server.v1_7_R3.PacketPlayOutAnimation;
-import net.minecraft.server.v1_7_R3.WorldServer;
+import net.minecraft.server.v1_7_R4.PacketPlayOutAnimation;
+import net.minecraft.server.v1_7_R4.WorldServer;
 
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;

@@ -3,11 +3,11 @@ package com.topcat.npclib.nms;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.minecraft.server.v1_7_R3.MinecraftServer;
+import net.minecraft.server.v1_7_R4.MinecraftServer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
-import org.bukkit.craftbukkit.v1_7_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_7_R4.CraftServer;
 
 /**
  * Server hacks for Bukkit

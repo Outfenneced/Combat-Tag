@@ -34,6 +34,8 @@ import org.bukkit.util.StringUtil;
 import com.google.common.collect.ImmutableList;
 import com.topcat.npclib.NPCManager;
 import com.topcat.npclib.entity.NPC;
+import com.trc202.CombatTagEvents.NpcDespawnEvent;
+import com.trc202.CombatTagEvents.NpcDespawnReason;
 import com.trc202.CombatTagListeners.CombatTagCommandPrevention;
 import com.trc202.CombatTagListeners.NoPvpBlockListener;
 import com.trc202.CombatTagListeners.NoPvpEntityListener;
@@ -107,6 +109,9 @@ public class CombatTag extends JavaPlugin {
 		for (NPC npc : npcm.getNPCs()) {
 			UUID uuid = npcm.getNPCIdFromEntity(npc.getBukkitEntity());
 			updatePlayerData(npc, uuid);
+			// fire event so plugins dependent on getting a player's inventory may do so.
+			NpcDespawnEvent ev = new NpcDespawnEvent(null, NpcDespawnReason.PLUGIN_DISABLED, uuid, npc);		
+			getServer().getPluginManager().callEvent(ev);
 			npcm.despawnById(uuid);
 			if (isDebugEnabled()) {
 				log.info("[CombatTag] Disabling npc with ID of: " + uuid);
@@ -210,13 +215,16 @@ public class CombatTag extends JavaPlugin {
 	 *
 	 * @param plrData
 	 */
-	public void despawnNPC(UUID playerUUID) {
+	public void despawnNPC(UUID playerUUID, NpcDespawnReason reason) {
 		if (isDebugEnabled()) {
 			log.info("[CombatTag] Despawning NPC for " + playerUUID);
 		}
 		NPC npc = npcm.getNPC(playerUUID);
 		if (npc != null) {
 			updatePlayerData(npc, playerUUID);
+			// fire event so plugins dependent on getting a player's inventory may do so.
+			NpcDespawnEvent event = new NpcDespawnEvent(this, reason, playerUUID, npc);		
+			getServer().getPluginManager().callEvent(event);
 			npcm.despawnById(playerUUID);
 		}
 	}
@@ -387,7 +395,7 @@ public class CombatTag extends JavaPlugin {
 							plrNpc.setHealth(0);
 							updatePlayerData(npc, uuid);
 						} else {
-							despawnNPC(uuid);
+							despawnNPC(uuid, NpcDespawnReason.DESPAWN_TIMEOUT);
 						}
 					}
 				} else if(!Bukkit.getServer().getPlayer(uuid).isOnline()){
@@ -396,7 +404,7 @@ public class CombatTag extends JavaPlugin {
 							plrNpc.setHealth(0);
 							updatePlayerData(npc, uuid);
 						} else {
-							despawnNPC(uuid);
+							despawnNPC(uuid, NpcDespawnReason.DESPAWN_TIMEOUT);
 						}
 					}
 				}

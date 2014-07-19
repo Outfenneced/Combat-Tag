@@ -21,6 +21,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import com.topcat.npclib.entity.NPC;
 import com.trc202.CombatTag.CombatTag;
+import com.trc202.CombatTagEvents.NpcDespawnReason;
 
 public class NoPvpPlayerListener implements Listener {
 	private final CombatTag plugin;
@@ -39,7 +40,7 @@ public class NoPvpPlayerListener implements Listener {
 		if (plugin.inTagged(playerUUID)) {
 			//Player has an NPC and is likely to need some sort of punishment
 			loginPlayer.setNoDamageTicks(0);
-			plugin.despawnNPC(playerUUID);
+			plugin.despawnNPC(playerUUID, NpcDespawnReason.PLAYER_LOGIN);
 			if (loginPlayer.getHealth() > 0) {
 				plugin.addTagged(loginPlayer);
 			} else {

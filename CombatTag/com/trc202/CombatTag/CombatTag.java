@@ -108,11 +108,7 @@ public class CombatTag extends JavaPlugin {
 	public void onDisable() {
 		for (NPC npc : npcm.getNPCs()) {
 			UUID uuid = npcm.getNPCIdFromEntity(npc.getBukkitEntity());
-			updatePlayerData(npc, uuid);
-			// fire event so plugins dependent on getting a player's inventory may do so.
-			NpcDespawnEvent ev = new NpcDespawnEvent(null, NpcDespawnReason.PLUGIN_DISABLED, uuid, npc);		
-			getServer().getPluginManager().callEvent(ev);
-			npcm.despawnById(uuid);
+			despawnNPC(uuid, NpcDespawnReason.PLUGIN_DISABLED);
 			if (isDebugEnabled()) {
 				log.info("[CombatTag] Disabling npc with ID of: " + uuid);
 			}
@@ -309,8 +305,7 @@ public class CombatTag extends JavaPlugin {
 				if (sender.hasPermission("combattag.wipe")) {
 					int numNPC = 0;
 					for (NPC npc : npcm.getNPCs()) {
-						updatePlayerData(npc, npcm.getNPCIdFromEntity(npc.getBukkitEntity()));
-						npcm.despawnById(npcm.getNPCIdFromEntity(npc.getBukkitEntity()));
+						despawnNPC(npcm.getNPCIdFromEntity((Entity) npc), NpcDespawnReason.COMMAND_WIPE);
 						numNPC++;
 					}
 					sender.sendMessage("[CombatTag] Wiped " + numNPC + " pvploggers!");

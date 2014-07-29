@@ -11,21 +11,22 @@ import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import com.topcat.npclib.NPCManager;
 
 /**
- * 
+ *
  * @author martin
  */
 public class NPCNetHandler extends PlayerConnection {
 
-	public NPCNetHandler(NPCManager npcManager, EntityPlayer entityplayer) {
-		super(npcManager.getServer().getMCServer(), npcManager.getNPCNetworkManager(), entityplayer);
-	}
+    public NPCNetHandler(NPCManager npcManager, EntityPlayer entityplayer) {
+        super(npcManager.getServer().getMCServer(), npcManager.getNPCNetworkManager(), entityplayer);
+    }
 
-	@Override
-	public CraftPlayer getPlayer() {
-		return new CraftPlayer((CraftServer) Bukkit.getServer(), player); //Fake player prevents spout NPEs
-	}
+    @Override
+    public CraftPlayer getPlayer() {
+        return new CraftPlayer((CraftServer) Bukkit.getServer(), player); //Fake player prevents spout NPEs
+    }
 
-	@Override
-	public void sendPacket(Packet packet) {
-	};
+    @Override
+    public void sendPacket(Packet packet) {
+    }
+;
 }

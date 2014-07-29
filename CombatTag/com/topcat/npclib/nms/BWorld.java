@@ -14,19 +14,19 @@ import org.bukkit.craftbukkit.v1_7_R4.CraftWorld;
  */
 public class BWorld {
 
-	private CraftWorld cWorld;
-	private WorldServer wServer;
+    private CraftWorld cWorld;
+    private WorldServer wServer;
 
-	public BWorld(World world) {
-		try {
-			cWorld = (CraftWorld) world;
-			wServer = cWorld.getHandle();
-		} catch (Exception ex) {
-			Logger.getLogger("Minecraft").log(Level.SEVERE, null, ex);
-		}
-	}
+    public BWorld(World world) {
+        try {
+            cWorld = (CraftWorld) world;
+            wServer = cWorld.getHandle();
+        } catch (Exception ex) {
+            Logger.getLogger("Minecraft").log(Level.SEVERE, null, ex);
+        }
+    }
 
-	public WorldServer getWorldServer() {
-		return wServer;
-	}
+    public WorldServer getWorldServer() {
+        return wServer;
+    }
 }

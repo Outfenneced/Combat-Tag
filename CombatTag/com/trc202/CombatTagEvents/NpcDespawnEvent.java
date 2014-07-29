@@ -6,11 +6,11 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 import com.trc202.CombatTag.CombatTag;
-import com.trc202.CombatTagEvents.NpcDespawnReason;
 import com.topcat.npclib.entity.NPC;
 
 public class NpcDespawnEvent extends Event {
-        private static final HandlerList handlers = new HandlerList();
+
+    private static final HandlerList handlers = new HandlerList();
 
     public static HandlerList getHandlerList() {
         return handlers;
@@ -32,6 +32,7 @@ public class NpcDespawnEvent extends Event {
         npc_ = npc;
     }
 
+    @Override
     public HandlerList getHandlers() {
         return NpcDespawnEvent.getHandlerList();
     }

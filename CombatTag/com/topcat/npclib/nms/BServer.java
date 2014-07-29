@@ -16,42 +16,43 @@ import org.bukkit.craftbukkit.v1_7_R4.CraftServer;
  */
 public class BServer {
 
-	private static BServer ins;
-	private MinecraftServer mcServer;
-	private CraftServer cServer;
-	private Server server;
+    private static BServer ins;
+    private MinecraftServer mcServer;
+    private CraftServer cServer;
+    private Server server;
 
-	private BServer() {
-		server = Bukkit.getServer();
-		try {
-			cServer = (CraftServer) server;
-			mcServer = cServer.getServer();
-		} catch (Exception ex) {
-			Logger.getLogger("Minecraft").log(Level.SEVERE, null, ex);
-		}
-	}
+    private BServer() {
+        server = Bukkit.getServer();
+        try {
+            cServer = (CraftServer) server;
+            mcServer = cServer.getServer();
+        } catch (Exception ex) {
+            Logger.getLogger("Minecraft").log(Level.SEVERE, null, ex);
+        }
+    }
 
-	public Logger getLogger() {
-		return cServer.getLogger();
-	}
-/*
-	public List<WorldServer> getWorldServers() {
-		return mcServer.worlds;
-	}
+    public Logger getLogger() {
+        return cServer.getLogger();
+    }
+    /*
+     public List<WorldServer> getWorldServers() {
+     return mcServer.worlds;
+     }
 
-	public Server getServer() {
-		return server;
-	}
-*/
-	public static BServer getInstance() {
-		if (ins == null) {
-			ins = new BServer();
-		}
-		return ins;
-	}
+     public Server getServer() {
+     return server;
+     }
+     */
 
-	public MinecraftServer getMCServer() {
-		return mcServer;
-	}
-	
+    public static BServer getInstance() {
+        if (ins == null) {
+            ins = new BServer();
+        }
+        return ins;
+    }
+
+    public MinecraftServer getMCServer() {
+        return mcServer;
+    }
+
 }

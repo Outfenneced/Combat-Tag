@@ -21,95 +21,100 @@ import com.tommytony.war.Warzone;
 
 public class CombatTagIncompatibles {
 
-	CombatTag plugin;
+    CombatTag plugin;
 
-	public CombatTagIncompatibles(CombatTag combatTag){
-		this.plugin = combatTag;
-	}
+    public CombatTagIncompatibles(CombatTag combatTag) {
+        this.plugin = combatTag;
+    }
 
-	public boolean PvPArenaHook(Player plr){
-		Plugin pvparena = this.plugin.getServer().getPluginManager().getPlugin("pvparena");
-		boolean notInArena = true;
-		if(pvparena != null && (pvparena instanceof PVPArena)){
-			notInArena = PVPArenaAPI.getArenaName(plr) == "";
-		}
-		return notInArena;
-	} 
+    public boolean PvPArenaHook(Player plr) {
+        Plugin pvparena = this.plugin.getServer().getPluginManager().getPlugin("pvparena");
+        boolean notInArena = true;
+        if (pvparena != null && (pvparena instanceof PVPArena)) {
+            notInArena = "".equals(PVPArenaAPI.getArenaName(plr));
+        }
+        return notInArena;
+    }
 
-	public boolean WarArenaHook(Player plr){
-		boolean notInArena = true;
-		if(plugin.getServer().getPluginManager().getPlugin("War") != null){
-			notInArena = Warzone.getZoneByPlayerName(plr.getName()) == null;
-		}
-		return notInArena;
-	}
+    public boolean WarArenaHook(Player plr) {
+        boolean notInArena = true;
+        if (plugin.getServer().getPluginManager().getPlugin("War") != null) {
+            notInArena = Warzone.getZoneByPlayerName(plr.getName()) == null;
+        }
+        return notInArena;
+    }
 
-	public WorldGuardPlugin getWorldGuard() {
-		Plugin wg = plugin.getServer().getPluginManager().getPlugin("WorldGuard");
+    public WorldGuardPlugin getWorldGuard() {
+        Plugin wg = plugin.getServer().getPluginManager().getPlugin("WorldGuard");
 
-		// WorldGuard may not be loaded
-		if (wg == null || !(wg instanceof WorldGuardPlugin)) {
-			return null;
-		}
+        // WorldGuard may not be loaded
+        if (wg == null || !(wg instanceof WorldGuardPlugin)) {
+            return null;
+        }
 
-		return (WorldGuardPlugin) wg;
-	}
+        return (WorldGuardPlugin) wg;
+    }
 
-	public boolean InWGCheck(Player plr){
-		WorldGuardPlugin wg = getWorldGuard();
-		if (wg != null) {
-			Location plrLoc = plr.getLocation();
-			Vector pt = toVector(plrLoc);
+    public boolean InWGCheck(Player plr) {
+        WorldGuardPlugin wg = getWorldGuard();
+        if (wg != null) {
+            Location plrLoc = plr.getLocation();
+            Vector pt = toVector(plrLoc);
 
-			RegionManager regionManager = wg.getRegionManager(plr.getWorld());
-			ApplicableRegionSet set = regionManager.getApplicableRegions(pt);
-			if(set != null){
-				return set.allows(DefaultFlag.PVP) && !set.allows(DefaultFlag.INVINCIBILITY);
-			} else {
-				return true;
-			}
-		}
-		return true;
-	}
+            RegionManager regionManager = wg.getRegionManager(plr.getWorld());
+            ApplicableRegionSet set = regionManager.getApplicableRegions(pt);
+            if (set != null) {
+                return set.allows(DefaultFlag.PVP) && !set.allows(DefaultFlag.INVINCIBILITY);
+            } else {
+                return true;
+            }
+        }
+        return true;
+    }
 
-	public boolean notInArena(Player player){
-		return WarArenaHook(player) && PvPArenaHook(player);
-	}
+    public boolean notInArena(Player player) {
+        return WarArenaHook(player) && PvPArenaHook(player);
+    }
 
-	public void startup(PluginManager pm) {
-		if(crackShotCheck() != null){
-			pm.registerEvents(new CrackShotListener(), plugin);
-		}
-	}
-	
-	private Plugin crackShotCheck() {
-		Plugin cs = plugin.getServer().getPluginManager().getPlugin("CrackShot");
+    public void startup(PluginManager pm) {
+        if (crackShotCheck() != null) {
+            pm.registerEvents(new CrackShotListener(), plugin);
+        }
+    }
 
-		// CrackShot may not be loaded
-		if (cs == null || !(cs instanceof CSDirector)) {
-			return null;
-		}
+    private Plugin crackShotCheck() {
+        Plugin cs = plugin.getServer().getPluginManager().getPlugin("CrackShot");
 
-		return (Plugin) cs;
-	}
+        // CrackShot may not be loaded
+        if (cs == null || !(cs instanceof CSDirector)) {
+            return null;
+        }
 
-	public class CrackShotListener implements Listener{
-		public void crackShotEventListener(WeaponDamageEntityEvent e){
-			if (e.isCancelled() || (e.getDamage() == 0)){return;}
-			Player dmgr = e.getPlayer();
-			
-			if(e.getVictim() instanceof Player){
-				Player tagged = (Player) e.getVictim();
-				
-				if(plugin.npcm.isNPC(tagged) || plugin.entityListener.disallowedWorld(tagged.getWorld().getName())){return;} //If the damaged player is an npc do nothing
-				
-				if ((dmgr instanceof Player) && plugin.settings.playerTag()){
-					Player damagerPlayer = (Player) dmgr;
-					if(damagerPlayer != tagged && damagerPlayer != null){
-						plugin.entityListener.onPlayerDamageByPlayer(damagerPlayer,tagged);
-					}
-				}
-			}
-		}
-	}
+        return (Plugin) cs;
+    }
+
+    public class CrackShotListener implements Listener {
+
+        public void crackShotEventListener(WeaponDamageEntityEvent e) {
+            if (e.isCancelled() || (e.getDamage() == 0)) {
+                return;
+            }
+            Player dmgr = e.getPlayer();
+
+            if (e.getVictim() instanceof Player) {
+                Player tagged = (Player) e.getVictim();
+
+                if (plugin.npcm.isNPC(tagged) || plugin.entityListener.disallowedWorld(tagged.getWorld().getName())) {
+                    return;
+                } //If the damaged player is an npc do nothing
+
+                if ((dmgr instanceof Player) && plugin.settings.playerTag()) {
+                    Player damagerPlayer = (Player) dmgr;
+                    if (damagerPlayer != tagged) {
+                        plugin.entityListener.onPlayerDamageByPlayer(damagerPlayer, tagged);
+                    }
+                }
+            }
+        }
+    }
 }

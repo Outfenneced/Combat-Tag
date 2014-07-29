@@ -11,19 +11,19 @@ import com.topcat.npclib.nms.NPCEntity;
 
 public class HumanNPC extends NPC {
 
-	public HumanNPC(NPCEntity npcEntity) {
-		super(npcEntity);
-	}
+    public HumanNPC(NPCEntity npcEntity) {
+        super(npcEntity);
+    }
 
-	public void actAsHurt() {
-		((WorldServer) getEntity().world).tracker.a(getEntity(), new PacketPlayOutAnimation(getEntity(), 2)); //TESTING
-	}
+    public void actAsHurt() {
+        ((WorldServer) getEntity().world).tracker.a(getEntity(), new PacketPlayOutAnimation(getEntity(), 2)); //TESTING
+    }
 
-	public void setItemInHand(Material m, short damage) {
-		((HumanEntity) getEntity().getBukkitEntity()).setItemInHand(new ItemStack(m, 1, damage));
-	}
-	
-	public String getName() {
-		return ((NPCEntity) getEntity()).getName(); // CHANGED 1.6.1
-	}
+    public void setItemInHand(Material m, short damage) {
+        ((HumanEntity) getEntity().getBukkitEntity()).setItemInHand(new ItemStack(m, 1, damage));
+    }
+
+    public String getName() {
+        return ((NPCEntity) getEntity()).getName(); // CHANGED 1.6.1
+    }
 }

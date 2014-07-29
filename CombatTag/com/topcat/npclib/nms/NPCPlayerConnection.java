@@ -16,17 +16,20 @@ import com.topcat.npclib.NPCManager;
  */
 public class NPCPlayerConnection extends PlayerConnection {
 
-	public NPCPlayerConnection(NPCManager npcManager, EntityPlayer entityplayer) {
-		super(npcManager.getServer().getMCServer(), npcManager.getNPCNetworkManager(), entityplayer);
-	}
+    public NPCPlayerConnection(NPCManager npcManager, EntityPlayer entityplayer) {
+        super(npcManager.getServer().getMCServer(), npcManager.getNPCNetworkManager(), entityplayer);
+    }
+
+    @Override
+    public CraftPlayer getPlayer() {
+        return new CraftPlayer((CraftServer) Bukkit.getServer(), player); //Fake player prevents spout NPEs
+    }
+
+    ;
 
 	@Override
-	public CraftPlayer getPlayer() {
-		return new CraftPlayer((CraftServer) Bukkit.getServer(), player); //Fake player prevents spout NPEs
-	};
-
-	@Override
-	public void sendPacket(Packet packet) {
-	};
+    public void sendPacket(Packet packet) {
+    }
+;
 
 }

@@ -10,10 +10,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class NPCUtils {
+
     public static void sendPacketNearby(Location location, Packet packet) {
         sendPacketNearby(location, packet, 64);
     }
-    
+
     public static void sendPacketNearby(Location location, Packet packet, double radius) {
         radius *= radius;
         final World world = location.getWorld();
@@ -24,13 +25,13 @@ public class NPCUtils {
             if (location.distanceSquared(p.getLocation()) > radius) {
                 continue;
             }
-            
-            ((CraftPlayer)p).getHandle().playerConnection.sendPacket(packet);
+
+            ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
         }
     }
-    
+
     public static ItemStack[] combineItemStackArrays(Object[] a, Object[] b) {
-        ItemStack[] c = new ItemStack[a.length+b.length];
+        ItemStack[] c = new ItemStack[a.length + b.length];
         System.arraycopy(a, 0, c, 0, a.length);
         System.arraycopy(b, 0, c, a.length, b.length);
         return c;

@@ -29,8 +29,6 @@ import com.topcat.npclib.nms.BServer;
 import com.topcat.npclib.nms.BWorld;
 import com.topcat.npclib.nms.NPCEntity;
 import com.topcat.npclib.nms.NPCNetworkManager;
-import com.trc202.CombatTagEvents.NpcDespawnEvent;
-import com.trc202.CombatTagEvents.NpcDespawnReason;
 
 /**
  *

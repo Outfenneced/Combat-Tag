@@ -81,7 +81,7 @@ public class NoPvpEntityListener implements Listener {
             return;
         } //If the damaged player is an npc do nothing
 
-        if (plugin.ctIncompatible.WarArenaHook(damager) && plugin.ctIncompatible.WarArenaHook(damaged)) {
+        if (plugin.ctIncompatible.WarArenaHook(damager) && plugin.ctIncompatible.WarArenaHook(damaged) && plugin.ctIncompatible.AuthMeHook(damager) && plugin.ctIncompatible.AuthMeHook(damaged)) {
             if (!damager.hasPermission("combattag.ignore")) {
                 if (plugin.settings.blockCreativeTagging() && damager.getGameMode() == GameMode.CREATIVE) {
                     damager.sendMessage(ChatColor.RED + "[CombatTag] You can't tag players while in creative mode!");

@@ -18,6 +18,8 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.tommytony.war.Warzone;
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.api.API;
 
 public class CombatTagIncompatibles {
 
@@ -25,6 +27,18 @@ public class CombatTagIncompatibles {
 
     public CombatTagIncompatibles(CombatTag combatTag) {
         this.plugin = combatTag;
+    }
+    
+    public boolean AuthMeHook(player plr) {
+        Plugin authme = this.plugin.getServer().getPluginManager().getPlugin("AuthMe");
+        if (authme == null || !(authme instanceof AuthMe)) {
+            return true;
+        }
+        AuthMe authmeapi = (AuthMe) authme;
+        if (authmeapi.isAuthenticated(plr) {
+            return true;
+        }
+        return false;
     }
 
     public boolean PvPArenaHook(Player plr) {

@@ -4,14 +4,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-import net.minecraft.server.v1_7_R4.EntityHuman;
-import net.minecraft.server.v1_7_R4.EntityPlayer;
-import net.minecraft.server.v1_7_R4.MinecraftServer;
-import net.minecraft.server.v1_7_R4.PlayerInteractManager;
-import net.minecraft.util.com.mojang.authlib.GameProfile;
+import net.citizensnpcs.api.event.DespawnReason;
+import net.citizensnpcs.api.npc.NPC;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -19,8 +17,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_7_R4.CraftServer;
-import org.bukkit.craftbukkit.v1_7_R4.entity.CraftHumanEntity;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -32,8 +28,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.StringUtil;
 
 import com.google.common.collect.ImmutableList;
+import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Util;
 import com.topcat.npclib.NPCManager;
-import com.topcat.npclib.entity.NPC;
 import com.trc202.CombatTagEvents.NpcDespawnEvent;
 import com.trc202.CombatTagEvents.NpcDespawnReason;
 import com.trc202.CombatTagListeners.CombatTagCommandPrevention;
@@ -43,6 +39,12 @@ import com.trc202.CombatTagListeners.NoPvpPlayerListener;
 import com.trc202.settings.Settings;
 import com.trc202.settings.SettingsHelper;
 import com.trc202.settings.SettingsLoader;
+
+import techcable.minecraft.combattag.NPCMaster;
+import techcable.minecraft.combattag.Utils;
+import techcable.minecraft.offlineplayers.AdvancedOfflinePlayer;
+import techcable.minecraft.offlineplayers.NBTAdvancedOfflinePlayer;
+import techcable.minecraft.offlineplayers.wrapper.OnlineAdvancedOfflinePlayer;
 
 public class CombatTag extends JavaPlugin {
 
@@ -63,8 +65,11 @@ public class CombatTag extends JavaPlugin {
     private final CombatTagCommandPrevention commandPreventer = new CombatTagCommandPrevention(this);
 
     private int npcNumber;
-
+    
+    private NPCMaster npcMaster;
+    
     public CombatTag() {
+    	npcMaster = new NPCMaster(this);
         settings = new Settings();
         new File(mainDirectory).mkdirs();
         settingsFile = new File(mainDirectory + File.separator + "settings.prop");
@@ -94,9 +99,9 @@ public class CombatTag extends JavaPlugin {
      */
     @Override
     public void onDisable() {
-        for (NPC npc : npcm.getNPCs()) {
-            UUID uuid = npcm.getNPCIdFromEntity(npc.getBukkitEntity());
-            despawnNPC(uuid, NpcDespawnReason.PLUGIN_DISABLED);
+        for (NPC npc : npcMaster.getNpcs()) {
+            UUID uuid = npc.getUniqueId();
+            npc.despawn(DespawnReason.PLUGIN);
             if (isDebugEnabled()) {
                 log.info("[CombatTag] Disabling npc with ID of: " + uuid);
             }
@@ -172,13 +177,9 @@ public class CombatTag extends JavaPlugin {
         if (isDebugEnabled()) {
             log.info("[CombatTag] Spawning NPC for " + plr.getName());
         }
-        NPC spawnedNPC = npcm.spawnHumanNPC(getNpcName(plr.getName()), location, plr.getUniqueId());
-        if (spawnedNPC.getBukkitEntity() instanceof HumanEntity) {
-            HumanEntity p = (HumanEntity) spawnedNPC.getBukkitEntity();
-            p.setNoDamageTicks(1);
-            p.setMetadata("NPC", new FixedMetadataValue(this, "NPC"));
-        }
-        return spawnedNPC;
+        NPC npc = npcMaster.createNPC(plr);
+        npc.spawn(location);
+        return npc;
     }
 
     public String getNpcName(String plr) {
@@ -205,13 +206,13 @@ public class CombatTag extends JavaPlugin {
         if (isDebugEnabled()) {
             log.info("[CombatTag] Despawning NPC for " + playerUUID);
         }
-        NPC npc = npcm.getNPC(playerUUID);
+        NPC npc = npcMaster.getNPC(playerUUID);
         if (npc != null) {
             updatePlayerData(npc, playerUUID);
             // fire event so plugins dependent on getting a player's inventory may do so.
             NpcDespawnEvent event = new NpcDespawnEvent(this, reason, playerUUID, npc);
             getServer().getPluginManager().callEvent(event);
-            npcm.despawnById(playerUUID);
+            npc.despawn();
         }
     }
 
@@ -220,19 +221,6 @@ public class CombatTag extends JavaPlugin {
             return npcm.getNPCIdFromEntity(entity);
         }
         return null;
-    }
-
-    /**
-     * Copys inventory from the Player to the NPC
-     *
-     * @param npc Npc
-     * @param plr Player
-     */
-    public void copyContentsNpc(NPC npc, Player plr) {
-        if (npc.getBukkitEntity() instanceof Player) {
-            Player playerNPC = (Player) npc.getBukkitEntity();
-            copyTo(playerNPC, plr);
-        }
     }
 
     /**
@@ -294,8 +282,8 @@ public class CombatTag extends JavaPlugin {
             } else if (args[0].equalsIgnoreCase("wipe")) {
                 if (sender.hasPermission("combattag.wipe")) {
                     int numNPC = 0;
-                    for (NPC npc : npcm.getNPCs()) {
-                        despawnNPC(npcm.getNPCIdFromEntity((Entity) npc), NpcDespawnReason.COMMAND_WIPE);
+                    for (NPC npc : npcMaster.getNpcs()) {
+                        npc.despawn(DespawnReason.PLUGIN);
                         numNPC++;
                     }
                     sender.sendMessage("[CombatTag] Wiped " + numNPC + " pvploggers!");
@@ -404,65 +392,21 @@ public class CombatTag extends JavaPlugin {
      * @param playerUUID
      */
     public void updatePlayerData(NPC npc, UUID playerUUID) {
-        Player target = Bukkit.getPlayer(playerUUID); //Could return the player or null
-        if (target == null) { //If player is offline
-            if (isDebugEnabled()) {
-                log.info("[CombatTag] Update player data for " + playerUUID + " !");
-            }
-            //Create an entity to load the player data
-            String name = Bukkit.getOfflinePlayer(playerUUID).getName();
-            MinecraftServer server = ((CraftServer) this.getServer()).getServer();
-            EntityPlayer entity = new EntityPlayer(server, server.getWorldServer(0), setGameProfile(name, playerUUID), new PlayerInteractManager(server.getWorldServer(0))); //Eh
-            target = entity.getBukkitEntity();
-            if (target != null) {
-                target.loadData();
-            }
-        }
-        if (target != null && (npcm.getNPC(playerUUID) == npc) && npc != null) {
-            EntityHuman humanTarget = ((CraftHumanEntity) target).getHandle();
-            Player source = (Player) npc.getBukkitEntity();
-            if (source.getHealth() <= 0) {
-                emptyInventory(target);
-                ItemStack airItem = new ItemStack(Material.AIR);
-                ItemStack[] emptyArmorStack = new ItemStack[4];
-                for (int x = 0; x < emptyArmorStack.length; x++) {
-                    emptyArmorStack[x] = airItem;
-                }
-                target.getInventory().setArmorContents(emptyArmorStack);
-                humanTarget.setHealth(0);
-            } else {
-                copyTo(target, source);
-            }
-        } else {
-            log.info("[" + this.getDescription().getName() + "] Something went wrong with the copy process!");
-        }
-        if (target != null) {
-            target.saveData();
-        }
-    }
-
-    public GameProfile setGameProfile(String name, UUID id) {
-        return new GameProfile(id, name);
-    }
-
-    public void copyTo(Player target, Player source) {
-        target.getInventory().setContents(source.getInventory().getContents());
-        target.getInventory().setArmorContents(source.getInventory().getArmorContents());
-        target.setExp(source.getExp());
-        target.setLevel(source.getLevel());
-        target.setFoodLevel(source.getFoodLevel());
-        target.addPotionEffects(source.getActivePotionEffects());
-        target.setRemainingAir(source.getRemainingAir());
-        target.setExhaustion(source.getExhaustion());
-        target.setSaturation(source.getSaturation());
-        target.setFireTicks(source.getFireTicks());
-        if (target instanceof CraftHumanEntity) {
-            EntityHuman humanTarget = ((CraftHumanEntity) target).getHandle();
-            double healthSet = healthCheck(source.getHealth());
-            humanTarget.setHealth((float) healthSet);
-        } else {
-            log.info("[CombatTag] An error has occurred! Target is not a HumanEntity!");
-        }
+    	AdvancedOfflinePlayer target;
+    	Player source = (Player) npc.getEntity();
+    	if (Bukkit.getPlayer(playerUUID) == null) {
+    		target = new NBTAdvancedOfflinePlayer(Bukkit.getOfflinePlayer(playerUUID));
+    		target.load();
+    	} else {
+    		target = new OnlineAdvancedOfflinePlayer(Bukkit.getPlayer(playerUUID));
+    	}
+    	if (source.getHealth() <= 0) {
+    		Utils.emptyInventory(target);
+    		target.setHealth(0);
+    	} else {
+    		Utils.copyPlayer(target, source);
+    	}
+    	target.save();
     }
 
     public double healthCheck(double health) {

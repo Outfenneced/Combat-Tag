@@ -2,11 +2,12 @@ package com.trc202.CombatTagEvents;
 
 import java.util.UUID;
 
+import net.citizensnpcs.api.npc.NPC;
+
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 import com.trc202.CombatTag.CombatTag;
-import com.topcat.npclib.entity.NPC;
 
 public class NpcDespawnEvent extends Event {
 

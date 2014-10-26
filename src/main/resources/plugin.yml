@@ -3,7 +3,8 @@ version: 6.2.0
 authors: [cheddar262, Techcable]
 main: com.trc202.CombatTag.CombatTag
 dev-url: http://dev.bukkit.org/server-mods/combat-tag
-depend: [Citizens]
+depend:
+- Citizens
 commands:
   CombatTag:
     description: Shows the current remaining time in a tag

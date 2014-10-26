@@ -29,8 +29,6 @@ import org.bukkit.util.StringUtil;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
-import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Util;
-import com.topcat.npclib.NPCManager;
 import com.trc202.CombatTagEvents.NpcDespawnEvent;
 import com.trc202.CombatTagEvents.NpcDespawnReason;
 import com.trc202.CombatTagListeners.CombatTagCommandPrevention;
@@ -48,19 +46,20 @@ import techcable.minecraft.offlineplayers.NBTAdvancedOfflinePlayer;
 import techcable.minecraft.offlineplayers.NBTAdvancedOfflinePlayer.PlayerNotFoundException;
 import techcable.minecraft.offlineplayers.wrapper.OnlineAdvancedOfflinePlayer;
 
+import lombok.Getter;
+
 public class CombatTag extends JavaPlugin {
 
     private final SettingsHelper settingsHelper;
     private final File settingsFile;
     public Settings settings;
     public static final Logger log = Logger.getLogger("Minecraft");
-    public NPCManager npcm;
     private HashMap<UUID, Long> tagged;
     private static final String mainDirectory = "plugins/CombatTag";
     private static final List<String> SUBCOMMANDS = ImmutableList.of("reload", "wipe", "command");
     private static final List<String> COMMAND_SUBCOMMANDS = ImmutableList.of("add", "remove");
 
-    public final CombatTagIncompatibles ctIncompatible = new CombatTagIncompatibles(this);
+    //public final CombatTagIncompatibles ctIncompatible = new CombatTagIncompatibles(this);
     private final NoPvpPlayerListener plrListener = new NoPvpPlayerListener(this);
     public final NoPvpEntityListener entityListener = new NoPvpEntityListener(this);
     private final NoPvpBlockListener blockListener = new NoPvpBlockListener(this);
@@ -68,6 +67,7 @@ public class CombatTag extends JavaPlugin {
 
     private int npcNumber;
     
+    @Getter
     private NPCMaster npcMaster;
     
     public CombatTag() {
@@ -116,9 +116,8 @@ public class CombatTag extends JavaPlugin {
     public void onEnable() {
         tagged = new HashMap<UUID, Long>();
         settings = new SettingsLoader().loadSettings(settingsHelper, this.getDescription().getVersion());
-        npcm = new NPCManager(this);
         PluginManager pm = getServer().getPluginManager();
-        ctIncompatible.startup(pm);
+        //ctIncompatible.startup(pm);
         pm.registerEvents(plrListener, this);
         pm.registerEvents(entityListener, this);
         pm.registerEvents(commandPreventer, this);
@@ -213,13 +212,6 @@ public class CombatTag extends JavaPlugin {
             updatePlayerData(npc, playerUUID);
             npcMaster.despawn(npc);
         }
-    }
-
-    public UUID getPlayerUUID(Entity entity) {
-        if (npcm.isNPC(entity)) {
-            return npcm.getNPCIdFromEntity(entity);
-        }
-        return null;
     }
 
     /**
@@ -361,7 +353,7 @@ public class CombatTag extends JavaPlugin {
             @Override
             public void run() {
                 if (Bukkit.getServer().getPlayer(uuid) == null) {
-                    if (npcm.getNPC(uuid) != null) {
+                    if (npcMaster.getNPC(uuid) != null) {
                         if (kill == true) {
                             plrNpc.setHealth(0);
                             updatePlayerData(npc, uuid);

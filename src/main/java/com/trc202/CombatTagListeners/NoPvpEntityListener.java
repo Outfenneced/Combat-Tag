@@ -2,6 +2,8 @@ package com.trc202.CombatTagListeners;
 
 import java.util.UUID;
 
+import net.citizensnpcs.api.npc.NPC;
+
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Entity;
@@ -14,7 +16,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 
-import com.topcat.npclib.entity.NPC;
 import com.trc202.CombatTag.CombatTag;
 
 public class NoPvpEntityListener implements Listener {
@@ -39,7 +40,7 @@ public class NoPvpEntityListener implements Listener {
         if (e.getEntity() instanceof Player) {
             Player tagged = (Player) e.getEntity();
 
-            if (plugin.npcm.isNPC(tagged) || disallowedWorld(tagged.getWorld().getName())) {
+            if (plugin.getNpcMaster().isNPC(tagged) || disallowedWorld(tagged.getWorld().getName())) {
                 return;
             } //If the damaged player is an npc do nothing
 
@@ -58,7 +59,7 @@ public class NoPvpEntityListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDeath(EntityDeathEvent event) {
-        if (plugin.npcm.isNPC(event.getEntity())) {
+        if (plugin.getNpcMaster().isNPC(event.getEntity())) {
             onNPCDeath(event.getEntity());
         } else if (event.getEntity() instanceof Player) {
             onPlayerDeath((Player) event.getEntity());
@@ -66,8 +67,8 @@ public class NoPvpEntityListener implements Listener {
     }
 
     public void onNPCDeath(Entity entity) {
-        UUID id = plugin.getPlayerUUID(entity);
-        NPC npc = plugin.npcm.getNPC(id);
+        NPC npc = plugin.getNpcMaster().getAsNPC(entity);
+    	UUID id = plugin.getNpcMaster().getPlayerId(npc);
         plugin.updatePlayerData(npc, id);
         plugin.removeTagged(id);
     }
@@ -77,11 +78,11 @@ public class NoPvpEntityListener implements Listener {
     }
 
     public void onPlayerDamageByPlayer(Player damager, Player damaged) {
-        if (plugin.npcm.isNPC(damaged)) {
+        if (plugin.getNpcMaster().isNPC(damaged)) {
             return;
         } //If the damaged player is an npc do nothing
 
-        if (plugin.ctIncompatible.WarArenaHook(damager) && plugin.ctIncompatible.WarArenaHook(damaged)) {
+        //if (plugin.ctIncompatible.WarArenaHook(damager) && plugin.ctIncompatible.WarArenaHook(damaged)) {
             if (!damager.hasPermission("combattag.ignore")) {
                 if (plugin.settings.blockCreativeTagging() && damager.getGameMode() == GameMode.CREATIVE) {
                     damager.sendMessage(ChatColor.RED + "[CombatTag] You can't tag players while in creative mode!");
@@ -115,11 +116,11 @@ public class NoPvpEntityListener implements Listener {
                     damaged.setFlying(false);
                 }
             }
-        }
+        //}
     }
 
     private void onPlayerDamageByMob(LivingEntity damager, Player damaged) {
-        if (plugin.ctIncompatible.WarArenaHook(damaged)) {
+        //if (plugin.ctIncompatible.WarArenaHook(damaged)) {
             if (!damaged.hasPermission("combattag.ignoremob")) {
                 if (!plugin.isInCombat(damaged.getUniqueId())) {
                     if (plugin.settings.isSendMessageWhenTagged()) {
@@ -130,7 +131,7 @@ public class NoPvpEntityListener implements Listener {
                 }
                 plugin.addTagged(damaged);
             }
-        }
+        //}
     }
 
     public boolean disallowedWorld(String worldName) {

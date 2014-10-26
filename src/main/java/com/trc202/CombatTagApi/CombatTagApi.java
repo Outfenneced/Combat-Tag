@@ -85,7 +85,7 @@ public class CombatTagApi {
      * @return true if the player is an NPC
      */
     public boolean isNPC(Entity entity) {
-        return plugin.npcm.isNPC(entity);
+        return plugin.getNpcMaster().isNPC(entity);
     }
 
     /**

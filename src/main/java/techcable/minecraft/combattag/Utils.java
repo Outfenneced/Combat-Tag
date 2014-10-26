@@ -1,5 +1,7 @@
 package techcable.minecraft.combattag;
 
+import net.citizensnpcs.api.npc.NPC;
+
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -36,6 +38,11 @@ public class Utils {
 		target.setSaturation(source.getSaturation());
 		target.setFireTicks(source.getFireTicks());
 		target.setHealth((float)source.getHealth());
+	}
+	
+	public static void copyNPC(NPC target, Player source) {
+		Player playerTarget = (Player) target.getEntity();
+		copyPlayer(playerTarget, source);
 	}
 	
 	public static final ItemStack EMPTY = new ItemStack(Material.AIR);

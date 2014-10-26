@@ -2,6 +2,8 @@ package com.trc202.CombatTagListeners;
 
 import java.util.UUID;
 
+import net.citizensnpcs.api.npc.NPC;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -19,9 +21,10 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import com.topcat.npclib.entity.NPC;
 import com.trc202.CombatTag.CombatTag;
 import com.trc202.CombatTagEvents.NpcDespawnReason;
+
+import techcable.minecraft.combattag.Utils;
 
 public class NoPvpPlayerListener implements Listener {
 
@@ -37,13 +40,13 @@ public class NoPvpPlayerListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player loginPlayer = event.getPlayer();
         UUID playerUUID = loginPlayer.getUniqueId();
-        if (plugin.npcm.getNPC(playerUUID) == null) {
+        if (plugin.getNpcMaster().getNPC(playerUUID) == null) {
             return;
         }
         if (plugin.inTagged(playerUUID)) {
             //Player has an NPC and is likely to need some sort of punishment
             loginPlayer.setNoDamageTicks(0);
-            plugin.despawnNPC(playerUUID, NpcDespawnReason.PLAYER_LOGIN);
+            plugin.despawnNPC(playerUUID);
             if (loginPlayer.getHealth() > 0) {
                 plugin.addTagged(loginPlayer);
             } else {
@@ -75,13 +78,12 @@ public class NoPvpPlayerListener implements Listener {
             } else {
                 boolean wgCheck = true;
                 if (plugin.settings.dontSpawnInWG()) {
-                    wgCheck = plugin.ctIncompatible.InWGCheck(quitPlr);
+                    //wgCheck = plugin.ctIncompatible.InWGCheck(quitPlr);
                 }
                 if (wgCheck) {
                     NPC npc = plugin.spawnNpc(quitPlr, quitPlr.getLocation());
-                    Player npcPlayer = (Player) npc.getBukkitEntity();
-                    plugin.copyContentsNpc(npc, quitPlr);
-                    npcPlayer.setMetadata("NPC", new FixedMetadataValue(plugin, "NPC"));
+                    Player npcPlayer = (Player) npc.getEntity();
+                    Utils.copyNPC(npc, quitPlr);
                     npcPlayer.setHealth(plugin.healthCheck(quitPlr.getHealth()));
                     quitPlr.getWorld().createExplosion(quitPlr.getLocation(), -1); //Create the smoke effect
                     if (plugin.settings.getNpcDespawnTime() > 0) {
@@ -125,7 +127,7 @@ public class NoPvpPlayerListener implements Listener {
         if (event.isCancelled()) {
             return;
         }
-        if (plugin.settings.blockTeleport() && plugin.isInCombat(event.getPlayer().getUniqueId()) && plugin.ctIncompatible.notInArena(event.getPlayer())) {
+        //if (plugin.settings.blockTeleport() && plugin.isInCombat(event.getPlayer().getUniqueId()) && plugin.ctIncompatible.notInArena(event.getPlayer())) {
             TeleportCause cause = event.getCause();
             if ((cause == TeleportCause.PLUGIN || cause == TeleportCause.COMMAND)) {
                 if (event.getPlayer().getWorld() != event.getTo().getWorld()) {
@@ -136,7 +138,7 @@ public class NoPvpPlayerListener implements Listener {
                     event.setCancelled(true);
                 }
             }
-        }
+        //}
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

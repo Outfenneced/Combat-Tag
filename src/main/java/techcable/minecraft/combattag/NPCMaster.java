@@ -53,7 +53,7 @@ public class NPCMaster {
 	}
 	
 	public boolean isNPC(Entity entity) {
-		return registry.isNPC(entity);
+		return registry.isNPC(entity) && playerToNpc.containsKey(getAsNPC(entity).getUniqueId());
 	}
 
 	public List<NPC> getNpcs() {

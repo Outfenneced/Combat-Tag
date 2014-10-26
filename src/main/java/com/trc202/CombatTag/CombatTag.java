@@ -71,7 +71,6 @@ public class CombatTag extends JavaPlugin {
     private NPCMaster npcMaster;
     
     public CombatTag() {
-    	npcMaster = new NPCMaster(this);
         settings = new Settings();
         new File(mainDirectory).mkdirs();
         settingsFile = new File(mainDirectory + File.separator + "settings.prop");
@@ -114,6 +113,7 @@ public class CombatTag extends JavaPlugin {
 
     @Override
     public void onEnable() {
+	npcMaster = new NPCMaster(this);
         tagged = new HashMap<UUID, Long>();
         settings = new SettingsLoader().loadSettings(settingsHelper, this.getDescription().getVersion());
         PluginManager pm = getServer().getPluginManager();

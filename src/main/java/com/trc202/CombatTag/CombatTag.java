@@ -27,6 +27,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.StringUtil;
 
+import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Util;
 import com.topcat.npclib.NPCManager;
@@ -44,6 +45,7 @@ import techcable.minecraft.combattag.NPCMaster;
 import techcable.minecraft.combattag.Utils;
 import techcable.minecraft.offlineplayers.AdvancedOfflinePlayer;
 import techcable.minecraft.offlineplayers.NBTAdvancedOfflinePlayer;
+import techcable.minecraft.offlineplayers.NBTAdvancedOfflinePlayer.PlayerNotFoundException;
 import techcable.minecraft.offlineplayers.wrapper.OnlineAdvancedOfflinePlayer;
 
 public class CombatTag extends JavaPlugin {
@@ -100,8 +102,8 @@ public class CombatTag extends JavaPlugin {
     @Override
     public void onDisable() {
         for (NPC npc : npcMaster.getNpcs()) {
-            UUID uuid = npc.getUniqueId();
-            npc.despawn(DespawnReason.PLUGIN);
+            UUID uuid = npcMaster.getPlayerId(npc);
+            despawnNPC(uuid);
             if (isDebugEnabled()) {
                 log.info("[CombatTag] Disabling npc with ID of: " + uuid);
             }
@@ -202,17 +204,14 @@ public class CombatTag extends JavaPlugin {
      * @param playerUUID
      * @param reason
      */
-    public void despawnNPC(UUID playerUUID, NpcDespawnReason reason) {
+    public void despawnNPC(UUID playerUUID) {
         if (isDebugEnabled()) {
             log.info("[CombatTag] Despawning NPC for " + playerUUID);
         }
         NPC npc = npcMaster.getNPC(playerUUID);
         if (npc != null) {
             updatePlayerData(npc, playerUUID);
-            // fire event so plugins dependent on getting a player's inventory may do so.
-            NpcDespawnEvent event = new NpcDespawnEvent(this, reason, playerUUID, npc);
-            getServer().getPluginManager().callEvent(event);
-            npc.despawn();
+            npcMaster.despawn(npc);
         }
     }
 
@@ -283,7 +282,7 @@ public class CombatTag extends JavaPlugin {
                 if (sender.hasPermission("combattag.wipe")) {
                     int numNPC = 0;
                     for (NPC npc : npcMaster.getNpcs()) {
-                        npc.despawn(DespawnReason.PLUGIN);
+                        despawnNPC(npcMaster.getPlayerId(npc));
                         numNPC++;
                     }
                     sender.sendMessage("[CombatTag] Wiped " + numNPC + " pvploggers!");
@@ -367,16 +366,16 @@ public class CombatTag extends JavaPlugin {
                             plrNpc.setHealth(0);
                             updatePlayerData(npc, uuid);
                         } else {
-                            despawnNPC(uuid, NpcDespawnReason.DESPAWN_TIMEOUT);
+                            despawnNPC(uuid);
                         }
                     }
                 } else if (!Bukkit.getServer().getPlayer(uuid).isOnline()) {
-                    if (npcm.getNPC(uuid) != null) {
+                    if (npcMaster.getNPC(uuid) != null) {
                         if (kill == true) {
                             plrNpc.setHealth(0);
                             updatePlayerData(npc, uuid);
                         } else {
-                            despawnNPC(uuid, NpcDespawnReason.DESPAWN_TIMEOUT);
+                            despawnNPC(uuid);
                         }
                     }
                 }
@@ -395,7 +394,11 @@ public class CombatTag extends JavaPlugin {
     	AdvancedOfflinePlayer target;
     	Player source = (Player) npc.getEntity();
     	if (Bukkit.getPlayer(playerUUID) == null) {
-    		target = new NBTAdvancedOfflinePlayer(Bukkit.getOfflinePlayer(playerUUID));
+    		try {
+    			target = new NBTAdvancedOfflinePlayer(Bukkit.getOfflinePlayer(playerUUID));
+    		} catch (PlayerNotFoundException ex) {
+    			throw Throwables.propagate(ex);
+    		}
     		target.load();
     	} else {
     		target = new OnlineAdvancedOfflinePlayer(Bukkit.getPlayer(playerUUID));

@@ -16,6 +16,9 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+
 import lombok.*;
 
 @Getter
@@ -24,7 +27,7 @@ public class NPCMaster {
 	
 	private NPCRegistry registry;
 	
-	private Map<UUID, UUID> playerToNpc = new HashMap<>();
+	private BiMap<UUID, UUID> playerToNpc = HashBiMap.create();
 	private int lastId;
 	public NPCMaster(JavaPlugin plugin) {
 		this.plugin = plugin;
@@ -59,5 +62,14 @@ public class NPCMaster {
 			npcs.add(registry.getByUniqueId(realId));
 		}
 		return npcs;
+	}
+	
+	public UUID getPlayerId(NPC npc) {
+		return playerToNpc.inverse().get(npc.getUniqueId());
+	}
+	
+	public void despawn(NPC npc) {
+		playerToNpc.inverse().remove(npc.getUniqueId());
+		npc.despawn();
 	}
 }

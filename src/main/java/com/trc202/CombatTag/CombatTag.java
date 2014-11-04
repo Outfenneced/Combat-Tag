@@ -1,6 +1,7 @@
 package com.trc202.CombatTag;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +27,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.StringUtil;
+import org.mcstats.Metrics;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
@@ -107,6 +109,7 @@ public class CombatTag extends JavaPlugin {
                 log.info("[CombatTag] Disabling npc with ID of: " + uuid);
             }
         }
+        disableMetrics();
         //Just in case...
         log.info("[CombatTag] Disabled");
     }
@@ -118,6 +121,9 @@ public class CombatTag extends JavaPlugin {
         settings = new SettingsLoader().loadSettings(settingsHelper, this.getDescription().getVersion());
         PluginManager pm = getServer().getPluginManager();
         //ctIncompatible.startup(pm);
+        if (!initMetrics()) {
+        	log.warning("Unable to initialize metrics");
+        };
         pm.registerEvents(plrListener, this);
         pm.registerEvents(entityListener, this);
         pm.registerEvents(commandPreventer, this);
@@ -416,5 +422,22 @@ public class CombatTag extends JavaPlugin {
 
     public SettingsHelper getSettingsHelper() {
         return this.settingsHelper;
+    }
+    
+    private Metrics metrics;
+    public boolean initMetrics() {
+    	try {
+    		if (metrics == null) {
+    			metrics = new Metrics(this);
+    		}
+    		metrics.start();
+    		return true;
+    	} catch (IOException ex) {
+    		return false;
+    	}
+    }
+    
+    public void disableMetrics() {
+    	
     }
 }

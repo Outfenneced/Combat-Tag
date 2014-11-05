@@ -123,7 +123,9 @@ public class CombatTag extends JavaPlugin {
         //ctIncompatible.startup(pm);
         if (!initMetrics()) {
         	log.warning("Unable to initialize metrics");
-        };
+        } else {
+	    if (isDebugEnabled()) log.info("Enabled Metrics");
+	}
         pm.registerEvents(plrListener, this);
         pm.registerEvents(entityListener, this);
         pm.registerEvents(commandPreventer, this);

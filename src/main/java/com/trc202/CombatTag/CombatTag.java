@@ -11,6 +11,8 @@ import java.util.logging.Logger;
 
 import net.citizensnpcs.api.event.DespawnReason;
 import net.citizensnpcs.api.npc.NPC;
+import net.gravitydevelopment.updater.Updater;
+import net.gravitydevelopment.updater.Updater.UpdateType;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -441,5 +443,11 @@ public class CombatTag extends JavaPlugin {
     
     public void disableMetrics() {
     	
+    }
+    
+    private static final int projectId = 86389;
+    
+    public void updateProject() {
+    	Updater updater = new Updater(this, CombatTag.projectId, this.getFile(), UpdateType.DEFAULT, true);
     }
 }

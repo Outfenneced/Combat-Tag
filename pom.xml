@@ -16,6 +16,10 @@
 			<url>http://repo.bukkit.org/content/repositories/public/</url>
 		</repository>
 		<repository>
+		  <id>gravity-repo</id>
+		  <url>http://repo.gravitydevelopment.net</url>
+		</repository>
+		<repository>
 			<id>citizens-repo</id>
 			<url>http://repo.citizensnpcs.co/</url>
 		</repository>
@@ -29,6 +33,11 @@
 		</repository>
 	</repositories>
 	<dependencies>
+	  <dependency>
+	    <groupId>net.gravitydevelopment.updater</groupId>
+	    <artifactId>updater</artifactId>
+	    <version>2.3</version>
+	  </dependency>
 		<dependency>
 			<groupId>org.bukkit</groupId>
 			<artifactId>bukkit</artifactId>
@@ -83,6 +92,10 @@
 								<relocation>
 									<pattern>org.mcstats</pattern>
 									<shadedPattern>techcable.minecraft.combattag.libs.org.mcstats</shadedPattern>
+								</relocation>
+								<relocation>
+								  <pattern>net.gravitydevelopment.updater</pattern>
+								  <shadedPattern>techcable.minecraft.libs.net.gravitydevelopment.updater</shadedPattern>
 								</relocation>
 							</relocations>
 						</configuration>

@@ -64,6 +64,8 @@
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<version>1.14.8</version>
+			<!-- Needed at compile time but not runtime -->
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 
@@ -84,10 +86,6 @@
 								<relocation>
 									<pattern>techcable.minecaft.offlineplayers</pattern>
 									<shadedPattern>techcable.minecraft.combattag.libs.techcable.minecraft.offlineplayers</shadedPattern>
-								</relocation>
-								<relocation>
-									<pattern>lombok</pattern>
-									<shadedPattern>techcable.minecraft.combattag.libs.lombok</shadedPattern>
 								</relocation>
 								<relocation>
 									<pattern>org.mcstats</pattern>

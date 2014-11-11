@@ -24,6 +24,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import com.trc202.CombatTag.CombatTag;
 import com.trc202.CombatTagEvents.NpcDespawnReason;
 
+import techcable.minecraft.combattag.PluginCompatibility;
 import techcable.minecraft.combattag.Utils;
 
 public class NoPvpPlayerListener implements Listener {
@@ -66,7 +67,7 @@ public class NoPvpPlayerListener implements Listener {
             plugin.entityListener.onPlayerDeath(quitPlr);
             return;
         }
-        if (plugin.isInCombat(playerUUID)) {
+        if (plugin.isInCombat(playerUUID) && PluginCompatibility.isAuthenticated(quitPlr)) {
             //Player has logged out before the pvp battle is considered over by the plugin
             alertPlayers(quitPlr);
             if (plugin.settings.isInstaKill()) {

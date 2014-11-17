@@ -434,13 +434,37 @@ public class CombatTag extends JavaPlugin {
     		if (metrics == null) {
     			metrics = new Metrics(this);
     		}
+		Graph punishment = metrics.creeateGraph("Punishment used on Combat Tag");
+
+		punishment.addPlotter(new Metrics.PLOTTER("Instakill") {
+
+		    @Override
+		    public int getValue() {
+			if (settings.isInstakill()) {
+			    return 1;
+			} else {
+			    return 0;
+			}
+		    }
+		};
+
+		punishment.addPlotter(new Metrics.PLOTTER("NPC") {
+		   @Override
+		   public int getValue() {
+		       if (!settings.isInstakill()) {
+			    return 1;
+			} else {
+			    return 0;
+			}
+		    }
+		};
     		metrics.start();
     		return true;
     	} catch (IOException ex) {
     		return false;
     	}
     }
-    
+
     public void disableMetrics() {
     	
     }

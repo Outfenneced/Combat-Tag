@@ -30,6 +30,8 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.StringUtil;
 import org.mcstats.Metrics;
+import org.mcstats.Metrics.Graph;
+import org.mcstats.Metrics.Plotter;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
@@ -434,30 +436,30 @@ public class CombatTag extends JavaPlugin {
     		if (metrics == null) {
     			metrics = new Metrics(this);
     		}
-		Graph punishment = metrics.creeateGraph("Punishment used on Combat Tag");
+		Graph punishment = metrics.createGraph("Punishment used on Combat Tag");
 
-		punishment.addPlotter(new Metrics.PLOTTER("Instakill") {
+		punishment.addPlotter(new Plotter("Instakill") {
 
 		    @Override
 		    public int getValue() {
-			if (settings.isInstakill()) {
+			if (settings.isInstaKill()) {
 			    return 1;
 			} else {
 			    return 0;
 			}
 		    }
-		};
+		});
 
-		punishment.addPlotter(new Metrics.PLOTTER("NPC") {
+		punishment.addPlotter(new Plotter("NPC") {
 		   @Override
 		   public int getValue() {
-		       if (!settings.isInstakill()) {
-			    return 1;
-			} else {
-			    return 0;
-			}
+		       if (!settings.isInstaKill()) {
+		    	   return 1;
+		       } else {
+		    	   return 0;
+		       }
 		    }
-		};
+		});
     		metrics.start();
     		return true;
     	} catch (IOException ex) {

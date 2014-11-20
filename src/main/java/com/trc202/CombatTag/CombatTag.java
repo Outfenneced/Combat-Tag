@@ -106,11 +106,13 @@ public class CombatTag extends JavaPlugin {
      */
     @Override
     public void onDisable() {
-        for (NPC npc : npcMaster.getNpcs()) {
-            UUID uuid = npcMaster.getPlayerId(npc);
-            despawnNPC(uuid);
-            if (isDebugEnabled()) {
-                log.info("[CombatTag] Disabling npc with ID of: " + uuid);
+        if (npcMaster != null) {
+        	for (NPC npc : npcMaster.getNpcs()) {
+                UUID uuid = npcMaster.getPlayerId(npc);
+                despawnNPC(uuid);
+                if (isDebugEnabled()) {
+                    log.info("[CombatTag] Disabling npc with ID of: " + uuid);
+                }
             }
         }
         disableMetrics();
@@ -120,9 +122,17 @@ public class CombatTag extends JavaPlugin {
 
     @Override
     public void onEnable() {
-	npcMaster = new NPCMaster(this);
-        tagged = new HashMap<UUID, Long>();
-        settings = new SettingsLoader().loadSettings(settingsHelper, this.getDescription().getVersion());
+    	settings = new SettingsLoader().loadSettings(settingsHelper, this.getDescription().getVersion());
+    	if (!settings.isInstaKill()) {
+    		if (Bukkit.getPluginManager().isPluginEnabled("Citizens")) npcMaster = new NPCMaster(this);
+    		else {
+    			log.severe("[CombatTag] NPCs are enabled but citizens isn't installed");
+    			log.severe("[CombatTag] Please install citizens if you want to use npcs");
+    			setEnabled(false);
+    			return;
+    		}
+    	} 
+    	tagged = new HashMap<UUID, Long>();
         PluginManager pm = getServer().getPluginManager();
         //ctIncompatible.startup(pm);
         if (!initMetrics()) {
@@ -187,6 +197,7 @@ public class CombatTag extends JavaPlugin {
      * @return
      */
     public NPC spawnNpc(Player plr, Location location) {
+    	if (npcMaster == null) return null;
         if (isDebugEnabled()) {
             log.info("[CombatTag] Spawning NPC for " + plr.getName());
         }
@@ -216,6 +227,7 @@ public class CombatTag extends JavaPlugin {
      * @param reason
      */
     public void despawnNPC(UUID playerUUID) {
+    	if (npcMaster == null) return;
         if (isDebugEnabled()) {
             log.info("[CombatTag] Despawning NPC for " + playerUUID);
         }
@@ -283,6 +295,7 @@ public class CombatTag extends JavaPlugin {
                 }
                 return true;
             } else if (args[0].equalsIgnoreCase("wipe")) {
+            	if (npcMaster == null) return false;
                 if (sender.hasPermission("combattag.wipe")) {
                     int numNPC = 0;
                     for (NPC npc : npcMaster.getNpcs()) {
@@ -358,6 +371,7 @@ public class CombatTag extends JavaPlugin {
     }
 
     public void scheduleDelayedKill(final NPC npc, final UUID uuid) {
+    	if (npcMaster == null) return;
         long despawnTicks = settings.getNpcDespawnTime() * 20L;
         final boolean kill = settings.isNpcDieAfterTime();
         final Player plrNpc = (Player) npc.getBukkitEntity();

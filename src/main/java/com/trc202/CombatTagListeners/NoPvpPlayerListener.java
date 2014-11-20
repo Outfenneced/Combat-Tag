@@ -41,7 +41,7 @@ public class NoPvpPlayerListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player loginPlayer = event.getPlayer();
         UUID playerUUID = loginPlayer.getUniqueId();
-        if (plugin.getNpcMaster().getNPC(playerUUID) == null) {
+        if (plugin.getNpcMaster() != null && plugin.getNpcMaster().getNPC(playerUUID) == null) {
             return;
         }
         if (plugin.inTagged(playerUUID)) {
@@ -77,6 +77,10 @@ public class NoPvpPlayerListener implements Listener {
                 quitPlr.damage(1000L);
                 plugin.removeTagged(playerUUID);
             } else {
+            	if (plugin.getNpcMaster() == null) {
+            		CombatTag.log.severe("[CombatTag] unable to spawn npc because npcmaster is null");
+            		return;
+            	}
                 boolean wgCheck = true;
                 if (plugin.settings.dontSpawnInWG()) {
                     //wgCheck = plugin.ctIncompatible.InWGCheck(quitPlr);

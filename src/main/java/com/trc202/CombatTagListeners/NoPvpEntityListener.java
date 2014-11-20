@@ -40,7 +40,7 @@ public class NoPvpEntityListener implements Listener {
         if (e.getEntity() instanceof Player) {
             Player tagged = (Player) e.getEntity();
 
-            if (plugin.getNpcMaster().isNPC(tagged) || disallowedWorld(tagged.getWorld().getName())) {
+            if ((plugin.getNpcMaster() != null && plugin.getNpcMaster().isNPC(tagged)) || disallowedWorld(tagged.getWorld().getName())) {
                 return;
             } //If the damaged player is an npc do nothing
 
@@ -59,7 +59,7 @@ public class NoPvpEntityListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDeath(EntityDeathEvent event) {
-        if (plugin.getNpcMaster().isNPC(event.getEntity())) {
+        if (plugin.getNpcMaster() != null && plugin.getNpcMaster().isNPC(event.getEntity())) {
             onNPCDeath(event.getEntity());
         } else if (event.getEntity() instanceof Player) {
             onPlayerDeath((Player) event.getEntity());
@@ -67,6 +67,7 @@ public class NoPvpEntityListener implements Listener {
     }
 
     public void onNPCDeath(Entity entity) {
+    	if (plugin.getNpcMaster() == null) return;
         NPC npc = plugin.getNpcMaster().getAsNPC(entity);
     	UUID id = plugin.getNpcMaster().getPlayerId(npc);
         plugin.updatePlayerData(npc, id);
@@ -78,7 +79,7 @@ public class NoPvpEntityListener implements Listener {
     }
 
     public void onPlayerDamageByPlayer(Player damager, Player damaged) {
-        if (plugin.getNpcMaster().isNPC(damaged)) {
+        if (plugin.getNpcMaster() != null && plugin.getNpcMaster().isNPC(damaged)) {
             return;
         } //If the damaged player is an npc do nothing
 

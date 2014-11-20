@@ -27,8 +27,10 @@ public class Settings {
     private boolean playerTag;
     private boolean blockCreativeTagging;
     private boolean blockFly;
+    private boolean updateEnabled;
 
     public Settings() {
+	updateEnabled = true;
         instaKill = false;
         tagDuration = 10;
         debugEnabled = false;
@@ -53,6 +55,10 @@ public class Settings {
         blockCreativeTagging = true;
         blockFly = false;
     }
+    
+    public void setUpdateEnabled(boolean updateEnabled) {
+	this.updateEnabled = updateEnabled;
+    }
 
     public void setDebugEnabled(boolean debugEnabled) {
         this.debugEnabled = debugEnabled;
@@ -73,7 +79,11 @@ public class Settings {
     public void setInstaKill(boolean instaKill) {
         this.instaKill = instaKill;
     }
-
+    
+    public boolean isUpdateEnabled() {
+	return updateEnabled;
+    }
+    
     public boolean isInstaKill() {
         return instaKill;
     }

@@ -488,6 +488,8 @@ public class CombatTag extends JavaPlugin {
     private static final int projectId = 86389;
     
     public void updateProject() {
-    	Updater updater = new Updater(this, CombatTag.projectId, this.getFile(), UpdateType.DEFAULT, true);
+    	if (settings.isUpdateEnabled()) {
+	    Updater updater = new Updater(this, CombatTag.projectId, this.getFile(), UpdateType.DEFAULT, true);
+	}
     }
 }

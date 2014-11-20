@@ -27,6 +27,7 @@ public class SettingsLoader {
     private static final String playerTag = "playerTag";
     private static final String blockCreativeTagging = "blockCreativeTagging";
     private static final String blockFlying = "blockFlying";
+    private static final String updateEnabled = "updateEnabled";
 
     public Settings loadSettings(SettingsHelper helper, String version) {
         settings = new Settings();
@@ -44,6 +45,9 @@ public class SettingsLoader {
         if (helper.getProperty(debug) == null) {
             helper.setProperty(debug, Boolean.toString(temp.isDebugEnabled()));
         }
+	if (helper.getProperty(updateEnabled) == null) {
+	    helper.setProperty(updateEnabled, Boolean.toString(temp.isUpdateEnabled()));
+	}
         if (helper.getProperty(tagDuration) == null) {
             helper.setProperty(tagDuration, String.valueOf(temp.getTagDuration()));
         }
@@ -146,7 +150,8 @@ public class SettingsLoader {
                 && (helper.getProperty(mobTag) != null)
                 && (helper.getProperty(playerTag) != null)
                 && (helper.getProperty(blockCreativeTagging) != null)
-                && (helper.getProperty(blockFlying) != null);
+                && (helper.getProperty(blockFlying) != null)
+	        && (helper.getProperty(updateEnabled) != null);
     }
 
     private void loadProperties(SettingsHelper helper) {
@@ -158,7 +163,8 @@ public class SettingsLoader {
         settings.setSendMessageWhenTagged(Boolean.valueOf(helper.getProperty(sendMessageWhenTagged)));
         settings.setNpcName(String.valueOf(helper.getProperty(npcName)));
         settings.setNpcDieAfterTime(Boolean.valueOf(helper.getProperty(npcDieAfterTime)));
-        String disabledCommandsString = helper.getProperty(disabledCommands).replace("[", "");
+        settings.setUpdateEnabled(Boolean.valueOf(helper.getProperty(updateEnabled)));
+	String disabledCommandsString = helper.getProperty(disabledCommands).replace("[", "");
         disabledCommandsString = disabledCommandsString.replace("]", "");
         String disabledCmds[] = disabledCommandsString.split(",");
         if (disabledCmds.length == 1 && disabledCmds[0].equals("")) {

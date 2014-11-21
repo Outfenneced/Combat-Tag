@@ -79,7 +79,7 @@ public class CombatTag extends JavaPlugin {
     @Getter
     private NPCMaster npcMaster;
     @Getter
-    private PlayerListener playerListener = new PlayerListner(this);
+    private PlayerListener playerListener = new PlayerListener();
     public CombatTag() {
         settings = new Settings();
         new File(mainDirectory).mkdirs();

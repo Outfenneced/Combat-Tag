@@ -1,14 +1,18 @@
 package techcable.minecraft.combattag.listeners;
 
 import org.bukkit.Bukkit;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 
+import com.trc202.CombatTag.CombatTag;
+
 import techcable.minecraft.combattag.PluginCompatibility;
+import techcable.minecraft.combattag.Utils;
 
 public class PlayerListener implements Listener {
     private CombatTag plugin;
-    public class PlayerListener() {
+    public PlayerListener() {
         this.plugin = Utils.getPlugin();
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }

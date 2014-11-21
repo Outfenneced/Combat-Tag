@@ -5,6 +5,7 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -22,7 +23,7 @@ public class PluginCompatibility {
 		return API.isAuthenticated(player);
 	}
     
-    public boolean isPvpDisabled(Location location) {
+    public static boolean isPvpDisabled(Location location) {
 	return !isWGPvPEnabled(location) || isSafezone(location);
     }
         public static boolean isWGPvPEnabled(Location location) {
@@ -33,7 +34,7 @@ public class PluginCompatibility {
     
     public static boolean isSafezone(Location location) {
 	//TODO Factions Integration
-	return false
+	return false;
     }
     
     public static boolean hasWG() {
@@ -42,7 +43,7 @@ public class PluginCompatibility {
 	} catch (ClassNotFoundException ex) {
 	    return false;
 	}
-	Plugin plugin = getServer().getPluginManager().getPlugin("WorldGuard");
+	Plugin plugin = Bukkit.getPluginManager().getPlugin("WorldGuard");
 	if (plugin != null && plugin instanceof WorldGuardPlugin) return true;
 	else return false;
     }

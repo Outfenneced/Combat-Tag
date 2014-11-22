@@ -47,6 +47,7 @@ import com.trc202.settings.SettingsLoader;
 
 import techcable.minecraft.combattag.NPCMaster;
 import techcable.minecraft.combattag.Utils;
+import techcable.minecraft.combattag.listeners.PlayerListener;
 import techcable.minecraft.offlineplayers.AdvancedOfflinePlayer;
 import techcable.minecraft.offlineplayers.NBTAdvancedOfflinePlayer;
 import techcable.minecraft.offlineplayers.NBTAdvancedOfflinePlayer.PlayerNotFoundException;
@@ -72,10 +73,13 @@ public class CombatTag extends JavaPlugin {
     private final CombatTagCommandPrevention commandPreventer = new CombatTagCommandPrevention(this);
 
     private int npcNumber;
-    
+
+    //Techcable Variables
+
     @Getter
     private NPCMaster npcMaster;
-    
+    @Getter
+    private PlayerListener playerListener = new PlayerListener();
     public CombatTag() {
         settings = new Settings();
         new File(mainDirectory).mkdirs();
@@ -107,7 +111,7 @@ public class CombatTag extends JavaPlugin {
     @Override
     public void onDisable() {
         if (npcMaster != null) {
-        	for (NPC npc : npcMaster.getNpcs()) {
+            for (NPC npc : npcMaster.getNpcs()) {
                 UUID uuid = npcMaster.getPlayerId(npc);
                 despawnNPC(uuid);
                 if (isDebugEnabled()) {
@@ -122,24 +126,24 @@ public class CombatTag extends JavaPlugin {
 
     @Override
     public void onEnable() {
-    	settings = new SettingsLoader().loadSettings(settingsHelper, this.getDescription().getVersion());
-    	if (!settings.isInstaKill()) {
-    		if (Bukkit.getPluginManager().isPluginEnabled("Citizens")) npcMaster = new NPCMaster(this);
-    		else {
-    			log.severe("[CombatTag] NPCs are enabled but citizens isn't installed");
-    			log.severe("[CombatTag] Please install citizens if you want to use npcs");
-    			setEnabled(false);
-    			return;
-    		}
-    	} 
-    	tagged = new HashMap<UUID, Long>();
+        settings = new SettingsLoader().loadSettings(settingsHelper, this.getDescription().getVersion());
+        if (!settings.isInstaKill()) {
+            if (Bukkit.getPluginManager().isPluginEnabled("Citizens")) npcMaster = new NPCMaster(this);
+            else {
+                log.severe("[CombatTag] NPCs are enabled but citizens isn't installed");
+                log.severe("[CombatTag] Please install citizens if you want to use npcs");
+                setEnabled(false);
+                return;
+            }
+        }
+        tagged = new HashMap<UUID, Long>();
         PluginManager pm = getServer().getPluginManager();
         //ctIncompatible.startup(pm);
         if (!initMetrics()) {
-        	log.warning("Unable to initialize metrics");
+            log.warning("Unable to initialize metrics");
         } else {
-	    if (isDebugEnabled()) log.info("Enabled Metrics");
-	}
+            if (isDebugEnabled()) log.info("Enabled Metrics");
+        }
         pm.registerEvents(plrListener, this);
         pm.registerEvents(entityListener, this);
         pm.registerEvents(commandPreventer, this);
@@ -197,7 +201,7 @@ public class CombatTag extends JavaPlugin {
      * @return
      */
     public NPC spawnNpc(Player plr, Location location) {
-    	if (npcMaster == null) return null;
+        if (npcMaster == null) return null;
         if (isDebugEnabled()) {
             log.info("[CombatTag] Spawning NPC for " + plr.getName());
         }
@@ -227,7 +231,7 @@ public class CombatTag extends JavaPlugin {
      * @param reason
      */
     public void despawnNPC(UUID playerUUID) {
-    	if (npcMaster == null) return;
+        if (npcMaster == null) return;
         if (isDebugEnabled()) {
             log.info("[CombatTag] Despawning NPC for " + playerUUID);
         }
@@ -295,7 +299,7 @@ public class CombatTag extends JavaPlugin {
                 }
                 return true;
             } else if (args[0].equalsIgnoreCase("wipe")) {
-            	if (npcMaster == null) return false;
+                if (npcMaster == null) return false;
                 if (sender.hasPermission("combattag.wipe")) {
                     int numNPC = 0;
                     for (NPC npc : npcMaster.getNpcs()) {
@@ -371,7 +375,7 @@ public class CombatTag extends JavaPlugin {
     }
 
     public void scheduleDelayedKill(final NPC npc, final UUID uuid) {
-    	if (npcMaster == null) return;
+        if (npcMaster == null) return;
         long despawnTicks = settings.getNpcDespawnTime() * 20L;
         final boolean kill = settings.isNpcDieAfterTime();
         final Player plrNpc = (Player) npc.getBukkitEntity();
@@ -409,25 +413,25 @@ public class CombatTag extends JavaPlugin {
      * @param playerUUID
      */
     public void updatePlayerData(NPC npc, UUID playerUUID) {
-    	AdvancedOfflinePlayer target;
-    	Player source = (Player) npc.getEntity();
-    	if (Bukkit.getPlayer(playerUUID) == null) {
-    		try {
-    			target = new NBTAdvancedOfflinePlayer(Bukkit.getOfflinePlayer(playerUUID));
-    		} catch (PlayerNotFoundException ex) {
-    			throw Throwables.propagate(ex);
-    		}
-    		target.load();
-    	} else {
-    		target = new OnlineAdvancedOfflinePlayer(Bukkit.getPlayer(playerUUID));
-    	}
-    	if (source.getHealth() <= 0) {
-    		Utils.emptyInventory(target);
-    		target.setHealth(0);
-    	} else {
-    		Utils.copyPlayer(target, source);
-    	}
-    	target.save();
+        AdvancedOfflinePlayer target;
+        Player source = (Player) npc.getEntity();
+        if (Bukkit.getPlayer(playerUUID) == null) {
+            try {
+                target = new NBTAdvancedOfflinePlayer(Bukkit.getOfflinePlayer(playerUUID));
+            } catch (PlayerNotFoundException ex) {
+                throw Throwables.propagate(ex);
+            }
+            target.load();
+        } else {
+            target = new OnlineAdvancedOfflinePlayer(Bukkit.getPlayer(playerUUID));
+        }
+        if (source.getHealth() <= 0) {
+            Utils.emptyInventory(target);
+            target.setHealth(0);
+        } else {
+            Utils.copyPlayer(target, source);
+        }
+        target.save();
     }
 
     public double healthCheck(double health) {
@@ -443,53 +447,53 @@ public class CombatTag extends JavaPlugin {
     public SettingsHelper getSettingsHelper() {
         return this.settingsHelper;
     }
-    
+
     private Metrics metrics;
     public boolean initMetrics() {
-    	try {
-    		if (metrics == null) {
-    			metrics = new Metrics(this);
-    		}
-		Graph punishment = metrics.createGraph("Punishment used on Combat Tag");
+        try {
+            if (metrics == null) {
+                metrics = new Metrics(this);
+            }
+            Graph punishment = metrics.createGraph("Punishment used on Combat Tag");
 
-		punishment.addPlotter(new Plotter("Instakill") {
+            punishment.addPlotter(new Plotter("Instakill") {
 
-		    @Override
-		    public int getValue() {
-			if (settings.isInstaKill()) {
-			    return 1;
-			} else {
-			    return 0;
-			}
-		    }
-		});
+                @Override
+                public int getValue() {
+                    if (settings.isInstaKill()) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                }
+            });
 
-		punishment.addPlotter(new Plotter("NPC") {
-		   @Override
-		   public int getValue() {
-		       if (!settings.isInstaKill()) {
-		    	   return 1;
-		       } else {
-		    	   return 0;
-		       }
-		    }
-		});
-    		metrics.start();
-    		return true;
-    	} catch (IOException ex) {
-    		return false;
-    	}
+            punishment.addPlotter(new Plotter("NPC") {
+                @Override
+                public int getValue() {
+                    if (!settings.isInstaKill()) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                }
+            });
+            metrics.start();
+            return true;
+        } catch (IOException ex) {
+            return false;
+        }
     }
 
     public void disableMetrics() {
-    	
+
     }
-    
+
     private static final int projectId = 86389;
-    
+
     public void updateProject() {
-    	if (settings.isUpdateEnabled()) {
-	    Updater updater = new Updater(this, CombatTag.projectId, this.getFile(), UpdateType.DEFAULT, true);
-	}
+        if (settings.isUpdateEnabled()) {
+            Updater updater = new Updater(this, CombatTag.projectId, this.getFile(), UpdateType.DEFAULT, true);
+        }
     }
 }

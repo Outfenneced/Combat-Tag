@@ -28,7 +28,7 @@ public class SettingsLoader {
     private static final String blockCreativeTagging = "blockCreativeTagging";
     private static final String blockFlying = "blockFlying";
     private static final String updateEnabled = "updateEnabled";
-
+    private static final String stopCombatSafezoning = "stopCombatSafezoning";
     public Settings loadSettings(SettingsHelper helper, String version) {
         settings = new Settings();
         helper.loadConfig();
@@ -42,6 +42,9 @@ public class SettingsLoader {
 
     private void addOtherSettingsIfNecessary(SettingsHelper helper, String version) {
         Settings temp = new Settings();
+	if (helper.getProperty(stopCombatSafezoning) == null) {
+	    helper.setProperty(stopCombatSafezoning, Boolean.toString(temp.isStopCombatSafezoning()));
+	} 
         if (helper.getProperty(debug) == null) {
             helper.setProperty(debug, Boolean.toString(temp.isDebugEnabled()));
         }
@@ -151,11 +154,13 @@ public class SettingsLoader {
                 && (helper.getProperty(playerTag) != null)
                 && (helper.getProperty(blockCreativeTagging) != null)
                 && (helper.getProperty(blockFlying) != null)
-	        && (helper.getProperty(updateEnabled) != null);
+	        && (helper.getProperty(updateEnabled) != null)
+ 	        && (helper.getProperty(stopCombatSafezoning) != null);
     }
 
     private void loadProperties(SettingsHelper helper) {
-        settings.setDebugEnabled(Boolean.valueOf(helper.getProperty(debug)));
+        settings.setStopCombatSafezoning(Boolean.valueOf(helper.getProperty(stopCombatSafezoning)));
+	settings.setDebugEnabled(Boolean.valueOf(helper.getProperty(debug)));
         settings.setTagDuration(Integer.valueOf(helper.getProperty(tagDuration)));
         settings.setNpcDespawnTime(Integer.valueOf(helper.getProperty(npcDespawnTime)));
         settings.setBlockEditWhileTagged(Boolean.valueOf(helper.getProperty(blockEditWhileTagged)));

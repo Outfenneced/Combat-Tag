@@ -12,3 +12,6 @@ nbproject/project.xml
 /nbproject/
 /target/
 /bin/
+
+#Stupid Astyle orig
+*.orig

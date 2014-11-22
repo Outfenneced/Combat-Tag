@@ -2,8 +2,12 @@ package com.trc202.settings;
 
 import org.bukkit.ChatColor;
 
-public class Settings {
+import lombok.*;
 
+public class Settings {
+    @Getter
+    @Setter
+    private boolean stopCombatSafezoning;
     private int tagDuration;
     private boolean debugEnabled;
     private boolean instaKill;
@@ -30,6 +34,7 @@ public class Settings {
     private boolean updateEnabled;
 
     public Settings() {
+	stopCombatSafezoning = true;
 	updateEnabled = true;
         instaKill = false;
         tagDuration = 10;

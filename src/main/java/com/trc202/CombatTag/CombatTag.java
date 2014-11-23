@@ -79,7 +79,7 @@ public class CombatTag extends JavaPlugin {
     @Getter
     private NPCMaster npcMaster;
     @Getter
-    private PlayerListener playerListener = new PlayerListener();
+    private PlayerListener playerListener = new PlayerListener(this);
     public CombatTag() {
         settings = new Settings();
         new File(mainDirectory).mkdirs();
@@ -148,6 +148,7 @@ public class CombatTag extends JavaPlugin {
         pm.registerEvents(entityListener, this);
         pm.registerEvents(commandPreventer, this);
         pm.registerEvents(blockListener, this);
+        pm.registerEvents(playerListener, this);
 
         log.info("[" + getDescription().getName() + "]" + " has loaded with a tag time of " + settings.getTagDuration() + " seconds");
     }

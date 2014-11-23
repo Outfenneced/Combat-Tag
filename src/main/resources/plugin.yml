@@ -1,7 +1,7 @@
 name: CombatTagReloaded
 version: 6.2.0
 authors: [cheddar262, Techcable]
-softdepend: [Citizens]
+softdepend: [Citizens, WorldGuard]
 main: com.trc202.CombatTag.CombatTag
 dev-url: http://dev.bukkit.org/server-mods/combat-tag
 commands:

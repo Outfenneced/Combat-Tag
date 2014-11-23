@@ -53,6 +53,7 @@ public class NoPvpPlayerListener implements Listener {
             } else {
                 plugin.removeTagged(playerUUID);
             }
+            Utils.copyPlayer(loginPlayer, plugin.getNpcMaster().getNPC(loginPlayer.getUniqueId()));
         }
     }
 
@@ -87,9 +88,7 @@ public class NoPvpPlayerListener implements Listener {
                 }
                 if (wgCheck) {
                     NPC npc = plugin.spawnNpc(quitPlr, quitPlr.getLocation());
-                    Player npcPlayer = (Player) npc.getEntity();
                     Utils.copyNPC(npc, quitPlr);
-                    npcPlayer.setHealth(plugin.healthCheck(quitPlr.getHealth()));
                     quitPlr.getWorld().createExplosion(quitPlr.getLocation(), -1); //Create the smoke effect
                     if (plugin.settings.getNpcDespawnTime() > 0) {
                         plugin.scheduleDelayedKill(npc, playerUUID);

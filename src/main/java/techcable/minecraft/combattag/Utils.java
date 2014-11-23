@@ -29,6 +29,10 @@ public class Utils {
         target.setFireTicks(source.getFireTicks());
         target.setHealth(source.getHealth());
     }
+    
+    public static void copyPlayer(Player target, NPC source) {
+    	copyPlayer(target, (Player)source.getEntity());
+    }
 
     public static void copyPlayer(AdvancedOfflinePlayer target, Player source) {
         target.setItems(source.getInventory().getContents());

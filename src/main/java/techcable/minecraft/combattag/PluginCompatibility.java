@@ -24,10 +24,10 @@ public class PluginCompatibility {
 	}
     
     public static boolean isPvpDisabled(Location location) {
-	return !isWGPvPEnabled(location) || isSafezone(location);
+    	return !isWGPvPEnabled(location) || isSafezone(location);
     }
         public static boolean isWGPvPEnabled(Location location) {
-	    if (!hasWG()) return false;
+	    if (!hasWG()) return true;
 	    ApplicableRegionSet set = WGBukkit.getRegionManager(location.getWorld()).getApplicableRegions(location);
 	    return set.allows(DefaultFlag.PVP);
 	}

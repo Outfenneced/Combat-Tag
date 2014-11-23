@@ -36,6 +36,7 @@ public class NPCMaster {
 	
 	public NPC createNPC(UUID player) {
 		NPC npc = registry.createNPC(EntityType.PLAYER, Bukkit.getOfflinePlayer(player).getName());
+		npc.setProtected(false);
 		playerToNpc.put(player, npc.getUniqueId());
 		return npc;
 	}

@@ -46,14 +46,14 @@ public class NoPvpPlayerListener implements Listener {
         }
         if (plugin.inTagged(playerUUID)) {
             //Player has an NPC and is likely to need some sort of punishment
-            loginPlayer.setNoDamageTicks(0);
+        	Utils.copyPlayer(loginPlayer, plugin.getNpcMaster().getNPC(loginPlayer.getUniqueId()));
+        	loginPlayer.setNoDamageTicks(0);
             plugin.despawnNPC(playerUUID);
             if (loginPlayer.getHealth() > 0) {
                 plugin.addTagged(loginPlayer);
             } else {
                 plugin.removeTagged(playerUUID);
             }
-            Utils.copyPlayer(loginPlayer, plugin.getNpcMaster().getNPC(loginPlayer.getUniqueId()));
         }
     }
 

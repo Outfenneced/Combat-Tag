@@ -71,5 +71,6 @@ public class NPCMaster {
 	public void despawn(NPC npc) {
 		playerToNpc.inverse().remove(npc.getUniqueId());
 		npc.despawn();
+		npc.destroy();
 	}
 }

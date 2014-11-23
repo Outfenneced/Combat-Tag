@@ -12,9 +12,8 @@ import techcable.minecraft.combattag.Utils;
 
 public class PlayerListener implements Listener {
     private CombatTag plugin;
-    public PlayerListener() {
-        this.plugin = Utils.getPlugin();
-        Bukkit.getPluginManager().registerEvents(this, plugin);
+    public PlayerListener(CombatTag plugin) {
+        this.plugin = plugin;
     }
 
     @EventHandler

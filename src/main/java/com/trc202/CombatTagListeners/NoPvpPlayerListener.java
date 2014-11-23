@@ -131,7 +131,7 @@ public class NoPvpPlayerListener implements Listener {
         if (event.isCancelled()) {
             return;
         }
-        //if (plugin.settings.blockTeleport() && plugin.isInCombat(event.getPlayer().getUniqueId()) && plugin.ctIncompatible.notInArena(event.getPlayer())) {
+        if (plugin.isInCombat(event.getPlayer().getUniqueId())) {
             TeleportCause cause = event.getCause();
             if ((cause == TeleportCause.PLUGIN || cause == TeleportCause.COMMAND)) {
                 if (event.getPlayer().getWorld() != event.getTo().getWorld()) {
@@ -142,7 +142,7 @@ public class NoPvpPlayerListener implements Listener {
                     event.setCancelled(true);
                 }
             }
-        //}
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

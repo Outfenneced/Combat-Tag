@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>techcable.minecraft</groupId>
 	<artifactId>CombatTag</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.8</version>
 	<name>Spigot-1.8 Combat Tag</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

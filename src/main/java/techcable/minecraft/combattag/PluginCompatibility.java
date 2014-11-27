@@ -5,6 +5,8 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 
+import techcable.minecraft.factionsapi.FactionsAPI;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -33,8 +35,8 @@ public class PluginCompatibility {
 	}
     
     public static boolean isSafezone(Location location) {
-	//TODO Factions Integration
-	return false;
+    	if (!hasFactions()) return false;
+    	return FactionsAPI.getInstance().getOwningFaction(location).isSafezone();
     }
     
     public static boolean hasWG() {
@@ -47,7 +49,11 @@ public class PluginCompatibility {
 	if (plugin != null && plugin instanceof WorldGuardPlugin) return true;
 	else return false;
     }
-	
+    
+    public static boolean hasFactions() {
+    	return FactionsAPI.isFactionsInstalled();
+    }
+    
 	public static boolean hasAuthme() {
 		try {
 			Class.forName("fr.xephi.authme.AuthMe");

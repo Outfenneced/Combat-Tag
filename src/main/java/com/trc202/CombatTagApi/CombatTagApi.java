@@ -26,6 +26,7 @@ public class CombatTagApi {
      * @param player
      * @return true if player is in combat
      */
+    @Deprecated
     public boolean isInCombat(Player player) {
         return plugin.isInCombat(player.getUniqueId());
     }
@@ -39,6 +40,7 @@ public class CombatTagApi {
      * @return true if player is online and in combat
      */
     @SuppressWarnings("deprecation")
+    @Deprecated
     public boolean isInCombat(String name) {
         Player player = Bukkit.getPlayerExact(name);
         if (player != null) {
@@ -54,6 +56,8 @@ public class CombatTagApi {
      * @param player
      * @return
      */
+    
+    @Deprecated
     public long getRemainingTagTime(Player player) {
         if (plugin.isInCombat(player.getUniqueId())) {
             return plugin.getRemainingTagTime(player.getUniqueId());
@@ -70,6 +74,7 @@ public class CombatTagApi {
      * @return
      */
     @SuppressWarnings("deprecation")
+    @Deprecated
     public long getRemainingTagTime(String name) {
         if (Bukkit.getPlayerExact(name) != null) {
             Player player = Bukkit.getPlayerExact(name);
@@ -88,6 +93,7 @@ public class CombatTagApi {
      * @param entity
      * @return true if the player is an NPC
      */
+    @Deprecated
     public boolean isNPC(Entity entity) {
     	if (plugin.getNpcMaster() == null) return false;
         return plugin.getNpcMaster().isNPC(entity);
@@ -99,6 +105,7 @@ public class CombatTagApi {
      * @param player
      * @return true if the action is successful, false if not
      */
+    @Deprecated
     public boolean tagPlayer(Player player) {
         return plugin.addTagged(player);
     }
@@ -108,6 +115,7 @@ public class CombatTagApi {
      *
      * @param player
      */
+    @Deprecated
     public void untagPlayer(Player player) {
         plugin.removeTagged(player.getUniqueId());
     }
@@ -118,6 +126,7 @@ public class CombatTagApi {
      * @param configKey
      * @return String value of option
      */
+    @Deprecated
     public String getConfigOption(String configKey) {
         return plugin.getSettingsHelper().getProperty(configKey);
     }

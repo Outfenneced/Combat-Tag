@@ -9,8 +9,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-import net.citizensnpcs.api.event.DespawnReason;
-import net.citizensnpcs.api.npc.NPC;
 import net.gravitydevelopment.updater.Updater;
 import net.gravitydevelopment.updater.Updater.UpdateType;
 
@@ -35,8 +33,6 @@ import org.mcstats.Metrics.Plotter;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
-import com.trc202.CombatTagEvents.NpcDespawnEvent;
-import com.trc202.CombatTagEvents.NpcDespawnReason;
 import com.trc202.CombatTagListeners.CombatTagCommandPrevention;
 import com.trc202.CombatTagListeners.NoPvpBlockListener;
 import com.trc202.CombatTagListeners.NoPvpEntityListener;
@@ -48,8 +44,10 @@ import com.trc202.settings.SettingsLoader;
 import techcable.minecraft.combattag.NPCMaster;
 import techcable.minecraft.combattag.Utils;
 import techcable.minecraft.combattag.listeners.PlayerListener;
+import techcable.minecraft.npclib.NPC;
 import techcable.minecraft.offlineplayers.AdvancedOfflinePlayer;
 import techcable.minecraft.offlineplayers.NBTAdvancedOfflinePlayer;
+import techcable.minecraft.offlineplayers.OfflinePlayers;
 import techcable.minecraft.offlineplayers.NBTAdvancedOfflinePlayer.PlayerNotFoundException;
 import techcable.minecraft.offlineplayers.wrapper.OnlineAdvancedOfflinePlayer;
 
@@ -136,6 +134,7 @@ public class CombatTag extends JavaPlugin {
                 return;
             }
         }
+        OfflinePlayers.setDebug(settings.isDebugEnabled());
         tagged = new HashMap<UUID, Long>();
         PluginManager pm = getServer().getPluginManager();
         //ctIncompatible.startup(pm);
@@ -379,7 +378,7 @@ public class CombatTag extends JavaPlugin {
         if (npcMaster == null) return;
         long despawnTicks = settings.getNpcDespawnTime() * 20L;
         final boolean kill = settings.isNpcDieAfterTime();
-        final Player plrNpc = (Player) npc.getBukkitEntity();
+        final Player plrNpc = (Player) npc.getEntity();
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
             @Override
             public void run() {

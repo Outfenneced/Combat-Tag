@@ -20,10 +20,6 @@
 		  <url>http://repo.gravitydevelopment.net</url>
 		</repository>
 		<repository>
-			<id>citizens-repo</id>
-			<url>http://repo.citizensnpcs.co/</url>
-		</repository>
-		<repository>
 			<id>techcable-repo</id>
 			<url>https://raw.githubusercontent.com/Techcable/Maven-Repo/master/</url>
 		</repository>
@@ -60,15 +56,15 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>net.citizensnpcs</groupId>
-			<artifactId>citizensapi</artifactId>
-			<version>2.0.13-SNAPSHOT</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
 		    <groupId>org.mcstats.bukkit</groupId>
 		    <artifactId>metrics</artifactId>
 		    <version>R7</version>
+		</dependency>
+		<dependency>
+			<groupId>techcable.minecraft</groupId>
+			<artifactId>npclib-base</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>techcable.minecraft</groupId>
@@ -123,6 +119,10 @@
 								<relocation>
 								  <pattern>net.gravitydevelopment.updater</pattern>
 								  <shadedPattern>techcable.minecraft.libs.net.gravitydevelopment.updater</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>techcable.minecraft.npclib</pattern>
+									<shadedPattern>techcable.minecraft.combattag.libs.techcable.minecraft.npclib</shadedPattern>
 								</relocation>
 							</relocations>
 						</configuration>

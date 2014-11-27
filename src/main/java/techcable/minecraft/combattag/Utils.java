@@ -1,7 +1,5 @@
 package techcable.minecraft.combattag;
 
-import net.citizensnpcs.api.npc.NPC;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -10,6 +8,7 @@ import org.bukkit.plugin.Plugin;
 
 import com.trc202.CombatTag.CombatTag;
 
+import techcable.minecraft.npclib.NPC;
 import techcable.minecraft.offlineplayers.AdvancedOfflinePlayer;
 
 import lombok.*;

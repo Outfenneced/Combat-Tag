@@ -6,6 +6,10 @@ import org.bukkit.entity.Player;
 
 import com.trc202.CombatTag.CombatTag;
 
+/**
+ * @deprecated see techcable.minecraft.combattag CombatTagAPI
+ */
+@Deprecated
 public class CombatTagApi {
 
     private final CombatTag plugin;

@@ -1,14 +1,11 @@
 package techcable.minecraft.combattag;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import net.citizensnpcs.api.CitizensAPI;
-import net.citizensnpcs.api.npc.NPC;
-import net.citizensnpcs.api.npc.NPCRegistry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
@@ -19,25 +16,27 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
+import techcable.minecraft.npclib.NPC;
+import techcable.minecraft.npclib.NPCLib;
+import techcable.minecraft.npclib.NPCRegistry;
+
 import lombok.*;
 
 @Getter
 public class NPCMaster {
 	private final JavaPlugin plugin;
 	
-	private NPCRegistry registry;
+	public NPCRegistry getRegistry() {
+		return NPCLib.getNPCRegistry("CombatTagReloaded");
+	}
 	
-	private BiMap<UUID, UUID> playerToNpc = HashBiMap.create();
-	private int lastId;
 	public NPCMaster(JavaPlugin plugin) {
 		this.plugin = plugin;
-		registry = CitizensAPI.getNPCRegistry();
 	}
 	
 	public NPC createNPC(UUID player) {
-		NPC npc = registry.createNPC(EntityType.PLAYER, Bukkit.getOfflinePlayer(player).getName());
+		NPC npc = getRegistry().createNPC(EntityType.PLAYER, player, Bukkit.getOfflinePlayer(player).getName());
 		npc.setProtected(false);
-		playerToNpc.put(player, npc.getUniqueId());
 		return npc;
 	}
 	
@@ -46,32 +45,26 @@ public class NPCMaster {
 	}
 	
 	public NPC getNPC(UUID player) {
-		return registry.getByUniqueId(playerToNpc.get(player));
+		return getRegistry().getByUUID(player);
 	}
 	
 	public NPC getAsNPC(Entity entity) {
-		return registry.getNPC(entity);
+		return getRegistry().getAsNPC(entity);
 	}
 	
 	public boolean isNPC(Entity entity) {
-		return registry.isNPC(entity) && playerToNpc.containsKey(getAsNPC(entity).getUniqueId());
+		return getRegistry().isNPC(entity);
 	}
 
-	public List<NPC> getNpcs() {
-		List<NPC> npcs = new ArrayList<>();
-		for (UUID realId : playerToNpc.values()) {
-			npcs.add(registry.getByUniqueId(realId));
-		}
-		return npcs;
+	public Collection<? extends NPC> getNpcs() {
+		return getRegistry().listNpcs();
 	}
 	
 	public UUID getPlayerId(NPC npc) {
-		return playerToNpc.inverse().get(npc.getUniqueId());
+		return npc.getUUID();
 	}
 	
 	public void despawn(NPC npc) {
-		playerToNpc.inverse().remove(npc.getUniqueId());
-		npc.despawn();
-		npc.destroy();
+		getRegistry().deregister(npc);
 	}
 }

@@ -2,8 +2,6 @@ package com.trc202.CombatTagListeners;
 
 import java.util.UUID;
 
-import net.citizensnpcs.api.npc.NPC;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -22,10 +20,10 @@ import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import com.trc202.CombatTag.CombatTag;
-import com.trc202.CombatTagEvents.NpcDespawnReason;
 
 import techcable.minecraft.combattag.PluginCompatibility;
 import techcable.minecraft.combattag.Utils;
+import techcable.minecraft.npclib.NPC;
 
 public class NoPvpPlayerListener implements Listener {
 

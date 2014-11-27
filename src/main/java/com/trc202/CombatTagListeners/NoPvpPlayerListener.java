@@ -86,7 +86,7 @@ public class NoPvpPlayerListener implements Listener {
                 }
                 if (wgCheck) {
                     NPC npc = plugin.spawnNpc(quitPlr, quitPlr.getLocation());
-                    Utils.copyNPC(npc, quitPlr);
+                    Utils.copyPlayer(quitPlr, npc);
                     quitPlr.getWorld().createExplosion(quitPlr.getLocation(), -1); //Create the smoke effect
                     if (plugin.settings.getNpcDespawnTime() > 0) {
                         plugin.scheduleDelayedKill(npc, playerUUID);

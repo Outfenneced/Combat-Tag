@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.util.Vector;
 
 import com.trc202.CombatTag.CombatTag;
 
@@ -22,8 +23,14 @@ public class PlayerListener implements Listener {
         if (event.getPlayer().hasPermission("combattag.safezone.ignore"));
         if (!plugin.inTagged(event.getPlayer().getUniqueId())) return;
         if (PluginCompatibility.isPvpDisabled(event.getTo())) {
-            event.setCancelled(true);
+            event.getPlayer().setVelocity(reverse(event.getPlayer().getVelocity()));
             event.getPlayer().sendMessage("[CombatTag] You can't enter a safezone while combat tagged");
         }
+    }
+
+    public static Vector reverse(Vector vector) {
+	Vector reverse = vector.multiply(-1);
+	reverse.setY(0); //Don't fly
+	return reverse;
     }
 }

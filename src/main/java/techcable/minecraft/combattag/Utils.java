@@ -17,7 +17,7 @@ import lombok.*;
 public class Utils {
     public static void copyPlayer(Player target, Player source) {
         target.getInventory().setContents(source.getInventory().getContents());
-        target.getInventory().setArmorContents(source.getInventory().getArmorContents());
+        target.getEquipment().setArmorContents(source.getEquipment().getArmorContents());
         target.setExp(source.getExp());
         target.setLevel(source.getLevel());
         target.setFoodLevel(source.getFoodLevel());

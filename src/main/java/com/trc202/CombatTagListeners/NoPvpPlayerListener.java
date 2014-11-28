@@ -39,9 +39,9 @@ public class NoPvpPlayerListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player loginPlayer = event.getPlayer();
         UUID playerUUID = loginPlayer.getUniqueId();
-        if (plugin.getNpcMaster() != null && plugin.getNpcMaster().getNPC(playerUUID) == null) {
+        if (plugin.getNpcMaster() != null && plugin.getNpcMaster().getNPC(loginPlayer.getUniqueId()) != null) {
             return;
-        }
+        } 
         if (plugin.inTagged(playerUUID)) {
             //Player has an NPC and is likely to need some sort of punishment
         	Utils.copyPlayer(loginPlayer, plugin.getNpcMaster().getNPC(loginPlayer.getUniqueId()));

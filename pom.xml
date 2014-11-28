@@ -2,13 +2,10 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>techcable.minecraft</groupId>
 	<artifactId>CombatTag</artifactId>
-	<version>1.0.8</version>
-	<name>Spigot-1.8 Combat Tag</name>
+	<version>1.0.9-SNAPSHOT</version>
+	<name>Combat Tag Reloaded</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<minecraft.version>1.7.10</minecraft.version>
-		<bukkit.version>1.7.9-R0.2</bukkit.version>
-		<mapping.mcp2cb>src/resources/mappings/mcp2cb.srg</mapping.mcp2cb>
 	</properties>
 	<repositories>
 		<repository>
@@ -52,7 +49,7 @@
 		<dependency>
 			<groupId>org.bukkit</groupId>
 			<artifactId>bukkit</artifactId>
-			<version>1.7.9-R0.2</version>
+			<version>1.8-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

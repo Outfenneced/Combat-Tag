@@ -27,6 +27,7 @@ public class Utils {
         target.setSaturation(source.getSaturation());
         target.setFireTicks(source.getFireTicks());
         target.setHealth(source.getHealth());
+	target.updateInventory();
     }
     
     public static void copyPlayer(Player target, NPC source) {

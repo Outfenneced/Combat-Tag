@@ -45,6 +45,7 @@ import techcable.minecraft.combattag.NPCMaster;
 import techcable.minecraft.combattag.Utils;
 import techcable.minecraft.combattag.listeners.PlayerListener;
 import techcable.minecraft.npclib.NPC;
+import techcable.minecraft.npclib.NPCLib;
 import techcable.minecraft.offlineplayers.AdvancedOfflinePlayer;
 import techcable.minecraft.offlineplayers.NBTAdvancedOfflinePlayer;
 import techcable.minecraft.offlineplayers.OfflinePlayers;
@@ -126,10 +127,10 @@ public class CombatTag extends JavaPlugin {
     public void onEnable() {
         settings = new SettingsLoader().loadSettings(settingsHelper, this.getDescription().getVersion());
         if (!settings.isInstaKill()) {
-            if (Bukkit.getPluginManager().isPluginEnabled("Citizens")) npcMaster = new NPCMaster(this);
+            if (NPCLib.isSupported()) npcMaster = new NPCMaster(this);
             else {
-                log.severe("[CombatTag] NPCs are enabled but citizens isn't installed");
-                log.severe("[CombatTag] Please install citizens if you want to use npcs");
+                log.severe("[CombatTag] NPCs are enabled but this version of minecraft isn't supported");
+                log.severe("[CombatTag] Please install citizens or update CombatTag if you want to use npcs");
                 setEnabled(false);
                 return;
             }

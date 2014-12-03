@@ -20,6 +20,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.projectiles.ProjectileSource;
+import org.bukkit.scoreboard.Scoreboard;
 
 import com.trc202.CombatTag.CombatTag;
 
@@ -28,24 +29,16 @@ import lombok.*;
 @Getter
 public class ScoreboardManager implements Listener {
 	public static final long BOARD_UPDATE_INTERVAL = 20; //1 second
+	public static final long BOARD_UPDATE_DELAY = 80; //4 Seconds - Give it some time so its less likely to blow up
 	private Map<UUID, CombatScoreboard> scoreboardMap = new HashMap<>();
 	private CombatTag plugin;
+	private ScoreboardTask task;
 	@SuppressWarnings("deprecation")
 	public ScoreboardManager(CombatTag plugin) {
+	    this.plugin = plugin;
 		Bukkit.getPluginManager().registerEvents(this, plugin);
-		Bukkit.getScheduler().runTaskTimer(getPlugin(), new Runnable() { //Only depreciated because the name is "misleading"
-			
-			@Override
-			public void run() {
-				for (CombatScoreboard board : scoreboardMap.values()) {
-					if (!board.getPlayer().isOnline()) {
-						board.destroy();
-					} else {
-						board.updateBoard();
-					}
-				}
-			}
-		}, 0, BOARD_UPDATE_INTERVAL);
+		task = new ScoreboardTask(this);
+		task.runTaskTimer(plugin, BOARD_UPDATE_DELAY, BOARD_UPDATE_INTERVAL);
 	}
 	
 	public CombatScoreboard getScoreboard(Player player) {
@@ -57,7 +50,7 @@ public class ScoreboardManager implements Listener {
 	}
 	
 	public void removeScoreboard(Player player) {
-		scoreboardMap.remove(player.getUniqueId());
+	    scoreboardMap.remove(player.getUniqueId());
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -97,13 +90,13 @@ public class ScoreboardManager implements Listener {
 				if (defender instanceof Player) { //If its a player display the attack regardless of whether or not another player attacked them first
 					Player attacker = (Player) defender;
 					if (!player.canSee(attacker)) return; //He is invisible
-					scoreboard.setDeffender(attacker.getDisplayName());
+					scoreboard.setDefender(attacker.getDisplayName());
 				} else if (defender instanceof LivingEntity) { //If it is a mob only display the attack if a player didn't attack them first
-					if (scoreboard.getDeffender() == null) { //No one attacked him yet
+					if (scoreboard.getDefender() == null) { //No one attacked him yet
 						if (defender.getCustomName() != null) { //He has a special name
-							scoreboard.setDeffender(defender.getCustomName());
+							scoreboard.setDefender(defender.getCustomName());
 						} else { //Give his mob type
-							scoreboard.setDeffender(defender.getType().getName());
+							scoreboard.setDefender(defender.getType().getName());
 						}
 					}
 				} //Otherwise its not alive and don't display it
@@ -113,11 +106,23 @@ public class ScoreboardManager implements Listener {
 	
 	@EventHandler(ignoreCancelled=true, priority=EventPriority.MONITOR)
 	public void onLeave(PlayerQuitEvent event) {
-		removeScoreboard(event.getPlayer());
+		if (getScoreboard(event.getPlayer()) != null) {
+		    getScoreboard(event.getPlayer()).destroy();
+		}
 	}
 	
 	@EventHandler(ignoreCancelled=true, priority=EventPriority.MONITOR)
 	public void onKick(PlayerKickEvent event) {
-		removeScoreboard(event.getPlayer());
+		if (getScoreboard(event.getPlayer()) != null) {
+		    getScoreboard(event.getPlayer()).destroy();
+		}
+	}
+	
+	public CombatScoreboard makeBoard(UUID id) {
+	    Player player = Bukkit.getPlayer(id);
+	    Scoreboard board = Bukkit.getScoreboardManager().getNewScoreboard();
+	    CombatScoreboard combatBoard = new CombatScoreboard(board, player, this);
+	    getScoreboardMap().put(id, combatBoard);
+	    return combatBoard;
 	}
 }

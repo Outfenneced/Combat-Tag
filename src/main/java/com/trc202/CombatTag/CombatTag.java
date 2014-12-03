@@ -44,6 +44,7 @@ import com.trc202.settings.SettingsLoader;
 import techcable.minecraft.combattag.NPCMaster;
 import techcable.minecraft.combattag.Utils;
 import techcable.minecraft.combattag.listeners.PlayerListener;
+import techcable.minecraft.combattag.scoreboard.ScoreboardManager;
 import techcable.minecraft.npclib.NPC;
 import techcable.minecraft.npclib.NPCLib;
 import techcable.minecraft.offlineplayers.AdvancedOfflinePlayer;
@@ -74,7 +75,8 @@ public class CombatTag extends JavaPlugin {
     private int npcNumber;
 
     //Techcable Variables
-
+    @Getter
+    private ScoreboardManager scoreboardManager;
     @Getter
     private NPCMaster npcMaster;
     @Getter
@@ -126,6 +128,9 @@ public class CombatTag extends JavaPlugin {
     @Override
     public void onEnable() {
         settings = new SettingsLoader().loadSettings(settingsHelper, this.getDescription().getVersion());
+        if (Bukkit.getScoreboardManager() != null /* Supports scoreboards */)  {
+            scoreboardManager = new ScoreboardManager(this);
+        }
         if (!settings.isInstaKill()) {
             if (NPCLib.isSupported()) npcMaster = new NPCMaster(this);
             else {

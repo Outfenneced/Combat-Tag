@@ -83,7 +83,7 @@ public class ScoreboardManager implements Listener {
 			}
 		}
 		if (event.getDamager() instanceof Player) {
-			Player player = (Player) event.getEntity();
+			Player player = (Player) event.getDamager();
 			Entity defender = event.getEntity();
 			if (getScoreboard(player) != null) {
 				CombatScoreboard scoreboard = getScoreboard(player);

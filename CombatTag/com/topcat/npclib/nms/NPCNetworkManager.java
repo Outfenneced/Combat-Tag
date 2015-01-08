@@ -3,7 +3,7 @@ package com.topcat.npclib.nms;
 import java.io.IOException;
 import java.lang.reflect.Field;
 
-import net.minecraft.server.v1_7_R4.NetworkManager;
+import net.minecraft.server.v1_8_R1.NetworkManager;
 import net.minecraft.util.io.netty.channel.Channel;
 
 /**
@@ -12,15 +12,13 @@ import net.minecraft.util.io.netty.channel.Channel;
  */
 public class NPCNetworkManager extends NetworkManager {
 
-    public NPCNetworkManager(boolean flag) throws IOException {
-        super(flag);
-        try {
-            Field f = getField(NetworkManager.class, "j");
-            f.setAccessible(true);
-            f.set(this, false);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public NPCNetworkManager() throws IOException {
+        super(EnumProtocolDirection.CLIENTBOUND);
+        Field channel = ReflectUtil.makeField(NetworkManager.class, "i"); 
+        Field address = ReflectUtil.makeField(NetworkManager.class, "j");
+        
+        ReflectUtil.setField(channel, this, new NullChannel());
+        ReflectUtil.setField(address, this, new NullSocketAddress());
     }
 
     public static Field getField(Class<?> clazz, String field) {

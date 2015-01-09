@@ -9,14 +9,14 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 
-import net.minecraft.server.v1_7_R4.Entity;
-import net.minecraft.server.v1_7_R4.PlayerInteractManager;
-import net.minecraft.util.com.mojang.authlib.GameProfile;
+import net.minecraft.server.v1_8_R1.Entity;
+import net.minecraft.server.v1_8_R1.PlayerInteractManager;
+import com.mojang.authlib.GameProfile;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_7_R4.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_8_R1.entity.CraftEntity;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -46,7 +46,7 @@ public class NPCManager {
         server = BServer.getInstance();
 
         try {
-            npcNetworkManager = new NPCNetworkManager(false);
+            npcNetworkManager = new NPCNetworkManager();
         } catch (IOException e) {
         }
 
@@ -58,7 +58,7 @@ public class NPCManager {
                 HashSet<UUID> toRemove = new HashSet<UUID>();
                 for (UUID i : npcs.keySet()) {
                     Entity j = npcs.get(i).getEntity();
-                    j.C();
+                    j.K();
                     if (j.dead) {
                         toRemove.add(i);
                     }
@@ -88,7 +88,7 @@ public class NPCManager {
             for (NPC npc : npcs.values()) {
                 if (npc != null && event.getChunk() == npc.getBukkitEntity().getLocation().getBlock().getChunk()) {
                     BWorld world = getBWorld(event.getWorld());
-                    if (world.getWorldServer().getEntity(npc.getEntity().getId()) != npc.getEntity()) { //ATTEMPT TO ERRADICATE ENTITY TRACKING ERROR (WORKS IN NORMAL BUKKIT)
+                    if (world.getWorldServer().getEntity(npc.getEntity().getUniqueID()) != npc.getEntity()) { //ATTEMPT TO ERRADICATE ENTITY TRACKING ERROR (WORKS IN NORMAL BUKKIT)
                         world.getWorldServer().addEntity(npc.getEntity());
                     }
                 }

@@ -1,5 +1,5 @@
 name: CombatTag
-version: 6.2.0
+version: 6.3.0-SNAPSHOT
 author: cheddar262
 main: com.trc202.CombatTag.CombatTag
 dev-url: http://dev.bukkit.org/server-mods/combat-tag

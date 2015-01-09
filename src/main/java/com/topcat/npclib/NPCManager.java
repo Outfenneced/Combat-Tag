@@ -10,16 +10,22 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 import net.minecraft.server.v1_8_R1.Entity;
+import net.minecraft.server.v1_8_R1.EntityPlayer;
+import net.minecraft.server.v1_8_R1.EnumPlayerInfoAction;
+import net.minecraft.server.v1_8_R1.PacketPlayOutPlayerInfo;
 import net.minecraft.server.v1_8_R1.PlayerInteractManager;
+
 import com.mojang.authlib.GameProfile;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_8_R1.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_8_R1.entity.CraftPlayer;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -34,7 +40,7 @@ import com.topcat.npclib.nms.NPCNetworkManager;
  *
  * @author martin
  */
-public class NPCManager {
+public class NPCManager implements Listener {
 
     private HashMap<UUID, NPC> npcs = new HashMap<UUID, NPC>();
     private final BServer server;
@@ -119,13 +125,14 @@ public class NPCManager {
             BWorld world = getBWorld(l.getWorld());
             NPCEntity npcEntity = new NPCEntity(this, world, setGameProfile(name), new PlayerInteractManager(world.getWorldServer()));
             npcEntity.setPositionRotation(l.getX(), l.getY(), l.getZ(), l.getYaw(), l.getPitch());
+            NPCUtils.sendPacketNearby(l, new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, npcEntity));
             world.getWorldServer().addEntity(npcEntity); //the right way
             NPC npc = new HumanNPC(npcEntity);
             npcs.put(id, npc);
             return npc;
         }
     }
-
+    
     public void despawnById(UUID playerUUID) {
         NPC npc = npcs.get(playerUUID);
         if (npc != null) {
@@ -133,7 +140,7 @@ public class NPCManager {
             npc.removeFromWorld();
         }
     }
-
+    
     public void despawnHumanByName(String npcName) {
         if (npcName.length() > 16) {
             npcName = npcName.substring(0, 16); //Ensure you can still despawn
@@ -179,7 +186,15 @@ public class NPCManager {
     public BServer getServer() {
         return server;
     }
-
+    
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+    	EntityPlayer[] npcs = this.npcs.values().toArray(new EntityPlayer[this.npcs.size()]);
+    	PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, npcs);
+    	EntityPlayer player = ((CraftPlayer)event.getPlayer()).getHandle();
+    	player.playerConnection.sendPacket(packet);
+    }
+    
     public NPCNetworkManager getNPCNetworkManager() {
         return npcNetworkManager;
     }

@@ -107,6 +107,12 @@ public class CombatTag extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        if (!isVersionSupported()) {
+            log.severe("[CombatTag] this version of minecraft isn't supported by combat tag");
+            log.severe("[CombatTag] this version only supports minecraft " + SUPPORTED_VERSION);
+            setEnabled(false);
+            return;
+        }
         tagged = new HashMap<UUID, Long>();
         settings = new SettingsLoader().loadSettings(settingsHelper, this.getDescription().getVersion());
         npcm = new NPCManager(this);
@@ -477,5 +483,15 @@ public class CombatTag extends JavaPlugin {
 
     public SettingsHelper getSettingsHelper() {
         return this.settingsHelper;
+    }
+    
+    public static final String SUPPORTED_VERSION = "1.8";
+    public static boolean isVersionSupported() {
+        try {
+            Class<MinecraftServer> clazz = MinecraftServer.class;
+            return true;
+        } catch (NoClassDefFoundError e) {
+            return false;
+        }
     }
 }

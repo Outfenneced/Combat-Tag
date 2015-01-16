@@ -90,4 +90,15 @@
             
         </plugins>
     </build>
+    
+    <distributionManagement>
+        <repository>
+            <id>techcable-repo</id>
+            <url>http://repo.techcable.net/content/repositories/releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>techcable-repo</id>
+            <url>http://repo.techcable.net/content/repositories/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>

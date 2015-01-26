@@ -11,8 +11,12 @@ import org.bukkit.inventory.ItemStack;
 
 public class NPCUtils {
 
+    private static double getDefaultRadius() {
+        return Bukkit.getViewDistance() * 16;
+    }
+
     public static void sendPacketNearby(Location location, Packet packet) {
-        sendPacketNearby(location, packet, 64);
+        sendPacketNearby(location, packet, getDefaultRadius());
     }
 
     public static void sendPacketNearby(Location location, Packet packet, double radius) {
@@ -27,6 +31,27 @@ public class NPCUtils {
             }
 
             ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
+        }
+    }
+    
+    public static void sendPacketsNearby(Location location, Packet... packets) {
+        sendPacketsNearby(location, packets, getDefaultRadius());
+    }
+    
+    public static void sendPacketsNearby(Location location, Packet[] packets, double radius) {
+        radius *= radius;
+        final World world = location.getWorld();
+        for (Player p : Bukkit.getServer().getOnlinePlayers()) {
+            if (p == null || world != p.getWorld()) {
+                continue;
+            }
+            if (location.distanceSquared(p.getLocation()) > radius) {
+                continue;
+            }
+            
+            for (Packet packet : packets) {
+                ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
+            }
         }
     }
 

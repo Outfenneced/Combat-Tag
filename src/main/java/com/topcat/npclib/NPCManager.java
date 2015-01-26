@@ -193,6 +193,11 @@ public class NPCManager implements Listener {
     	PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, npcs);
     	EntityPlayer player = ((CraftPlayer)event.getPlayer()).getHandle();
     	player.playerConnection.sendPacket(packet);
+    	for (NPC npc : this.npcs.values()) {
+    	    if (npc instanceof HumanNPC) {
+    	        ((HumanNPC)npc).updateEquipment();
+    	    }
+    	}
     }
     
     public NPCNetworkManager getNPCNetworkManager() {

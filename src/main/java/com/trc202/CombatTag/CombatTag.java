@@ -34,6 +34,7 @@ import org.bukkit.util.StringUtil;
 import com.google.common.collect.ImmutableList;
 import com.topcat.npclib.NPCManager;
 import com.topcat.npclib.entity.NPC;
+import com.topcat.npclib.entity.HumanNPC;
 import com.trc202.CombatTagEvents.NpcDespawnEvent;
 import com.trc202.CombatTagEvents.NpcDespawnReason;
 import com.trc202.CombatTagListeners.CombatTagCommandPrevention;
@@ -238,6 +239,9 @@ public class CombatTag extends JavaPlugin {
         if (npc.getBukkitEntity() instanceof Player) {
             Player playerNPC = (Player) npc.getBukkitEntity();
             copyTo(playerNPC, plr);
+            if (npc instanceof HumanNPC) {
+                ((HumanNPC)npc).updateEquipment();
+            }
         }
     }
 

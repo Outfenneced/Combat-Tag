@@ -489,7 +489,7 @@ public class CombatTag extends JavaPlugin {
         return this.settingsHelper;
     }
     
-    public static final String SUPPORTED_VERSION = "1.8";
+    public static final String SUPPORTED_VERSION = "1.8.3";
     public static boolean isVersionSupported() {
         try {
             Class<MinecraftServer> clazz = MinecraftServer.class;

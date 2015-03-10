@@ -9,19 +9,19 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 
-import net.minecraft.server.v1_8_R1.Entity;
-import net.minecraft.server.v1_8_R1.EntityPlayer;
-import net.minecraft.server.v1_8_R1.EnumPlayerInfoAction;
-import net.minecraft.server.v1_8_R1.PacketPlayOutPlayerInfo;
-import net.minecraft.server.v1_8_R1.PlayerInteractManager;
+import net.minecraft.server.v1_8_R2.Entity;
+import net.minecraft.server.v1_8_R2.EntityPlayer;
+import net.minecraft.server.v1_8_R2.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
+import net.minecraft.server.v1_8_R2.PacketPlayOutPlayerInfo;
+import net.minecraft.server.v1_8_R2.PlayerInteractManager;
 
 import com.mojang.authlib.GameProfile;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_8_R1.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_8_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_8_R2.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_8_R2.entity.CraftPlayer;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -66,6 +66,10 @@ public class NPCManager implements Listener {
                     Entity j = npcs.get(i).getEntity();
                     j.K();
                     if (j.dead) {
+                        NPC npc = npcs.get(i);
+                        if (npc instanceof HumanNPC) {
+                            ((HumanNPC)npc).sendDespawnPacket();
+                        }
                         toRemove.add(i);
                     }
                 }
@@ -137,6 +141,9 @@ public class NPCManager implements Listener {
         NPC npc = npcs.get(playerUUID);
         if (npc != null) {
             npcs.remove(playerUUID);
+            if (npc instanceof HumanNPC) {
+                ((HumanNPC)npc).sendDespawnPacket();
+            }
             npc.removeFromWorld();
         }
     }
@@ -145,18 +152,13 @@ public class NPCManager implements Listener {
         if (npcName.length() > 16) {
             npcName = npcName.substring(0, 16); //Ensure you can still despawn
         }
-        HashSet<UUID> toRemove = new HashSet<UUID>();
         for (UUID n : npcs.keySet()) {
             NPC npc = npcs.get(n);
             if (npc instanceof HumanNPC) {
                 if (((HumanNPC) npc).getName().equals(npcName)) {
-                    toRemove.add(n);
-                    npc.removeFromWorld();
+                    despawnById(n);
                 }
             }
-        }
-        for (UUID n : toRemove) {
-            npcs.remove(n);
         }
     }
 

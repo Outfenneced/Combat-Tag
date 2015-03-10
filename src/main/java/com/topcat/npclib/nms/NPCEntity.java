@@ -1,14 +1,14 @@
 package com.topcat.npclib.nms;
 
-import net.minecraft.server.v1_8_R1.Entity;
-import net.minecraft.server.v1_8_R1.EntityHuman;
-import net.minecraft.server.v1_8_R1.EntityPlayer;
-import net.minecraft.server.v1_8_R1.EnumGamemode;
-import net.minecraft.server.v1_8_R1.PlayerInteractManager;
-import net.minecraft.server.v1_8_R1.WorldServer;
+import net.minecraft.server.v1_8_R2.Entity;
+import net.minecraft.server.v1_8_R2.EntityHuman;
+import net.minecraft.server.v1_8_R2.EntityPlayer;
+import net.minecraft.server.v1_8_R2.WorldSettings.EnumGamemode;
+import net.minecraft.server.v1_8_R2.PlayerInteractManager;
+import net.minecraft.server.v1_8_R2.WorldServer;
 import com.mojang.authlib.GameProfile;
 
-import org.bukkit.craftbukkit.v1_8_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_8_R2.CraftServer;
 import org.bukkit.event.entity.EntityTargetEvent;
 
 import com.topcat.npclib.NPCManager;

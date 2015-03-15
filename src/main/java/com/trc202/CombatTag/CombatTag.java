@@ -1,6 +1,7 @@
 package com.trc202.CombatTag;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +21,7 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_8_R2.CraftServer;
+import org.bukkit.craftbukkit.v1_8_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_8_R2.entity.CraftHumanEntity;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
@@ -496,6 +498,15 @@ public class CombatTag extends JavaPlugin {
             return true;
         } catch (NoClassDefFoundError e) {
             return false;
+        }
+    }
+    
+    public static final Field ENTITY_PLAYER_INVULNERABLE_TICKS_FIELD = Reflection.makeField(EntityPlayer.class, "invulnerableTicks");
+    
+    public static void setInvulnerableTicks(Entity bukkitEntity, int invulnerableTicks) { //Entity.setNoDamageTicks() doesn't set EntityPlayer.invulnerableTicks
+        net.minecraft.server.v1_8_R2.Entity entity = ((CraftEntity)bukkitEntity).getHandle();
+        if (entity instanceof EntityPlayer) {
+            Reflection.setField(ENTITY_PLAYER_INVULNERABLE_TICKS_FIELD, entity, invulnerableTicks);
         }
     }
 }

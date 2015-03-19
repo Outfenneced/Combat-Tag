@@ -1,16 +1,17 @@
 package com.trc202.CombatTag;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-import net.minecraft.server.v1_8_R1.EntityHuman;
-import net.minecraft.server.v1_8_R1.EntityPlayer;
-import net.minecraft.server.v1_8_R1.MinecraftServer;
-import net.minecraft.server.v1_8_R1.PlayerInteractManager;
+import net.minecraft.server.v1_8_R2.EntityHuman;
+import net.minecraft.server.v1_8_R2.EntityPlayer;
+import net.minecraft.server.v1_8_R2.MinecraftServer;
+import net.minecraft.server.v1_8_R2.PlayerInteractManager;
 import com.mojang.authlib.GameProfile;
 
 import org.bukkit.Bukkit;
@@ -19,8 +20,9 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_8_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_8_R1.entity.CraftHumanEntity;
+import org.bukkit.craftbukkit.v1_8_R2.CraftServer;
+import org.bukkit.craftbukkit.v1_8_R2.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_8_R2.entity.CraftHumanEntity;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -34,6 +36,7 @@ import org.bukkit.util.StringUtil;
 import com.google.common.collect.ImmutableList;
 import com.topcat.npclib.NPCManager;
 import com.topcat.npclib.entity.NPC;
+import com.topcat.npclib.entity.HumanNPC;
 import com.trc202.CombatTagEvents.NpcDespawnEvent;
 import com.trc202.CombatTagEvents.NpcDespawnReason;
 import com.trc202.CombatTagListeners.CombatTagCommandPrevention;
@@ -238,6 +241,9 @@ public class CombatTag extends JavaPlugin {
         if (npc.getBukkitEntity() instanceof Player) {
             Player playerNPC = (Player) npc.getBukkitEntity();
             copyTo(playerNPC, plr);
+            if (npc instanceof HumanNPC) {
+                ((HumanNPC)npc).updateEquipment();
+            }
         }
     }
 
@@ -485,13 +491,22 @@ public class CombatTag extends JavaPlugin {
         return this.settingsHelper;
     }
     
-    public static final String SUPPORTED_VERSION = "1.8";
+    public static final String SUPPORTED_VERSION = "1.8.3";
     public static boolean isVersionSupported() {
         try {
             Class<MinecraftServer> clazz = MinecraftServer.class;
             return true;
         } catch (NoClassDefFoundError e) {
             return false;
+        }
+    }
+    
+    public static final Field ENTITY_PLAYER_INVULNERABLE_TICKS_FIELD = Reflection.makeField(EntityPlayer.class, "invulnerableTicks");
+    
+    public static void setInvulnerableTicks(Entity bukkitEntity, int invulnerableTicks) { //Entity.setNoDamageTicks() doesn't set EntityPlayer.invulnerableTicks
+        net.minecraft.server.v1_8_R2.Entity entity = ((CraftEntity)bukkitEntity).getHandle();
+        if (entity instanceof EntityPlayer) {
+            Reflection.setField(ENTITY_PLAYER_INVULNERABLE_TICKS_FIELD, entity, invulnerableTicks);
         }
     }
 }

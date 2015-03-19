@@ -42,7 +42,7 @@ public class NoPvpPlayerListener implements Listener {
         }
         if (plugin.inTagged(playerUUID)) {
             //Player has an NPC and is likely to need some sort of punishment
-            loginPlayer.setNoDamageTicks(0);
+            CombatTag.setInvulnerableTicks(loginPlayer, 0);
             plugin.despawnNPC(playerUUID, NpcDespawnReason.PLAYER_LOGIN);
             if (loginPlayer.getHealth() > 0) {
                 plugin.addTagged(loginPlayer);
@@ -84,6 +84,7 @@ public class NoPvpPlayerListener implements Listener {
                     npcPlayer.setMetadata("NPC", new FixedMetadataValue(plugin, "NPC"));
                     npcPlayer.setHealth(plugin.healthCheck(quitPlr.getHealth()));
                     quitPlr.getWorld().createExplosion(quitPlr.getLocation(), -1); //Create the smoke effect
+                    CombatTag.setInvulnerableTicks(npcPlayer, 0);
                     if (plugin.settings.getNpcDespawnTime() > 0) {
                         plugin.scheduleDelayedKill(npc, playerUUID);
                     }

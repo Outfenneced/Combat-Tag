@@ -11,3 +11,8 @@ nbproject/project.properties
 nbproject/project.xml
 /nbproject/
 target/
+dependency-reduced-pom.xml
+
+#Intellij
+/*.iml
+/.idea

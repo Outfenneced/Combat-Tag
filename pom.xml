@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.trc202</groupId>
     <artifactId>combattag</artifactId>
-    <version>6.3.2</version>
+    <version>6.4.0-SNAPSHOT</version>
     <name>CombatTag</name>
     <properties>
         <java.version>1.6</java.version>
@@ -11,7 +11,7 @@
     
     <repositories>
         <repository>
-            <id>techcable-repo</id> <!-- Houses war, crackshot, and craftbukkit -->
+            <id>techcable-repo</id> <!-- Houses war, crackshot, and NPCLib -->
             <url>http://repo.techcable.net/content/groups/public/</url>
         </repository>
         <repository>
@@ -26,10 +26,10 @@
     
     <dependencies>
         <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>craftbukkit</artifactId>
-            <version>1.8.3-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
+            <groupId>net.techcable</groupId>
+            <artifactId>npclib</artifactId>
+            <version>1.1.1-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.bukkit</groupId>
@@ -87,7 +87,27 @@
                     <target>${java.version}</target>
                 </configuration>
             </plugin>
-            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>2.3</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <relocations>
+                                <relocation>
+                                    <pattern>net.techcable.npclib</pattern>
+                                    <shadedPattern>com.trc202.CombatTag.libs.npclib</shadedPattern>
+                                </relocation>
+                            </relocations>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
     

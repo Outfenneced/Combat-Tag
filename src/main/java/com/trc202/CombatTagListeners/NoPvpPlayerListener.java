@@ -2,6 +2,7 @@ package com.trc202.CombatTagListeners;
 
 import java.util.UUID;
 
+import net.techcable.npclib.NPC;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -19,7 +20,6 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import com.topcat.npclib.entity.NPC;
 import com.trc202.CombatTag.CombatTag;
 import com.trc202.CombatTagEvents.NpcDespawnReason;
 
@@ -79,9 +79,8 @@ public class NoPvpPlayerListener implements Listener {
                 }
                 if (wgCheck) {
                     NPC npc = plugin.spawnNpc(quitPlr, quitPlr.getLocation());
-                    Player npcPlayer = (Player) npc.getBukkitEntity();
+                    Player npcPlayer = (Player) npc.getEntity();
                     plugin.copyContentsNpc(npc, quitPlr);
-                    npcPlayer.setMetadata("NPC", new FixedMetadataValue(plugin, "NPC"));
                     npcPlayer.setHealth(plugin.healthCheck(quitPlr.getHealth()));
                     quitPlr.getWorld().createExplosion(quitPlr.getLocation(), -1); //Create the smoke effect
                     CombatTag.setInvulnerableTicks(npcPlayer, 0);

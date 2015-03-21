@@ -2,6 +2,7 @@ package com.trc202.CombatTagListeners;
 
 import java.util.UUID;
 
+import net.techcable.npclib.NPC;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Entity;
@@ -14,7 +15,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 
-import com.topcat.npclib.entity.NPC;
 import com.trc202.CombatTag.CombatTag;
 
 public class NoPvpEntityListener implements Listener {

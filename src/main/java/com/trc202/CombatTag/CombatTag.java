@@ -8,21 +8,14 @@ import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-import net.minecraft.server.v1_8_R2.EntityHuman;
-import net.minecraft.server.v1_8_R2.EntityPlayer;
-import net.minecraft.server.v1_8_R2.MinecraftServer;
-import net.minecraft.server.v1_8_R2.PlayerInteractManager;
-import com.mojang.authlib.GameProfile;
-
+import net.techcable.npclib.NPC;
+import net.techcable.npclib.NPCLib;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_8_R2.CraftServer;
-import org.bukkit.craftbukkit.v1_8_R2.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_8_R2.entity.CraftHumanEntity;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -34,9 +27,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.StringUtil;
 
 import com.google.common.collect.ImmutableList;
-import com.topcat.npclib.NPCManager;
-import com.topcat.npclib.entity.NPC;
-import com.topcat.npclib.entity.HumanNPC;
 import com.trc202.CombatTagEvents.NpcDespawnEvent;
 import com.trc202.CombatTagEvents.NpcDespawnReason;
 import com.trc202.CombatTagListeners.CombatTagCommandPrevention;
@@ -98,7 +88,7 @@ public class CombatTag extends JavaPlugin {
     @Override
     public void onDisable() {
         for (NPC npc : npcm.getNPCs()) {
-            UUID uuid = npcm.getNPCIdFromEntity(npc.getBukkitEntity());
+            UUID uuid = npcm.getNPCIdFromEntity(npc.getEntity());
             despawnNPC(uuid, NpcDespawnReason.PLUGIN_DISABLED);
             if (isDebugEnabled()) {
                 log.info("[CombatTag] Disabling npc with ID of: " + uuid);
@@ -112,7 +102,7 @@ public class CombatTag extends JavaPlugin {
     public void onEnable() {
         if (!isVersionSupported()) {
             log.severe("[CombatTag] this version of minecraft isn't supported by combat tag");
-            log.severe("[CombatTag] this version only supports minecraft " + SUPPORTED_VERSION);
+            log.severe("[CombatTag] Please check bukkit-dev for an update");
             setEnabled(false);
             return;
         }
@@ -182,10 +172,9 @@ public class CombatTag extends JavaPlugin {
             log.info("[CombatTag] Spawning NPC for " + plr.getName());
         }
         NPC spawnedNPC = npcm.spawnHumanNPC(getNpcName(plr.getName()), location, plr.getUniqueId());
-        if (spawnedNPC.getBukkitEntity() instanceof HumanEntity) {
-            HumanEntity p = (HumanEntity) spawnedNPC.getBukkitEntity();
-            p.setNoDamageTicks(1);
-            p.setMetadata("NPC", new FixedMetadataValue(this, "NPC"));
+        if (spawnedNPC.getEntity() instanceof HumanEntity) {
+            HumanEntity p = (HumanEntity) spawnedNPC.getEntity();
+            CombatTag.setInvulnerableTicks(p, 0);
         }
         return spawnedNPC;
     }
@@ -238,12 +227,14 @@ public class CombatTag extends JavaPlugin {
      * @param plr Player
      */
     public void copyContentsNpc(NPC npc, Player plr) {
-        if (npc.getBukkitEntity() instanceof Player) {
-            Player playerNPC = (Player) npc.getBukkitEntity();
+        if (npc.getEntity() instanceof Player) {
+            Player playerNPC = (Player) npc.getEntity();
             copyTo(playerNPC, plr);
+            /* NPCLib does this automaticly
             if (npc instanceof HumanNPC) {
                 ((HumanNPC)npc).updateEquipment();
             }
+            */
         }
     }
 
@@ -381,7 +372,7 @@ public class CombatTag extends JavaPlugin {
     public void scheduleDelayedKill(final NPC npc, final UUID uuid) {
         long despawnTicks = settings.getNpcDespawnTime() * 20L;
         final boolean kill = settings.isNpcDieAfterTime();
-        final Player plrNpc = (Player) npc.getBukkitEntity();
+        final Player plrNpc = (Player) npc.getEntity();
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
             @Override
             public void run() {
@@ -422,17 +413,13 @@ public class CombatTag extends JavaPlugin {
                 log.info("[CombatTag] Update player data for " + playerUUID + " !");
             }
             //Create an entity to load the player data
-            String name = Bukkit.getOfflinePlayer(playerUUID).getName();
-            MinecraftServer server = ((CraftServer) this.getServer()).getServer();
-            EntityPlayer entity = new EntityPlayer(server, server.getWorldServer(0), setGameProfile(name, playerUUID), new PlayerInteractManager(server.getWorldServer(0))); //Eh
-            target = entity.getBukkitEntity();
+            target = OfflinePlayerLoader.loadPlayer(playerUUID);
             if (target != null) {
                 target.loadData();
             }
         }
         if (target != null && (npcm.getNPC(playerUUID) == npc) && npc != null) {
-            EntityHuman humanTarget = ((CraftHumanEntity) target).getHandle();
-            Player source = (Player) npc.getBukkitEntity();
+            Player source = (Player) npc.getEntity();
             if (source.getHealth() <= 0) {
                 emptyInventory(target);
                 ItemStack airItem = new ItemStack(Material.AIR);
@@ -441,7 +428,7 @@ public class CombatTag extends JavaPlugin {
                     emptyArmorStack[x] = airItem;
                 }
                 target.getInventory().setArmorContents(emptyArmorStack);
-                humanTarget.setHealth(0);
+                target.setHealth(0);
             } else {
                 copyTo(target, source);
             }
@@ -451,10 +438,6 @@ public class CombatTag extends JavaPlugin {
         if (target != null) {
             target.saveData();
         }
-    }
-
-    public GameProfile setGameProfile(String name, UUID id) {
-        return new GameProfile(id, name);
     }
 
     public void copyTo(Player target, Player source) {
@@ -468,8 +451,8 @@ public class CombatTag extends JavaPlugin {
         target.setExhaustion(source.getExhaustion());
         target.setSaturation(source.getSaturation());
         target.setFireTicks(source.getFireTicks());
-        if (target instanceof CraftHumanEntity) {
-            EntityHuman humanTarget = ((CraftHumanEntity) target).getHandle();
+        if (target instanceof HumanEntity) {
+            HumanEntity humanTarget = (HumanEntity) target;
             double healthSet = healthCheck(source.getHealth());
             humanTarget.setHealth((float) healthSet);
         } else {
@@ -491,21 +474,15 @@ public class CombatTag extends JavaPlugin {
         return this.settingsHelper;
     }
     
-    public static final String SUPPORTED_VERSION = "1.8.3";
     public static boolean isVersionSupported() {
-        try {
-            Class<MinecraftServer> clazz = MinecraftServer.class;
-            return true;
-        } catch (NoClassDefFoundError e) {
-            return false;
-        }
+        return NPCLib.isSupported();
     }
     
-    public static final Field ENTITY_PLAYER_INVULNERABLE_TICKS_FIELD = Reflection.makeField(EntityPlayer.class, "invulnerableTicks");
+    public static final Field ENTITY_PLAYER_INVULNERABLE_TICKS_FIELD = Reflection.makeField(Reflection.getNmsClass("EntityPlayer"), "invulnerableTicks");
     
     public static void setInvulnerableTicks(Entity bukkitEntity, int invulnerableTicks) { //Entity.setNoDamageTicks() doesn't set EntityPlayer.invulnerableTicks
-        net.minecraft.server.v1_8_R2.Entity entity = ((CraftEntity)bukkitEntity).getHandle();
-        if (entity instanceof EntityPlayer) {
+        Object entity = Reflection.getHandle(bukkitEntity);
+        if (Reflection.getNmsClass("EntityPlayer").isInstance(entity)) {
             Reflection.setField(ENTITY_PLAYER_INVULNERABLE_TICKS_FIELD, entity, invulnerableTicks);
         }
     }
